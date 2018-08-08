@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MyMixes"
+             xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
+              
+            x:Class="MyMixes.MainPage"
+             >
+    <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             ios:Page.UseSafeArea="true"-->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="projectfolderTemplate">
+                <ViewCell>
+                    <Grid Margin="10,0,0,0" BackgroundColor="#606060">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.8*" />
+                            <ColumnDefinition Width="0.1*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="Folder.png"/>
+                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="Large" />
+                        <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="trackTemplate">
+                <ViewCell>
+                    <Grid Margin="15,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.8*" />
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.1*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Clicked="Delete_Clicked" Image="TrashBt.png" />
+                        <Button Grid.Column="2" Clicked="Play_Clicked"  Image="PlayBt.png"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <local:TrackDataTemplateSelector x:Key="trackDataTemplateSelector" ProjectTemplate="{StaticResource projectfolderTemplate}" TrackTemplate="{StaticResource trackTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <StackLayout HorizontalOptions="FillAndExpand">
+            <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
+            <ScrollView Margin="20,10,20,10">
+                <ListView x:Name="Projects" 
+                        ItemSelected="TrackView_Sel"
+                        >
+                    <!--<ListView x:Name="Projects" ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                          CachingStrategy="RecycleElement"
+                        ItemSelected="TrackView_Sel"
+                        >-->
+                </ListView>
+            </ScrollView>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.9*" />
+                    <ColumnDefinition Width="0.1*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Text="" TextColor="White"/>
+                <Button Grid.Column="1" Clicked="PlaySong_Clicked" Image="PlayBt.png" />
+            </Grid>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
