@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:MyMixes"
               
             x:Class="MyMixes.MainPage"
+             Appearing="OnAppearing"
              >
     <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"-->
@@ -56,6 +57,7 @@
                         >-->
                 </ListView>
             </ScrollView>
+            <Button Text="add" Clicked="Add_Clicked"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.9*" />

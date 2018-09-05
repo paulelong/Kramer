@@ -15,6 +15,9 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using MyMixes;
+using OAuthNativeFlow;
+
 namespace MyMixes.UWP
 {
     /// <summary>
@@ -97,5 +100,40 @@ namespace MyMixes.UWP
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            // When the app was activated by a Protocol (custom URI scheme), forwards
+            // the URI to the MainPage through a Navigate event.
+            if (args.Kind == ActivationKind.Protocol)
+            {
+                // Extracts the authorization response URI from the arguments.
+                ProtocolActivatedEventArgs protocolArgs = (ProtocolActivatedEventArgs)args;
+                Uri uri = protocolArgs.Uri;
+
+                // Gets the current frame, making one if needed.
+                var frame = Window.Current.Content as Frame;
+                if (frame == null)
+                    frame = new Frame();
+
+                // Opens the URI for "navigation" (handling) on the MainPage.
+                if (uri.OriginalString.Contains("oauth2"))
+                {
+                    //App.Current.
+                    //frame.Navigate(typeof(MainPage), uri);
+                    //Window.Current.Content = frame;
+                    //Window.Current.Activate();
+                    //AuthenticationState
+
+                    AuthenticationState.Authenticator.OnPageLoading(uri);
+                }
+                else
+                {
+                    frame.Navigate(typeof(MainPage), uri);
+                    Window.Current.Content = frame;
+                    Window.Current.Activate();
+                }
+            }
+        }
+
     }
 }

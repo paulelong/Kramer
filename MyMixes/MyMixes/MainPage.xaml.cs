@@ -7,8 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+//using Xamarin.Plugin.FilePicker;
+
 using Plugin.SimpleAudioPlayer;
 using System.IO;
+using Plugin.FilePicker.Abstractions;
+using Plugin.FilePicker;
+using static MyMixes.ProviderInfo;
 
 namespace MyMixes
 {
@@ -24,8 +29,6 @@ namespace MyMixes
         {
             InitializeComponent();
 
-            LoadProjects();
-
             player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         }
 
@@ -36,6 +39,35 @@ namespace MyMixes
             {
                 selectedFolder = t.Name;
                 await LoadProjects();
+            }
+        }
+
+        private async void Add_Clicked(object sender, EventArgs e)
+        {
+            var ProviderChoices = Enum.GetNames(typeof(CloudProviders));
+        
+            var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
+
+            ICloudStore cs = null;
+
+            var provider = Enum.Parse(typeof(CloudProviders), action);
+            switch (provider)
+            {
+                case CloudProviders.OneDrive:
+                    cs = new OneDriveStore();
+                    break;
+                case CloudProviders.GoogleDrive:
+                    cs = new GoogleDriveStore();
+                    break;
+
+            }
+
+            if(cs != null)
+            {
+                if (await CloudStoreUtils.Authenticate(cs))
+                {
+                    //CrossFilePicker.Current.PickFile();
+                }
             }
         }
 
@@ -77,8 +109,28 @@ namespace MyMixes
             }
         }
 
+        private async Task SyncProjects()
+        {
+            // seed with static data for now REMOVE
+            ProviderInfo piA = new ProviderInfo();
+
+            piA.RootPath = "/Mixes";
+            piA.CloudProvider = CloudProviders.OneDrive;
+            PersistentData.MixLocations.Add(piA);
+
+            foreach(ProviderInfo pi in PersistentData.MixLocations)
+            {
+                foreach(string f in await pi.GetFoldersAsync())
+                {
+                    await pi.UpdateProjectAsync(f);
+                }
+            }
+        }
+
         private async Task LoadProjects()
         {
+            await SyncProjects();
+
             IFolder folder = FileSystem.Current.LocalStorage;
             IList<IFolder> folderList = await folder.GetFoldersAsync();
             var tracks = new List<Track>();
@@ -155,6 +207,11 @@ namespace MyMixes
         private void Delete_Clicked(object sender, EventArgs e)
         {
 
+        }
+
+        private async void OnAppearing(object sender, EventArgs e)
+        {
+            await LoadProjects();
         }
     }
 }
