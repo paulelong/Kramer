@@ -11,7 +11,7 @@ namespace MyMixes
 {
     public static class CloudStoreUtils
     {
-        public  static async Task<bool> Authenticate(ICloudStore cs)
+        public async static Task<bool> Authenticate(ICloudStore cs)
         {
             try
             {
@@ -36,13 +36,11 @@ namespace MyMixes
     {
         Task<bool> Authenticate(UIParent parent);
 
-        Task<bool> SaveRiffToCloud(Stream localfile, string RootPath, string ProjectPath, string cloudfile);
-
         Task<bool> ProjectExists(string path);
 
-        Task<bool> DeleteTake(string path);
+        Task<bool> DeleteSong(string path);
 
-        Task<List<string>> GetProjectFoldersAsync();
+        Task<List<string>> GetProjectFoldersAsync(string path);
 
         Task<bool> UpdateProjectAsync(string path);
 

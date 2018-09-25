@@ -562,7 +562,7 @@ namespace MyMixes
             PersistentData.GoogleToken = "";
         }
 
-        public async Task<bool> DeleteTake(string path)
+        public async Task<bool> DeleteSong(string path)
         {
             await WaitForAuthenticationComplete();
 
@@ -597,7 +597,7 @@ namespace MyMixes
             }
         }
 
-        public Task<List<string>> GetProjectFoldersAsync()
+        public Task<List<string>> GetProjectFoldersAsync(string path)
         {
             throw new NotImplementedException();
         }

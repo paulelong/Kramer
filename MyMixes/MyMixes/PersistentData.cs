@@ -5,11 +5,104 @@ using Xamarin.Forms;
 
 namespace MyMixes
 {
+    public class ProjectMapping
+    {
+        public ProviderInfo.CloudProviders provider;
+        public string project;
+    }
+
     public static class PersistentData
     {
         public static void Save()
         {
             Application.Current.SavePropertiesAsync();
+        }
+
+        private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
+        public static List<ProjectMapping> ProjectMappings
+        {
+            get
+            {
+                if(projectMappings == null)
+                {
+                    projectMappings = new List<ProjectMapping>();
+                    LoadProjectMappings();
+                }
+
+                return projectMappings;
+            }
+        }
+
+        public static void SaveProjectMappings()
+        {
+            Dictionary<ProviderInfo.CloudProviders, List<string>> ProjectsByProviders = new Dictionary<ProviderInfo.CloudProviders, List<string>>();
+
+            foreach(ProviderInfo.CloudProviders pmname in Enum.GetValues(typeof(ProviderInfo.CloudProviders)))
+            {
+                ProjectsByProviders[pmname] = new List<string>();
+            }
+
+            foreach(ProjectMapping pm in projectMappings)
+            {
+                ProjectsByProviders[pm.provider].Add(pm.project);
+            }
+
+            foreach(KeyValuePair<ProviderInfo.CloudProviders, List<string>> kvp in ProjectsByProviders)
+            {
+                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
+            }
+        }
+
+        public static void LoadProjectMappings()
+        {
+            foreach (ProviderInfo.CloudProviders pmname in Enum.GetValues(typeof(ProviderInfo.CloudProviders)))
+            {
+                if(Application.Current.Properties.ContainsKey("ProjectMap_" + pmname))
+                {
+                    string list = (string)Application.Current.Properties["ProjectMap_" + pmname];
+                    foreach(string p in list.Split(','))
+                    {
+                        projectMappings.Add(new ProjectMapping() { project = p, provider = pmname });
+                    }
+                }
+            }
+        }
+
+        public static List<string> GetProjectFoldersData(string provider, string root)
+        {
+            string key = provider + "_" + root;
+
+            if(Application.Current.Properties.ContainsKey(key))
+            {
+                string projects = (string)Application.Current.Properties[key];
+                return new List<string>(projects.Split(','));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static void PutProjectFoldersData(string provider, string root, string value)
+        {
+            string key = provider + "_" + root;
+
+            Application.Current.Properties[key] = value;
+        }
+
+        public static bool isRemoteNewer(string path, DateTime lastModified)
+        {
+            if(Application.Current.Properties.ContainsKey(path))
+            {
+                DateTime localLastModified = (DateTime)Application.Current.Properties[path];
+                if (lastModified <= localLastModified)
+                {
+                    return false;
+                }
+            }
+
+            Application.Current.Properties[path] = lastModified;
+            return true;
         }
 
         static List<ProviderInfo> mixLocations = new List<ProviderInfo>();

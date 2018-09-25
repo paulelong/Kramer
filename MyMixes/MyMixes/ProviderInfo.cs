@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace MyMixes
 {
     public class ProviderInfo
     {
-        private static Dictionary<CloudProviders, ICloudStore> providers;
+        private static Dictionary<CloudProviders, ICloudStore> providers = new Dictionary<CloudProviders, ICloudStore>();
 
         public enum CloudProviders
         {
@@ -26,12 +27,12 @@ namespace MyMixes
             get; set;
         }
 
-        public ICloudStore GetCloudProvider()
+        public async static Task<ICloudStore> GetCloudProvider(CloudProviders cp)
         {
-            if(!providers.ContainsKey(CloudProvider))
+            if (!providers.ContainsKey(cp))
             {
                 ICloudStore cs;
-                switch (CloudProvider)
+                switch (cp)
                 {
                     case CloudProviders.OneDrive:
                         cs = new OneDriveStore();
@@ -40,38 +41,60 @@ namespace MyMixes
                         cs = new GoogleDriveStore();
                         break;
                     default:
-                        cs = null;
+                        return null;
                         break;
                 }
 
-                providers[CloudProvider] = cs;
-                return cs;
+                bool success = await CloudStoreUtils.Authenticate(cs);
+                if (success)
+                {
+                    providers[cp] = cs;
+                    return cs;
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
-                return providers[CloudProvider];
+                return providers[cp];
             }
+        }
+
+        public async Task<ICloudStore> GetCloudProviderAsync()
+        {
+            return await GetCloudProvider(CloudProvider);
         }
         
         public async Task< List<string> > GetFoldersAsync()
         {
             try
             {
-                ICloudStore cs = GetCloudProvider();
+                ICloudStore cs = await GetCloudProviderAsync();
 
-                return await cs.GetProjectFoldersAsync();
+                return await cs.GetProjectFoldersAsync(RootPath);
             }
             catch(Exception ex)
             {
+                Debug.Print(ex.ToString());
+
                 return null;
             }
         }
 
         internal async Task<bool> UpdateProjectAsync(string f)
         {
-            ICloudStore cs = GetCloudProvider();
+            ICloudStore cs = await GetCloudProviderAsync();
 
-            return await cs.UpdateProjectAsync(f);
+            if(cs != null)
+            {
+                return await cs.UpdateProjectAsync(f);
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

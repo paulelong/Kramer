@@ -14,7 +14,7 @@ using System.Diagnostics;
 using Xamarin.Forms;
 
 using Microsoft.AppCenter.Analytics;
-
+using PCLStorage;
 
 namespace MyMixes
 {
@@ -198,7 +198,7 @@ namespace MyMixes
             PCA.Remove(user);
         }
 
-        public async Task<bool> DeleteTake(string path)
+        public async Task<bool> DeleteSong(string path)
         {
             try
             {
@@ -216,14 +216,243 @@ namespace MyMixes
             return true;
         }
 
-        public Task<List<string>> GetProjectFoldersAsync()
+        public async Task<List<string>> GetProjectFoldersAsync(string path)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var items = await graphClient.Me.Drive.Root.ItemWithPath(path).Children.Request().GetAsync();
+                List<string> ret = new List<string>();
+
+                foreach (var di in items)
+                {
+                    if(di.Folder != null && await isAudioFolderAsync(path + "/" + di.Name))
+                    {
+                        ret.Add(path + "/" + di.Name);
+                    }
+                }
+
+                // TOdo: Remove files that are no longer on the remote storage.
+                List<string> projects = PersistentData.GetProjectFoldersData("OneDrive", path);
+                if(projects != null)
+                {
+                    foreach (string p in projects)
+                    {
+                        if (ret.IndexOf(p) < 0)
+                        {
+                            // Remove the local version of the project
+                            await RemoveLocalProjectAsync(p);
+                        }
+                    }
+                }
+
+                PersistentData.PutProjectFoldersData("OneDrive", path, string.Join(",", ret));
+
+                // string.Join(",", ret.ToArray())
+
+                return ret;
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.StatusCode != System.Net.HttpStatusCode.NotFound)
+                {
+                    throw ex;
+                }
+
+                return null;
+            }
+            catch(Exception ex)
+            {
+                return null;
+                throw ex;
+            }
         }
 
-        public Task<bool> UpdateProjectAsync(string path)
+        private async Task RemoveLocalProjectAsync(string p)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IFolder rootfolder = FileSystem.Current.LocalStorage;
+
+                string name = Path.GetFileName(p);
+
+                IFolder folder = await rootfolder.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists);
+
+                await folder.DeleteAsync();
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+        }
+
+        public async Task<bool> UpdateProjectAsync(string path)
+        {
+            try
+            {
+                string name = Path.GetFileName(path);
+
+                Debug.WriteLine("Path is {0} name is {1}", path, name);
+
+                bool result = true;
+                IFolder rootfolder = FileSystem.Current.LocalStorage;
+
+                IFolder folder = await rootfolder.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists);
+
+                var items = await graphClient.Me.Drive.Root.ItemWithPath(path).Children.Request().GetAsync();
+                foreach (var di in items)
+                {
+                    if (isAudioFile(di.Name))
+                    {
+                        if (!await DownloadFileAsync(di, name, folder))
+                        {
+                            result = false;
+                        }
+                    }
+                }
+
+                return result;
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.StatusCode != System.Net.HttpStatusCode.NotFound)
+                {
+                    throw ex;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<bool> isAudioFolderAsync(string path)
+        {
+            var items = await graphClient.Me.Drive.Root.ItemWithPath(path).Children.Request().GetAsync();
+            foreach (var di in items)
+            {
+                if (isAudioFile(di.Name))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private async Task<bool> SyncFolderAsync(string name, string path)
+        {
+            bool result = true;
+            IFolder rootfolder = FileSystem.Current.LocalStorage;
+
+            IFolder folder = await rootfolder.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists);
+
+            var items = await graphClient.Me.Drive.Root.ItemWithPath(path +"/" + name).Children.Request().GetAsync();
+            foreach (var di in items)
+            {
+                if (isAudioFile(di.Name))
+                {
+                    if(!await DownloadFileAsync(di, name, folder))
+                    {
+                        result = false;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private async Task<bool> DownloadFileAsync(DriveItem di, string name, IFolder folder)
+        {
+            const long DefaultChunkSize = 5000 * 1024; // 50 KB, TODO: change chunk size to make it realistic for a large file.
+            long ChunkSize = DefaultChunkSize;
+            long offset = 0;         // cursor location for updating the Range header.
+            byte[] bytesInStream;                    // bytes in range returned by chunk download.
+
+            // We'll use the file metadata to determine size and the name of the downloaded file
+            // and to get the download URL.
+            var driveItemInfo = await graphClient.Me.Drive.Items[di.Id].Request().GetAsync();
+
+            // Get the download URL. This URL is preauthenticated and has a short TTL.
+            object downloadUrl;
+            driveItemInfo.AdditionalData.TryGetValue("@microsoft.graph.downloadUrl", out downloadUrl);
+
+            // Get the number of bytes to download. calculate the number of chunks and determine
+            // the last chunk size.
+            long size = (long)driveItemInfo.Size;
+            int numberOfChunks = Convert.ToInt32(size / DefaultChunkSize);
+            // We are incrementing the offset cursor after writing the response stream to a file after each chunk. 
+            // Subtracting one since the size is 1 based, and the range is 0 base. There should be a better way to do
+            // this but I haven't spent the time on that.
+            int lastChunkSize = Convert.ToInt32(size % DefaultChunkSize) - numberOfChunks - 1;
+            if (lastChunkSize > 0) { numberOfChunks++; }
+
+            // Need a away to only copy if newer, probalby need platform specific code since PCLStorage doesn't support it.
+            //if(await folder.CheckExistsAsync(di.Name) == ExistenceCheckResult.FileExists)
+            //{
+            //    var fileinfo = await folder.CreateFileAsync(di.Name, CreationCollisionOption.OpenIfExists);
+            //    folder.GetFileAsync()
+            //    fileinfo.
+            //}
+
+            DateTimeOffset dto = (DateTimeOffset)di.LastModifiedDateTime;
+            if (PersistentData.isRemoteNewer(folder.Path + "/" + di.Name, dto.DateTime))
+            {
+                Debug.WriteLine("  --Downloading {0}", di.Name);
+
+                IFile f = await folder.CreateFileAsync(driveItemInfo.Name, CreationCollisionOption.ReplaceExisting);
+                using (Stream fileStream = await f.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
+                {
+                    for (int i = 0; i < numberOfChunks; i++)
+                    {
+                        // Setup the last chunk to request. This will be called at the end of this loop.
+                        if (i == numberOfChunks - 1)
+                        {
+                            ChunkSize = lastChunkSize;
+                        }
+
+                        // Create the request message with the download URL and Range header.
+                        HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, (string)downloadUrl);
+                        req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(offset, ChunkSize + offset);
+
+                        // We can use the the client library to send this although it does add an authentication cost.
+                        // HttpResponseMessage response = await graphClient.HttpProvider.SendAsync(req);
+                        // Since the download URL is preauthenticated, and we aren't deserializing objects, 
+                        // we'd be better to make the request with HttpClient.
+                        var client = new HttpClient();
+                        HttpResponseMessage response = await client.SendAsync(req);
+
+                        using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+                        {
+                            bytesInStream = new byte[ChunkSize];
+                            int read;
+                            do
+                            {
+                                read = responseStream.Read(bytesInStream, 0, (int)bytesInStream.Length);
+                                if (read > 0)
+                                    fileStream.Write(bytesInStream, 0, bytesInStream.Length);
+                            }
+                            while (read > 0);
+                        }
+                        offset += ChunkSize + 1; // Move the offset cursor to the next chunk.
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool isAudioFile(string name)
+        {
+            switch(Path.GetExtension(name))
+            {
+                case ".wav":
+                case ".mp3":
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
