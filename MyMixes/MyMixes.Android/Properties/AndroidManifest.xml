@@ -3,5 +3,15 @@
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="27" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.INTERNET" />
-	<application android:label="MyMixes.Android"></application>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<application android:label="MyMixes.Android">
+    <activity android:name="microsoft.identity.client.BrowserTabActivity"> 
+      <intent-filter> 
+        <action android:name="android.intent.action.VIEW" /> 
+        <category android:name="android.intent.category.DEFAULT" /> 
+        <category android:name="android.intent.category.BROWSABLE" /> 
+        <data android:scheme="msal7ba22c7f-29be-4dc7-a274-4209fe0b8b72" android:host="auth" /> 
+      </intent-filter>
+  </activity>
+  </application>
 </manifest>
