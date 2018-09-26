@@ -1,6 +1,9 @@
-﻿using System;
+﻿using PCLStorage;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace MyMixes
@@ -90,9 +93,22 @@ namespace MyMixes
             Application.Current.Properties[key] = value;
         }
 
-        public static bool isRemoteNewer(string path, DateTime lastModified)
+        public static async Task<bool> isRemoteNewer(string path, DateTime lastModified)
         {
-            if(Application.Current.Properties.ContainsKey(path))
+            //IFolder rootfolder = FileSystem.Current.LocalStorage;
+
+            string filepath = Path.GetDirectoryName(path);
+            string name = Path.GetFileName(path);
+
+            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
+            ExistenceCheckResult result = await folder.CheckExistsAsync(name);
+
+            if(result != ExistenceCheckResult.FileExists)
+            {
+                return true;
+            }
+
+            if (Application.Current.Properties.ContainsKey(path))
             {
                 DateTime localLastModified = (DateTime)Application.Current.Properties[path];
                 if (lastModified <= localLastModified)

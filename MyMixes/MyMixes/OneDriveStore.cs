@@ -397,7 +397,7 @@ namespace MyMixes
             //}
 
             DateTimeOffset dto = (DateTimeOffset)di.LastModifiedDateTime;
-            if (PersistentData.isRemoteNewer(folder.Path + "/" + di.Name, dto.DateTime))
+            if (await PersistentData.isRemoteNewer(folder.Path + "/" + di.Name, dto.DateTime))
             {
                 Debug.WriteLine("  --Downloading {0}", di.Name);
 

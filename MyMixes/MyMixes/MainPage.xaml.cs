@@ -32,8 +32,17 @@ namespace MyMixes
             InitializeComponent();
 
             player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+            player.PlaybackEnded += Player_PlaybackEnded;
 
             this.BindingContext = ViewModel;
+        }
+
+        private void Player_PlaybackEnded(object sender, EventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+               {
+                   PlayButton.Image = "PlayBt.png";
+               });
         }
 
         private async void TrackView_Sel(object sender, EventArgs e)
@@ -77,7 +86,8 @@ namespace MyMixes
         {
             Track t = FindTrack((View)sender);
 
-            if (playingSong != t.FullPath)
+            //if (playingSong != t.FullPath)
+            if(!player.IsPlaying)
             {
                 string path = Path.GetDirectoryName(t.FullPath);
                 string filename = Path.GetFileName(t.FullPath);
@@ -105,7 +115,7 @@ namespace MyMixes
             }
             else
             {
-                playingSong = "";
+                //playingSong = "";
 
                 player.Stop();
             }
@@ -268,6 +278,7 @@ namespace MyMixes
         {
             // DCR: Maybe we don't sync all the time
             await SyncProjects();
+            await LoadProjects();
         }
 
         Track FindTrack(View v)
