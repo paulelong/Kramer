@@ -158,4 +158,9 @@
       <Name>MyMixes</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\PauseBt.png" />
+    <Content Include="Resources\PlayBt.png" />
+    <Content Include="Resources\TrashBt.png" />
+  </ItemGroup>
 </Project>
