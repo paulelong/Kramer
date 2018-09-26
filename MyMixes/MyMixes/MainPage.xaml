@@ -44,7 +44,7 @@
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <StackLayout HorizontalOptions="FillAndExpand">
+        <StackLayout HorizontalOptions="FillAndExpand" x:Name="MainStack">
             <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
             <ScrollView x:Name="TrackScroll" Margin="20,10,20,10">
                 <ListView x:Name="Projects" 
@@ -58,6 +58,7 @@
                         >-->
                 </ListView>
             </ScrollView>
+            <ActivityIndicator x:Name="BusySignal" HeightRequest="50"/>
             <StackLayout Orientation="Horizontal">
                 <Button Text="add" Clicked="Add_Clicked"/>
                 <Button Text="sync" Clicked="Sync_Clicked"/>

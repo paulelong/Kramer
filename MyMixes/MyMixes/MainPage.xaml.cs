@@ -271,14 +271,18 @@ namespace MyMixes
 
         private async void OnAppearing(object sender, EventArgs e)
         {
+            BusyOn(true);
             await LoadProjects();
+            BusyOn(false);
         }
 
         private async void Sync_Clicked(object sender, EventArgs e)
         {
             // DCR: Maybe we don't sync all the time
+            BusyOn(true);
             await SyncProjects();
             await LoadProjects();
+            BusyOn(false);
         }
 
         Track FindTrack(View v)
@@ -300,6 +304,13 @@ namespace MyMixes
 
             Track t = tl.Find((x) => x.Name == l.Text);
             return t;
+        }
+
+        private void BusyOn(bool TurnOn)
+        {
+            BusySignal.IsVisible = TurnOn;
+            BusySignal.IsRunning = TurnOn;
+            MainStack.IsEnabled = !TurnOn;
         }
     }
 }
