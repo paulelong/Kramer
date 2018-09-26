@@ -5,7 +5,7 @@
              x:Class="MyMixes.App">
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
-            <!-- Application resource dictionary -->
+             <!--Application resource dictionary--> 
 
         </ResourceDictionary>
         <!-- Application resource dictionary -->
