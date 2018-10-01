@@ -19,13 +19,20 @@ namespace MyMixes
 {
     public partial class MainPage : ContentPage
     {
-        private List<View> Takes = new List<View>();
+//        private List<View> Takes = new List<View>();
         private string selectedFolder = "";
         private ISimpleAudioPlayer player;
         private string playingSong;
         private bool isSongPlaying;
 
         private MainVM ViewModel = new MainVM();
+        private SelectedTracksVM SelectedTracks = new SelectedTracksVM();
+        private List<string> tl = new List<string>();
+        //private List<Track> SelectedTracks = new List<Track>();
+        private int currentOrder;
+        private int currentSong = 1;
+
+        private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
         public MainPage()
         {
@@ -34,30 +41,34 @@ namespace MyMixes
             player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
             player.PlaybackEnded += Player_PlaybackEnded;
 
-            this.BindingContext = ViewModel;
+            this.BindingContext = ViewModel; 
         }
 
-        private void Player_PlaybackEnded(object sender, EventArgs e)
+        private async void Player_PlaybackEnded(object sender, EventArgs e)
         {
-            Device.BeginInvokeOnMainThread(() =>
+            Device.BeginInvokeOnMainThread(async () =>
                {
-                   PlayButton.Image = "PlayBt.png";
+                   if(currentSong > ViewModel.SongsQueued)
+                   {
+                       currentSong = 1;
+                       SongList.SelectedIndex = currentSong - 1;
+                       if (ViewModel.isLooping)
+                       {
+                           await PlayCurrentSong();
+                       }
+                       else
+                       {
+                           PlayButton.Image = "PlayBt.png";
+                           isSongPlaying = false;
+                       }
+                   }
+                   else
+                   {
+                       currentSong++;
+                       SongList.SelectedIndex = currentSong - 1;
+                       await PlayCurrentSong();
+                   }
                });
-        }
-
-        private async void TrackView_Sel(object sender, EventArgs e)
-        {
-            Track t = (Track)Projects.SelectedItem;
-            if (t.isProject)
-            {
-                selectedFolder = t.Name;
-
-                double scrollY = TrackScroll.ScrollY;
-
-                await LoadProjects();
-
-                await TrackScroll.ScrollToAsync(0, scrollY, false);
-            }
         }
 
         private async void Add_Clicked(object sender, EventArgs e)
@@ -103,9 +114,10 @@ namespace MyMixes
                     if (player.Load(s))
                     {
                         playingSong = t.FullPath;
-                        CurrentSong.Text = filename;
+                        //CurrentSong.Text = filename;
                         PlayButton.Image = "PauseBt.png";
                         player.Play();
+                        isSongPlaying = true;
                     }
                     else
                     {
@@ -116,6 +128,7 @@ namespace MyMixes
             else
             {
                 //playingSong = "";
+                isSongPlaying = false;
 
                 player.Stop();
             }
@@ -159,7 +172,7 @@ namespace MyMixes
                 {
                     if (await WavDirectory(f))
                     {
-                        var p = new Track { Name = f.Name, FullPath = f.Path, isProject = true };
+                        var p = new Track { Name = f.Name, FullPath = f.Path, isProject = true};
                         tracks.Add(p);
 
                         if (f.Name == selectedFolder)
@@ -167,7 +180,13 @@ namespace MyMixes
                             IList<IFile> fileList = await f.GetFilesAsync();
                             foreach (IFile fl in fileList)
                             {
-                                var t = new Track { Name = fl.Name, FullPath = fl.Path, isProject = false };
+                                var t = new Track
+                                {
+                                    Name = fl.Name,
+                                    FullPath = fl.Path,
+                                    isProject = false,
+                                    OrderVal = PlayListOrder.ContainsKey(fl.Path) ? PlayListOrder[fl.Path] : 0
+                                };
                                 tracks.Add(t);
                             }
                         }
@@ -200,19 +219,60 @@ namespace MyMixes
 
         private async void PlaySong_Clicked(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(playingSong))
+            if (ViewModel.SongsQueued > 0)
+            //if (currentSong > = 0 !string.IsNullOrEmpty(playingSong))
             {
-                if(isSongPlaying)
+                if(player.IsPlaying)
                 {
-                    isSongPlaying = false;
-                    player.Pause();
-                    PlayButton.Image = "PauseBt.png";
+                    if (isSongPlaying)
+                    {
+                        isSongPlaying = false;
+                        player.Pause();
+                        PlayButton.Image = "PlayBt.png";
+                    }
+                    else
+                    {
+                        isSongPlaying = true;
+                        player.Play();
+                        PlayButton.Image = "PauseBt.png";
+                    }
                 }
                 else
                 {
                     isSongPlaying = true;
+                    PlayButton.Image = "PauseBt.png";
+
+                    await PlayCurrentSong();
+                }
+            }
+        }
+
+        private async Task PlayCurrentSong()
+        {
+            Track t = (Track)SongList.SelectedItem;
+
+            string path = Path.GetDirectoryName(t.FullPath);
+            string filename = Path.GetFileName(t.FullPath);
+
+            Debug.Print("playing {0} {1}\n", filename, path);
+
+            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path); ;
+            IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
+
+            player.Stop();
+            using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
+            {
+                if (player.Load(s))
+                {
+                    playingSong = t.FullPath;
+                    //CurrentSong.Text = filename;
+                    PlayButton.Image = "PauseBt.png";
                     player.Play();
-                    PlayButton.Image = "PlayBt.png";
+                    isSongPlaying = true;
+                }
+                else
+                {
+                    await DisplayAlert("Error openning track ", t.FullPath, "OK");
                 }
             }
         }
@@ -311,6 +371,173 @@ namespace MyMixes
             BusySignal.IsVisible = TurnOn;
             BusySignal.IsRunning = TurnOn;
             MainStack.IsEnabled = !TurnOn;
+        }
+
+        private void DeleteSong_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
+        {
+            Track t = (Track)e.SelectedItem;
+
+            if (!t.isProject)
+            {
+
+            }
+            else
+            {
+                selectedFolder = t.Name;
+
+                double scrollY = TrackScroll.ScrollY;
+
+                await LoadProjects();
+
+                await TrackScroll.ScrollToAsync(0, scrollY, false);
+            }
+
+        }
+
+        private async void SongOrderClicked(object sender, EventArgs e)
+        {
+            Track t = FindTrack((View)sender);
+
+            if (!PlayListOrder.ContainsKey(t.FullPath) || PlayListOrder[t.FullPath] == 0)
+            {
+                PlayListOrder[t.FullPath] = ++currentOrder;
+                t.OrderButtonText = "-";
+                //SelectedTracks.Add(t);
+                ViewModel.Tracklist.Add(t);
+
+                this.BindingContext = null;
+                this.BindingContext = ViewModel;
+
+                //SongList.Items.Add(t.Name);
+                //t.OrderVal = currentOrder++;
+            }
+            else
+            {
+                if (isSongPlaying && currentSong == t.OrderVal)
+                {
+                    player.Stop();
+                }
+
+                currentOrder--;
+
+                foreach (string key in PlayListOrder.Keys.ToArray())
+                {
+                    if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] > t.OrderVal)
+                    {
+                        PlayListOrder[key]--;
+                    }
+                }
+
+                foreach (Track ct in (List<Track>)Projects.ItemsSource)
+                {
+                    if (ct.OrderVal > t.OrderVal)
+                    {
+                        ct.OrderVal--;
+                    }
+                }
+                PlayListOrder[t.FullPath] = 0;
+                //SongList.Items.Remove(t.Name);
+                //SelectedTracks.Remove(t);
+                ViewModel.Tracklist.Remove(t);
+                this.BindingContext = null;
+                this.BindingContext = ViewModel;
+
+                t.OrderButtonText = "+";
+
+                if ((currentSong - 1) == SongList.SelectedIndex)
+                {
+                    if (currentSong >= ViewModel.SongsQueued)
+                        currentSong--;
+                }
+            }
+
+            t.OrderVal = PlayListOrder[t.FullPath];
+
+            //var kvp = PlayListOrder.FirstOrDefault((x) => x.Value == currentSong);
+
+            SongList.SelectedIndex = currentSong - 1;
+
+            if (isSongPlaying && ViewModel.SongsQueued > 0)
+            {
+                await PlayCurrentSong();
+            }
+        }
+
+        private async void Prev_Clicked(object sender, EventArgs e)
+        {
+            if (currentSong <= 1)
+            {
+                currentSong = ViewModel.SongsQueued;
+            }
+            else
+            {
+                currentSong--;
+            }
+
+            SongList.SelectedIndex = currentSong - 1;
+            await PlayCurrentSong();
+
+        }
+
+        private async void NextSong_Clicked(object sender, EventArgs e)
+        {
+            if (currentSong >= ViewModel.SongsQueued)
+            {
+                currentSong = 1;
+            }
+            else
+            {
+                currentSong++;
+            }
+
+            SongList.SelectedIndex = currentSong - 1;
+            await PlayCurrentSong();
+        }
+
+        private async void RemoveSong_Clicked(object sender, EventArgs e)
+        {
+            Track t = (Track)SongList.SelectedItem;
+
+            if (isSongPlaying && currentSong == t.OrderVal)
+            {
+                player.Stop();
+            }
+
+            foreach (string key in PlayListOrder.Keys.ToArray())
+            {
+                if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= t.OrderVal)
+                {
+                    PlayListOrder[key]--;
+                }
+            }
+
+            foreach (Track ct in (List<Track>)Projects.ItemsSource)
+            {
+                if (ct.OrderVal >= t.OrderVal && ct.OrderVal > 0)
+                {
+                    ct.OrderVal--;
+                    if(ct.OrderVal == 0)
+                        ct.OrderButtonText = "+";
+                }
+            }
+            PlayListOrder[t.FullPath] = 0;
+
+            ViewModel.Tracklist.Remove(t);
+            this.BindingContext = null;
+            this.BindingContext = ViewModel;
+
+            SongList.SelectedIndex = t.OrderVal;
+            currentOrder--;
+
+            if(isSongPlaying && ViewModel.SongsQueued > 0)
+            {
+                await PlayCurrentSong();
+            }
         }
     }
 }

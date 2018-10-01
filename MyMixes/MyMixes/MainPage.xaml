@@ -12,16 +12,16 @@
         <ResourceDictionary>
             <DataTemplate x:Key="projectfolderTemplate">
                 <ViewCell>
-                    <Grid Margin="10,0,0,0" BackgroundColor="#606060">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.8*" />
-                            <ColumnDefinition Width="0.1*" />
-                        </Grid.ColumnDefinitions>
-                        <Image Source="Folder.png"/>
-                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="Large" />
-                        <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
-                    </Grid>
+                        <Grid Margin="10,0,0,0" BackgroundColor="#404040">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.1*" />
+                                <ColumnDefinition Width="0.8*" />
+                                <ColumnDefinition Width="0.1*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Source="Folder.png" Scale="0.8"/>
+                            <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
+                            <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
+                        </Grid>
                 </ViewCell>
             </DataTemplate>
             <DataTemplate x:Key="trackTemplate">
@@ -31,11 +31,14 @@
                             <ColumnDefinition Width="0.8*" />
                             <ColumnDefinition Width="0.1*" />
                             <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.1*" />
                         </Grid.ColumnDefinitions>
                         <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
-                        <!--<Button Grid.Column="1" Clicked="Delete_Clicked" Image="PlayBt.png"/>-->
-                        <Button Grid.Column="1" Clicked="Play_Clicked"  Image="TrashBt.png"/>
-                        <Button Grid.Column="2" Clicked="Play_Clicked"  Image="PlayBt.png"/>
+                        <Button Grid.Column="1" Text="{Binding OrderButtonText}" Clicked="SongOrderClicked"/>
+                        <Label Grid.Column="2" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center"/>
+                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked"  Image="TrashBt.png"/>
+                        <Button Grid.Column="4" Clicked="Play_Clicked"  Image="PlayBt.png"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -45,11 +48,15 @@
 
     <ContentPage.Content>
         <StackLayout HorizontalOptions="FillAndExpand" x:Name="MainStack">
-            <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
+                <Button Text="add" Clicked="Add_Clicked" HorizontalOptions="End"/>
+                <Button Text="sync" Clicked="Sync_Clicked" HorizontalOptions="End"/>
+            </StackLayout>
             <ScrollView x:Name="TrackScroll" Margin="20,10,20,10">
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
-                          ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                        ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         >
                     <!--<ListView x:Name="Projects" 
                     ItemTemplate="{StaticResource trackDataTemplateSelector}" 
@@ -60,20 +67,27 @@
             </ScrollView>
             <ActivityIndicator x:Name="BusySignal" HeightRequest="50"/>
             <StackLayout Orientation="Horizontal">
-                <Button Text="add" Clicked="Add_Clicked"/>
-                <Button Text="sync" Clicked="Sync_Clicked"/>
-                <StackLayout Orientation="Vertical">
+                <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
                     <Label Text="Loop"/>
                     <Switch IsToggled="{Binding isLooping}"/>
                 </StackLayout>
             </StackLayout>
-            <Grid HeightRequest="50">
+            <Grid HeightRequest="70">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.9*" />
                     <ColumnDefinition Width="0.1*" />
+                    <ColumnDefinition Width="0.1*" />
+                    <ColumnDefinition Width="0.1*" />
+                    <ColumnDefinition Width="0.1*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" x:Name="CurrentSong" Text="" TextColor="White" FontSize="Medium"/>
-                <Button Grid.Column="1" x:Name="PlayButton" Clicked="PlaySong_Clicked" Image="PlayBt.png" />
+                <!--<Picker x:Name="SongList" SelectedItem="{Binding CurrentSel}"/>-->
+                <Picker x:Name="SongList" ItemsSource="{Binding Tracklist}" ItemDisplayBinding="{Binding Name}"/>
+                <!--<Picker x:Name="SongList" ItemsSource="{Binding SelTrackList}" SelectedItem="{Binding CurrentSel}"/>-->
+                <!--<Label Grid.Column="0" x:Name="CurrentSong" Text="" TextColor="White" FontSize="Medium"/>-->
+                <Button Grid.Column="1" x:Name="RemoveButton" Clicked="RemoveSong_Clicked" Text="X" />
+                <Button Grid.Column="2" x:Name="PrevSongButton" Clicked="Prev_Clicked" Text="Prev" />
+                <Button Grid.Column="3" x:Name="NextSongButton" Clicked="NextSong_Clicked" Text="Next" />
+                <Button Grid.Column="4" x:Name="PlayButton" Clicked="PlaySong_Clicked" Image="PlayBt.png" />
             </Grid>
         </StackLayout>
     </ContentPage.Content>

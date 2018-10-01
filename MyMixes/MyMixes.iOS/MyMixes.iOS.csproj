@@ -159,6 +159,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <BundleResource Include="Resources\Folder.png" />
     <Content Include="Resources\PauseBt.png" />
     <Content Include="Resources\PlayBt.png" />
     <Content Include="Resources\TrashBt.png" />
