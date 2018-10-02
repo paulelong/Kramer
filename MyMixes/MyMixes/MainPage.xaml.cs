@@ -222,7 +222,7 @@ namespace MyMixes
             if (ViewModel.SongsQueued > 0)
             //if (currentSong > = 0 !string.IsNullOrEmpty(playingSong))
             {
-                if(player.IsPlaying)
+                if(player.CurrentPosition > 0)
                 {
                     if (isSongPlaying)
                     {
@@ -401,6 +401,8 @@ namespace MyMixes
 
         private async void SongOrderClicked(object sender, EventArgs e)
         {
+            bool songStopped = false;
+
             Track t = FindTrack((View)sender);
 
             if (!PlayListOrder.ContainsKey(t.FullPath) || PlayListOrder[t.FullPath] == 0)
@@ -421,6 +423,7 @@ namespace MyMixes
                 if (isSongPlaying && currentSong == t.OrderVal)
                 {
                     player.Stop();
+                    songStopped = true;
                 }
 
                 currentOrder--;
@@ -462,7 +465,7 @@ namespace MyMixes
 
             SongList.SelectedIndex = currentSong - 1;
 
-            if (isSongPlaying && ViewModel.SongsQueued > 0)
+            if (isSongPlaying && ViewModel.SongsQueued > 0 && songStopped)
             {
                 await PlayCurrentSong();
             }
@@ -503,7 +506,10 @@ namespace MyMixes
         {
             Track t = (Track)SongList.SelectedItem;
 
-            if (isSongPlaying && currentSong == t.OrderVal)
+            if (t == null)
+                return;
+
+            if (player.CurrentPosition > 0 && currentSong == t.OrderVal)
             {
                 player.Stop();
             }
@@ -534,9 +540,17 @@ namespace MyMixes
             SongList.SelectedIndex = t.OrderVal;
             currentOrder--;
 
-            if(isSongPlaying && ViewModel.SongsQueued > 0)
+            if(isSongPlaying)
             {
-                await PlayCurrentSong();
+                if(ViewModel.SongsQueued > 0)
+                {
+                    await PlayCurrentSong();
+                }
+                else
+                {
+                    isSongPlaying = false;
+                    PlayButton.Image = "PlayBt.png";
+                }
             }
         }
     }
