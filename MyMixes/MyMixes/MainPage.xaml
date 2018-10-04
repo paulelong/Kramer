@@ -38,7 +38,7 @@
                         <Button Grid.Column="1" Text="{Binding OrderButtonText}" Clicked="SongOrderClicked"/>
                         <Label Grid.Column="2" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center"/>
                         <Button Grid.Column="3" Clicked="DeleteSong_Clicked"  Image="TrashBt.png"/>
-                        <Button Grid.Column="4" Clicked="Play_Clicked"  Image="PlayBt.png"/>
+                        <Button Grid.Column="4" Clicked="LocalPlay_Clicked"  Image="PlayBt.png"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -87,7 +87,7 @@
                 <Button Grid.Column="1" x:Name="RemoveButton" Clicked="RemoveSong_Clicked" Text="X" />
                 <Button Grid.Column="2" x:Name="PrevSongButton" Clicked="Prev_Clicked" Text="Prev" />
                 <Button Grid.Column="3" x:Name="NextSongButton" Clicked="NextSong_Clicked" Text="Next" />
-                <Button Grid.Column="4" x:Name="PlayButton" Clicked="PlaySong_Clicked" Image="PlayBt.png" />
+                <Button Grid.Column="4" x:Name="PlayButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
             </Grid>
         </StackLayout>
     </ContentPage.Content>

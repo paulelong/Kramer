@@ -93,45 +93,99 @@ namespace MyMixes
             }
         }
 
-        private async void Play_Clicked(object sender, EventArgs e)
+        private async void LocalPlay_Clicked(object sender, EventArgs e)
         {
             Track t = FindTrack((View)sender);
 
-            //if (playingSong != t.FullPath)
-            if(!player.IsPlaying)
+            if(PlayListOrder.ContainsKey(t.FullPath))
             {
-                string path = Path.GetDirectoryName(t.FullPath);
-                string filename = Path.GetFileName(t.FullPath);
-
-                Debug.Print("playing {0} {1}\n", filename, path);
-
-                IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path); ;
-                IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
-
-                player.Stop();
-                using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
-                {
-                    if (player.Load(s))
-                    {
-                        playingSong = t.FullPath;
-                        //CurrentSong.Text = filename;
-                        PlayButton.Image = "PauseBt.png";
-                        player.Play();
-                        isSongPlaying = true;
-                    }
-                    else
-                    {
-                        await DisplayAlert("Error openning track ", t.FullPath, "OK");
-                    }
-                }
+                currentSong = PlayListOrder[t.FullPath];
             }
             else
             {
-                //playingSong = "";
-                isSongPlaying = false;
+                if(isSongPlaying)
+                {
+                    foreach (string key in PlayListOrder.Keys.ToArray())
+                    {
+                        if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= currentSong)
+                        {
+                            PlayListOrder[key]++;
+                        }
+                    }
 
-                player.Stop();
+                    PlayListOrder[t.FullPath] = currentSong;
+
+                    ViewModel.Tracklist.Insert(currentSong, t);
+                    currentSong++;
+                }
+                else
+                {
+                    foreach (string key in PlayListOrder.Keys.ToArray())
+                    {
+                        if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] > currentSong)
+                        {
+                            PlayListOrder[key]++;
+                        }
+                    }
+
+                    PlayListOrder[t.FullPath] = currentSong;
+
+                    if(ViewModel.Tracklist.Count <= 0)
+                    {
+                        ViewModel.Tracklist.Add(t);
+                    }
+                    else
+                    {
+                        ViewModel.Tracklist.Insert(currentSong - 1, t);
+                    }
+                }
             }
+
+            this.BindingContext = null;
+            this.BindingContext = ViewModel;
+
+            SongList.SelectedIndex = currentSong - 1;
+
+            await PlayCurrentSong();
+
+            //if (playingSong != t.FullPath)
+            //if (!player.IsPlaying)
+            //{
+            //    PlayListOrder.Add(t);
+            //    currentSong++;
+
+            //    string path = Path.GetDirectoryName(t.FullPath);
+            //    string filename = Path.GetFileName(t.FullPath);
+
+            //    Debug.Print("playing {0} {1}\n", filename, path);
+
+            //    IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path); ;
+            //    IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
+
+            //    player.Stop();
+            //    using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
+            //    {
+            //        if (player.Load(s))
+            //        {
+            //            playingSong = t.FullPath;
+            //            //CurrentSong.Text = filename;
+            //            PlayButton.Image = "PauseBt.png";
+            //            player.Play();
+            //            isSongPlaying = true;
+            //        }
+            //        else
+            //        {
+            //            await DisplayAlert("Error openning track ", t.FullPath, "OK");
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    //playingSong = "";
+            //    isSongPlaying = false;
+
+            //    player.Stop();
+            //}
         }
 
         private async Task SyncProjects()
@@ -217,7 +271,7 @@ namespace MyMixes
             return false;
         }
 
-        private async void PlaySong_Clicked(object sender, EventArgs e)
+        private async void GlobalPlaySong_Clicked(object sender, EventArgs e)
         {
             if (ViewModel.SongsQueued > 0)
             //if (currentSong > = 0 !string.IsNullOrEmpty(playingSong))
