@@ -73,6 +73,8 @@ namespace MyMixes
 
         private async void Add_Clicked(object sender, EventArgs e)
         {
+            await Navigation.PushAsync(new FolderPicker());
+
             var ProviderChoices = Enum.GetNames(typeof(CloudProviders));
         
             var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);

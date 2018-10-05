@@ -19,7 +19,7 @@ namespace MyMixes
 		{
 			InitializeComponent();
 
-			MainPage = new MyMixes.MainPage();
+			MainPage = new NavigationPage(new MyMixes.MainPage());
 		}
 
 		protected override void OnStart ()
