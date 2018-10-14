@@ -160,8 +160,15 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Folder.png" />
+    <BundleResource Include="Resources\DelBt.png" />
+    <BundleResource Include="Resources\EditBt.png" />
+    <BundleResource Include="Resources\NextBt.png" />
+    <BundleResource Include="Resources\AddBt.png" />
     <Content Include="Resources\PauseBt.png" />
     <Content Include="Resources\PlayBt.png" />
+    <BundleResource Include="Resources\ResyncBt.png" />
+    <BundleResource Include="Resources\PrevBt.png" />
+    <BundleResource Include="Resources\RemoveBt.png" />
     <Content Include="Resources\TrashBt.png" />
   </ItemGroup>
 </Project>

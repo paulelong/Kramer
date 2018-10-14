@@ -104,6 +104,7 @@
     <None Include="MyMixes.UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AddBt.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />
@@ -124,9 +125,13 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="DelBt.png" />
+    <Content Include="EditBt.png" />
     <Content Include="Folder.png" />
+    <Content Include="NextBt.png" />
     <Content Include="PauseBt.png" />
     <Content Include="PlayBt.png" />
+    <Content Include="PrevBt.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-100.png" />
     <Content Include="Assets\LockScreenLogo.scale-125.png" />
@@ -158,6 +163,8 @@
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="RemoveBt.png" />
+    <Content Include="ResyncBt.png" />
     <Content Include="TrashBt.png" />
   </ItemGroup>
   <ItemGroup>
