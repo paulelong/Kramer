@@ -31,6 +31,32 @@ namespace MyMixes
             }
         }
 
+        private string updateListImage = "AddBt.png";
+        public string UpdateListImage
+        {
+            get
+            {
+                return updateListImage;
+            }
+        }
+
+        public bool ReadyToAdd
+        {
+            set
+            {
+                if(value)
+                {
+                    updateListImage = "AddBt.png";
+                }
+                else
+                {
+                    updateListImage = "RemoveBt.png";
+                }
+                OnPropertyChanged("UpdateListImage");
+            }
+        }
+
+
         private int order = 0;
 
         public string Order

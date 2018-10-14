@@ -465,6 +465,8 @@ namespace MyMixes
             {
                 PlayListOrder[t.FullPath] = ++currentOrder;
                 t.OrderButtonText = "-";
+                t.ReadyToAdd = false;
+                
                 //SelectedTracks.Add(t);
                 ViewModel.Tracklist.Add(t);
 
@@ -507,6 +509,7 @@ namespace MyMixes
                 this.BindingContext = ViewModel;
 
                 t.OrderButtonText = "+";
+                t.ReadyToAdd = true ;
 
                 if ((currentSong - 1) == SongList.SelectedIndex)
                 {
@@ -584,7 +587,10 @@ namespace MyMixes
                 {
                     ct.OrderVal--;
                     if(ct.OrderVal == 0)
+                    {
                         ct.OrderButtonText = "+";
+                        ct.ReadyToAdd = true;
+                    }
                 }
             }
             PlayListOrder[t.FullPath] = 0;
