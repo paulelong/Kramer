@@ -57,6 +57,7 @@
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                           CachingStrategy="RecycleElement"
                         >
                     <!--<ListView x:Name="Projects" 
                     ItemTemplate="{StaticResource trackDataTemplateSelector}" 
@@ -81,7 +82,7 @@
                     <ColumnDefinition Width="0.1*" />
                 </Grid.ColumnDefinitions>
                 <!--<Picker x:Name="SongList" SelectedItem="{Binding CurrentSel}"/>-->
-                <Picker x:Name="SongList" ItemsSource="{Binding Tracklist}" ItemDisplayBinding="{Binding Name}"/>
+                <Picker x:Name="SongList" ItemsSource="{Binding Tracklist}" ItemDisplayBinding="{Binding Name}" TextColor="White"/>
                 <!--<Picker x:Name="SongList" ItemsSource="{Binding SelTrackList}" SelectedItem="{Binding CurrentSel}"/>-->
                 <!--<Label Grid.Column="0" x:Name="CurrentSong" Text="" TextColor="White" FontSize="Medium"/>-->
                 <Button Grid.Column="1" x:Name="RemoveButton" Clicked="RemoveSong_Clicked" Text="X" />
