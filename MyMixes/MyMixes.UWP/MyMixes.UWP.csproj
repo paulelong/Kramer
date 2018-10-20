@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddBt.png" />
+    <Content Include="AddBt2.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />
@@ -127,6 +128,7 @@
     <Content Include="Assets\StoreLogo.scale-400.png" />
     <Content Include="DelBt.png" />
     <Content Include="EditBt.png" />
+    <Content Include="EditBt2.png" />
     <Content Include="Folder.png" />
     <Content Include="NextBt.png" />
     <Content Include="PauseBt.png" />
@@ -164,7 +166,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <Content Include="RemoveBt.png" />
+    <Content Include="RemoveBt2.png" />
     <Content Include="ResyncBt.png" />
+    <Content Include="ResyncBt2.png" />
+    <Content Include="ResyncBt3.png" />
     <Content Include="TrashBt.png" />
   </ItemGroup>
   <ItemGroup>

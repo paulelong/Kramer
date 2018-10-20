@@ -606,5 +606,10 @@ namespace MyMixes
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> UpdateFileAsync(string path)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
