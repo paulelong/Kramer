@@ -31,7 +31,7 @@ namespace MyMixes
             }
         }
 
-        private string updateListImage = "AddBt.png";
+        private string updateListImage = "AddBt2.png";
         public string UpdateListImage
         {
             get
@@ -46,11 +46,11 @@ namespace MyMixes
             {
                 if(value)
                 {
-                    updateListImage = "AddBt.png";
+                    updateListImage = "AddBt2.png";
                 }
                 else
                 {
-                    updateListImage = "RemoveBt.png";
+                    updateListImage = "RemoveBt2.png";
                 }
                 OnPropertyChanged("UpdateListImage");
             }

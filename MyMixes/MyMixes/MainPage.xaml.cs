@@ -409,9 +409,9 @@ namespace MyMixes
 
             Label l;
 
-            if (g.Children[0] is Label)
+            if (g.Children[1] is Label)
             {
-               l = (Label)(g.Children[0]);
+               l = (Label)(g.Children[1]);
             }
             else
             {
@@ -614,6 +614,27 @@ namespace MyMixes
                     PlayButton.Image = "PlayBt.png";
                 }
             }
+        }
+
+        private async void Resync_Clicked(object sender, EventArgs e)
+        {
+            Track t = (Track)SongList.SelectedItem;
+
+            ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
+
+            if (pm != null)
+            {
+                ICloudStore pi = await GetCloudProvider(pm.provider);
+                if(pi != null)
+                {
+                    await pi.UpdateFileAsync(t.FullPath);
+                }
+            }
+        }
+
+        private void Notes_Clicked(object sender, EventArgs e)
+        {
+
         }
     }
 }

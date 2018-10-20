@@ -96,5 +96,20 @@ namespace MyMixes
                 return false;
             }
         }
+
+        internal async Task<bool> UpdateFileAsync(string f)
+        {
+            ICloudStore cs = await GetCloudProviderAsync();
+
+            if (cs != null)
+            {
+                return await cs.UpdateFileAsync(f);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 }
