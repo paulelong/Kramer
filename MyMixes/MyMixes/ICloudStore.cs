@@ -44,6 +44,8 @@ namespace MyMixes
 
         Task<bool> UpdateProjectAsync(string path);
 
+        Task<bool> UpdateFileAsync(string fullpath);
+
         void Reset();
     }
 }

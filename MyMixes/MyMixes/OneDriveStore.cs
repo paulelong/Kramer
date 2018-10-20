@@ -20,6 +20,9 @@ namespace MyMixes
 {
     class OneDriveStore : ICloudStore
     {
+        private int DefaultChunkSize = 5 * 1024 * 1024;//5MB
+        private int BufferSize = 4096;
+
         static OneDriveStore _instance;
 
         public static OneDriveStore Instance
@@ -363,37 +366,104 @@ namespace MyMixes
             return result;
         }
 
+        public async Task<bool> UpdateFileAsync(string fullpath)
+        {
+            bool result = true;
+            IFolder rootfolder = FileSystem.Current.LocalStorage;
+
+            string name = Path.GetFileName(fullpath);
+            string path = Path.GetFullPath(fullpath);
+
+
+            IFolder folder = await rootfolder.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists);
+
+            var di = await graphClient.Me.Drive.Root.ItemWithPath(path + "/" + name).Request().GetAsync();
+
+            if (!await DownloadFileAsync(di, name, folder))
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         private async Task<bool> DownloadFileAsync(DriveItem di, string name, IFolder folder)
         {
-            const long DefaultChunkSize = 5000 * 1024; // 50 KB, TODO: change chunk size to make it realistic for a large file.
-            long ChunkSize = DefaultChunkSize;
-            long offset = 0;         // cursor location for updating the Range header.
-            byte[] bytesInStream;                    // bytes in range returned by chunk download.
+            //const long DefaultChunkSize = 50 * 1024; // 50 KB, TODO: change chunk size to make it realistic for a large file.
+            //long ChunkSize = DefaultChunkSize;
+            //long offset = 0;         // cursor location for updating the Range header.
+            //byte[] bytesInStream;                    // bytes in range returned by chunk download.
 
-            // We'll use the file metadata to determine size and the name of the downloaded file
-            // and to get the download URL.
-            var driveItemInfo = await graphClient.Me.Drive.Items[di.Id].Request().GetAsync();
+            //DateTimeOffset dto = (DateTimeOffset)di.LastModifiedDateTime;
 
-            // Get the download URL. This URL is preauthenticated and has a short TTL.
-            object downloadUrl;
-            driveItemInfo.AdditionalData.TryGetValue("@microsoft.graph.downloadUrl", out downloadUrl);
+            //// We'll use the file metadata to determine size and the name of the downloaded file
+            //// and to get the download URL.
+            //var driveItemInfo = await graphClient.Me.Drive.Items[di.Id].Request().GetAsync();
 
-            // Get the number of bytes to download. calculate the number of chunks and determine
-            // the last chunk size.
-            long size = (long)driveItemInfo.Size;
-            int numberOfChunks = Convert.ToInt32(size / DefaultChunkSize);
-            // We are incrementing the offset cursor after writing the response stream to a file after each chunk. 
-            // Subtracting one since the size is 1 based, and the range is 0 base. There should be a better way to do
-            // this but I haven't spent the time on that.
-            int lastChunkSize = Convert.ToInt32(size % DefaultChunkSize) - numberOfChunks - 1;
-            if (lastChunkSize > 0) { numberOfChunks++; }
+            //// Get the download URL. This URL is preauthenticated and has a short TTL.
+            //object downloadUrl;
+            //driveItemInfo.AdditionalData.TryGetValue("@microsoft.graph.downloadUrl", out downloadUrl);
 
-            // Need a away to only copy if newer, probalby need platform specific code since PCLStorage doesn't support it.
-            //if(await folder.CheckExistsAsync(di.Name) == ExistenceCheckResult.FileExists)
+            //// Get the number of bytes to download. calculate the number of chunks and determine
+            //// the last chunk size.
+            //long size = (long)driveItemInfo.Size;
+            //int numberOfChunks = Convert.ToInt32(size / DefaultChunkSize);
+            //// We are incrementing the offset cursor after writing the response stream to a file after each chunk. 
+            //// Subtracting one since the size is 1 based, and the range is 0 base. There should be a better way to do
+            //// this but I haven't spent the time on that.
+            //int lastChunkSize = Convert.ToInt32(size % DefaultChunkSize) - numberOfChunks - 1;
+            //if (lastChunkSize > 0) { numberOfChunks++; }
+
+            //// Need a away to only copy if newer, probalby need platform specific code since PCLStorage doesn't support it.
+            ////if(await folder.CheckExistsAsync(di.Name) == ExistenceCheckResult.FileExists)
+            ////{
+            ////    var fileinfo = await folder.CreateFileAsync(di.Name, CreationCollisionOption.OpenIfExists);
+            ////    folder.GetFileAsync()
+            ////    fileinfo.
+            ////}
+
+            //if (await PersistentData.isRemoteNewer(folder.Path + "/" + di.Name, dto.DateTime))
             //{
-            //    var fileinfo = await folder.CreateFileAsync(di.Name, CreationCollisionOption.OpenIfExists);
-            //    folder.GetFileAsync()
-            //    fileinfo.
+            //    Debug.WriteLine("  --Downloading {0}", di.Name);
+
+            //    IFile f = await folder.CreateFileAsync(driveItemInfo.Name, CreationCollisionOption.ReplaceExisting);
+            //    using (Stream fileStream = await f.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
+            //    {
+            //        for (int i = 0; i < numberOfChunks; i++)
+            //        {
+            //            // Setup the last chunk to request. This will be called at the end of this loop.
+            //            if (i == numberOfChunks - 1)
+            //            {
+            //                ChunkSize = lastChunkSize;
+            //            }
+
+            //            // Create the request message with the download URL and Range header.
+            //            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, (string)downloadUrl);
+            //            req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(offset, ChunkSize + offset);
+
+            //            // We can use the the client library to send this although it does add an authentication cost.
+            //            // HttpResponseMessage response = await graphClient.HttpProvider.SendAsync(req);
+            //            // Since the download URL is preauthenticated, and we aren't deserializing objects, 
+            //            // we'd be better to make the request with HttpClient.
+            //            var client = new HttpClient();
+            //            HttpResponseMessage response = await client.SendAsync(req);
+
+            //            using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+            //            {
+            //                bytesInStream = new byte[ChunkSize];
+            //                int read;
+            //                do
+            //                {
+            //                    read = responseStream.Read(bytesInStream, 0, (int)bytesInStream.Length);
+            //                    Debug.WriteLine("req={0} read={1}", bytesInStream.Length, read);
+            //                    if (read > 0)
+            //                        fileStream.Write(bytesInStream, 0, bytesInStream.Length);
+            //                }
+            //                while (read > 0);
+            //            }
+            //            offset += ChunkSize + 1; // Move the offset cursor to the next chunk.
+            //        }
+            //    }
             //}
 
             DateTimeOffset dto = (DateTimeOffset)di.LastModifiedDateTime;
@@ -401,41 +471,56 @@ namespace MyMixes
             {
                 Debug.WriteLine("  --Downloading {0}", di.Name);
 
+                int chunkSize = DefaultChunkSize;
+                long offset = 0; // cursor location for updating the Range header.                
+                byte[] buffer = new byte[BufferSize];
+                var driveItemInfo = await graphClient.Me.Drive.Items[di.Id].Request().GetAsync();
+
+                object downloadUrl;
+                driveItemInfo.AdditionalData.TryGetValue("@microsoft.graph.downloadUrl", out downloadUrl);
+                long size = (long)driveItemInfo.Size;
+
+                int numberOfChunks = Convert.ToInt32(size / DefaultChunkSize);
+
+                // We are incrementing the offset cursor after writing the response stream to a file after each chunk.                 
+                int lastChunkSize = Convert.ToInt32(size % DefaultChunkSize);
+                if (lastChunkSize > 0)
+                {
+                    numberOfChunks++;
+                }
+
                 IFile f = await folder.CreateFileAsync(driveItemInfo.Name, CreationCollisionOption.ReplaceExisting);
                 using (Stream fileStream = await f.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                 {
+
                     for (int i = 0; i < numberOfChunks; i++)
                     {
-                        // Setup the last chunk to request. This will be called at the end of this loop.
+                        // Setup the last chunk to request. This will be called at the end of this loop.              
                         if (i == numberOfChunks - 1)
                         {
-                            ChunkSize = lastChunkSize;
+                            chunkSize = lastChunkSize;
                         }
-
-                        // Create the request message with the download URL and Range header.
-                        HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, (string)downloadUrl);
-                        req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(offset, ChunkSize + offset);
-
+                        //Create the request message with the download URL and Range header.
+                        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, (string)downloadUrl);
+                        //-1 because range is zero based
+                        request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(offset, chunkSize + offset - 1);
                         // We can use the the client library to send this although it does add an authentication cost.
                         // HttpResponseMessage response = await graphClient.HttpProvider.SendAsync(req);
                         // Since the download URL is preauthenticated, and we aren't deserializing objects, 
                         // we'd be better to make the request with HttpClient.
                         var client = new HttpClient();
-                        HttpResponseMessage response = await client.SendAsync(req);
-
+                        HttpResponseMessage response = await client.SendAsync(request);
+                        int totalRead = 0;
                         using (Stream responseStream = await response.Content.ReadAsStreamAsync())
                         {
-                            bytesInStream = new byte[ChunkSize];
                             int read;
-                            do
+                            while ((read = await responseStream.ReadAsync(buffer: buffer, offset: 0, count: buffer.Length)) > 0)
                             {
-                                read = responseStream.Read(bytesInStream, 0, (int)bytesInStream.Length);
-                                if (read > 0)
-                                    fileStream.Write(bytesInStream, 0, bytesInStream.Length);
+                                fileStream.Write(buffer, 0, read);
+                                totalRead += read;
                             }
-                            while (read > 0);
                         }
-                        offset += ChunkSize + 1; // Move the offset cursor to the next chunk.
+                        offset += totalRead; // Move the offset cursor to the next chunk.
                     }
                 }
             }
