@@ -52,12 +52,12 @@
 
     <ContentPage.Content>
         <StackLayout HorizontalOptions="FillAndExpand" x:Name="MainStack">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start">
                 <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
                 <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End"/>
                 <Button Image="ResyncBt.png" Clicked="Sync_Clicked" HorizontalOptions="End"/>
             </StackLayout>
-            <ScrollView x:Name="TrackScroll" Margin="20,10,20,10">
+            <ScrollView x:Name="TrackScroll" Margin="20,10,20,10" VerticalOptions="FillAndExpand">
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
@@ -70,14 +70,14 @@
                         >-->
                 </ListView>
             </ScrollView>
-            <ActivityIndicator x:Name="BusySignal" HeightRequest="50"/>
-            <StackLayout Orientation="Horizontal">
-                <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                    <Label Text="Loop"/>
-                    <Switch IsToggled="{Binding isLooping}"/>
-                </StackLayout>
+            <ActivityIndicator x:Name="BusySignal" HeightRequest="50" IsVisible="false"/>
+            <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
+                <!--<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">-->
+                    <Label Text="Loop Song List" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+                    <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
+                <!--</StackLayout>-->
             </StackLayout>
-            <Grid HeightRequest="60">
+            <Grid HeightRequest="50" VerticalOptions="EndAndExpand">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.9*" />
                     <ColumnDefinition Width="0.1*" />
