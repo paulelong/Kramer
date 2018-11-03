@@ -64,7 +64,7 @@ namespace MyMixes
 
 
 
-    class GoogleDriveStore : /*ContentPage, */ICloudStore
+    class GoogleDriveStore : /*ContentPage, */ICloudStoreOrg
     {
         private AuthToken authToken = new AuthToken();
 

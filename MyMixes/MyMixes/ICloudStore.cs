@@ -11,7 +11,7 @@ namespace MyMixes
 {
     public static class CloudStoreUtils
     {
-        public async static Task<bool> Authenticate(ICloudStore cs)
+        public async static Task<bool> Authenticate(ICloudStoreOrg cs)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace MyMixes
         }
     }
 
-    public interface ICloudStore
+    public interface ICloudStoreOrg
     {
         Task<bool> Authenticate(UIParent parent);
 

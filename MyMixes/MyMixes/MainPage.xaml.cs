@@ -14,6 +14,7 @@ using System.IO;
 using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
 using static MyMixes.ProviderInfo;
+using CloudStorage;
 
 namespace MyMixes
 {
@@ -75,7 +76,7 @@ namespace MyMixes
         {
             await Navigation.PushAsync(new FolderPicker());
 
-            var ProviderChoices = Enum.GetNames(typeof(CloudProviders));
+            var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
         
             var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
 
@@ -83,7 +84,7 @@ namespace MyMixes
             ProviderInfo pi = new ProviderInfo();
             if(action != "Cancel")
             {
-                ICloudStore cs = await GetCloudProvider((CloudProviders)Enum.Parse(typeof(CloudProviders), action));
+                ICloudStore cs = await GetCloudProvider((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
 
                 if (cs != null)
                 {
@@ -347,7 +348,7 @@ namespace MyMixes
             if(pm != null)
             {
                 ICloudStore pi = await GetCloudProvider(pm.provider);
-                bool deleted = await pi.DeleteSong(pm.project + "/" + t.Name);
+                bool deleted = await pi.DeleteTake(pm.project + "/" + t.Name);
                 if (deleted)
                 {
                     bool localDeleted = await DeleteFile(t.FullPath);
@@ -624,10 +625,11 @@ namespace MyMixes
 
             if (pm != null)
             {
+                
                 ICloudStore pi = await GetCloudProvider(pm.provider);
                 if(pi != null)
                 {
-                    await pi.UpdateFileAsync(t.FullPath);
+                    await pi.UpdateProjectAsync(t.FullPath);
                 }
             }
         }

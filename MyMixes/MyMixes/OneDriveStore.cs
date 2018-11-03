@@ -18,7 +18,7 @@ using PCLStorage;
 
 namespace MyMixes
 {
-    class OneDriveStore : ICloudStore
+    class OneDriveStore : ICloudStoreOrg
     {
         private int DefaultChunkSize = 5 * 1024 * 1024;//5MB
         private int BufferSize = 4096;
@@ -308,8 +308,7 @@ namespace MyMixes
                     {
                         if (!await DownloadFileAsync(di, name, folder))
                         {
-                            result = false;
-                        }
+                            result = false;                        }
                     }
                 }
 
