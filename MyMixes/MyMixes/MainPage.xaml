@@ -39,10 +39,10 @@
                         <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
                         <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
-                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".2"/>
-                        <Button Grid.Column="4" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".6"/>
-                        <Button Grid.Column="5" Clicked="Resync_Clicked" Image="ResyncBt3.png" Scale=".6"/>
-                        <Button Grid.Column="6" Clicked="Notes_Clicked" Image="EditBt2.png" Scale=".6"/>
+                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
+                        <Button Grid.Column="4" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>
+                        <Button Grid.Column="5" Clicked="Resync_Clicked" Image="ResyncBt3.png" Scale=".9"/>
+                        <Button Grid.Column="6" Clicked="Notes_Clicked" Image="EditBt2.png" Scale=".9"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
