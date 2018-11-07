@@ -20,6 +20,13 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#202020" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="com.paulyshotel.mymixes">
+            <uap:DisplayName>My Mixes</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

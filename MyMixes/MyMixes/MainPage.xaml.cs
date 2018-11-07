@@ -42,7 +42,21 @@ namespace MyMixes
             player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
             player.PlaybackEnded += Player_PlaybackEnded;
 
-            this.BindingContext = ViewModel; 
+            this.BindingContext = ViewModel;
+
+            // seed with static data for now REMOVE
+            ProviderInfo piA = new ProviderInfo();
+
+            piA.RootPath = "Mixes";
+            piA.CloudProvider = CloudProviders.OneDrive;
+            PersistentData.MixLocations.Add(piA);
+
+            piA = new ProviderInfo();
+
+            piA.RootPath = "Mixes";
+            piA.CloudProvider = CloudProviders.GoogleDrive;
+            PersistentData.MixLocations.Add(piA);
+
         }
 
         private async void Player_PlaybackEnded(object sender, EventArgs e)
@@ -88,10 +102,10 @@ namespace MyMixes
 
                 if (cs != null)
                 {
-                    if (await CloudStoreUtils.Authenticate(cs))
-                    {
-                        //CrossFilePicker.Current.PickFile();
-                    }
+                    //if (await CloudStoreUtils.Authenticate(cs))
+                    //{
+                    //    //CrossFilePicker.Current.PickFile();
+                    //}
                 }
             }
         }
@@ -193,21 +207,18 @@ namespace MyMixes
 
         private async Task SyncProjects()
         {
-            // seed with static data for now REMOVE
-            ProviderInfo piA = new ProviderInfo();
-
-            piA.RootPath = "/Mixes";
-            piA.CloudProvider = CloudProviders.OneDrive;
-            PersistentData.MixLocations.Add(piA);
 
             foreach(ProviderInfo pi in PersistentData.MixLocations)
             {
-                List<string> l = await pi.GetFoldersAsync();
-                if(l != null)
+                if (await pi.CheckAuthenitcation())
                 {
-                    foreach (string f in l)
+                    List<string> l = await pi.GetFoldersAsync();
+                    if (l != null)
                     {
-                        await pi.UpdateProjectAsync(f);
+                        foreach (string f in l)
+                        {
+                            await pi.UpdateProjectAsync(f);
+                        }
                     }
                 }
             }
@@ -393,7 +404,7 @@ namespace MyMixes
             BusyOn(false);
         }
 
-        private async void Sync_Clicked(object sender, EventArgs e)
+        private async void ResyncAllClickedAsync(object sender, EventArgs e)
         {
             // DCR: Maybe we don't sync all the time
             BusyOn(true);
@@ -617,7 +628,7 @@ namespace MyMixes
             }
         }
 
-        private async void Resync_Clicked(object sender, EventArgs e)
+        private async void ResyncSongClickedAsync(object sender, EventArgs e)
         {
             Track t = (Track)SongList.SelectedItem;
 
@@ -629,7 +640,7 @@ namespace MyMixes
                 ICloudStore pi = await GetCloudProvider(pm.provider);
                 if(pi != null)
                 {
-                    await pi.UpdateProjectAsync(t.FullPath);
+                    //await pi.UpdateProjectAsync(t.FullPath);
                 }
             }
         }

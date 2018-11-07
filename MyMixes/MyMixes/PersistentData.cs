@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
+using CloudStorage;
+
 namespace MyMixes
 {
     public class ProjectMapping
     {
-        public ProviderInfo.CloudProviders provider;
+        public CloudProviders provider;
         public string project;
     }
 
@@ -38,9 +40,9 @@ namespace MyMixes
 
         public static void SaveProjectMappings()
         {
-            Dictionary<ProviderInfo.CloudProviders, List<string>> ProjectsByProviders = new Dictionary<ProviderInfo.CloudProviders, List<string>>();
+            Dictionary<CloudProviders, List<string>> ProjectsByProviders = new Dictionary<CloudProviders, List<string>>();
 
-            foreach(ProviderInfo.CloudProviders pmname in Enum.GetValues(typeof(ProviderInfo.CloudProviders)))
+            foreach(CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
             {
                 ProjectsByProviders[pmname] = new List<string>();
             }
@@ -50,7 +52,7 @@ namespace MyMixes
                 ProjectsByProviders[pm.provider].Add(pm.project);
             }
 
-            foreach(KeyValuePair<ProviderInfo.CloudProviders, List<string>> kvp in ProjectsByProviders)
+            foreach(KeyValuePair<CloudProviders, List<string>> kvp in ProjectsByProviders)
             {
                 Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
             }
@@ -58,7 +60,7 @@ namespace MyMixes
 
         public static void LoadProjectMappings()
         {
-            foreach (ProviderInfo.CloudProviders pmname in Enum.GetValues(typeof(ProviderInfo.CloudProviders)))
+            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
             {
                 if(Application.Current.Properties.ContainsKey("ProjectMap_" + pmname))
                 {
@@ -140,7 +142,7 @@ namespace MyMixes
                             ProviderInfo pi = new ProviderInfo
                             {
                                 RootPath = (string)Application.Current.Properties[key],
-                                CloudProvider = (ProviderInfo.CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
+                                CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
                             };
 
                             mixLocations.Add(pi);
@@ -153,14 +155,14 @@ namespace MyMixes
             }
         }
 
-        static void AddLocation(string path, ProviderInfo.CloudProviders cp)
+        static void AddLocation(string path, CloudProviders cp)
         {
             string key = "mixloc" + ProviderCount.ToString();
 
             ProviderInfo pi = new ProviderInfo
             {
                 RootPath = (string)Application.Current.Properties[key],
-                CloudProvider = (ProviderInfo.CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
+                CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
             };
 
             ProviderCount++;

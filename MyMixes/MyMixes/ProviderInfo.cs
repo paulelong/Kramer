@@ -14,13 +14,6 @@ namespace MyMixes
     {
         private static Dictionary<CloudProviders, ICloudStore> providers = new Dictionary<CloudProviders, ICloudStore>();
 
-        public enum CloudProviders
-        {
-            OneDrive,
-            GoogleDrive,
-            Dropbox,
-        }
-
         public CloudProviders CloudProvider
         {
             get; set;
@@ -29,6 +22,14 @@ namespace MyMixes
         public string RootPath
         {
             get; set;
+        }
+
+        private ICloudStore CloudStore
+        {
+            get
+            {
+                return providers[CloudProvider];
+            }
         }
 
         public async static Task<ICloudStore> GetCloudProvider(CloudProviders cp)
@@ -64,10 +65,10 @@ namespace MyMixes
                         cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.GoogleDrive);
 
                         Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
-                        googledriveparams[CloudParams.ClientID.ToString()] = "173566192011-5k9r7r9dnf4pvcuq1vjohopel5kmg8b6.apps.googleusercontent.com";
-                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.testcloud:/oauth2redirect";
+                        googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
+                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect";
                         googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
-                        googledriveparams[CloudParams.UIParent.ToString()] = null;
+                        googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
                         googledriveparams[CloudParams.GoogleToken.ToString()] = null;
 
                         if (cs.Initialize(googledriveparams))
@@ -111,7 +112,7 @@ namespace MyMixes
             {
                 ICloudStore cs = await GetCloudProviderAsync();
 
-                var l = await cs.GetFolderList(RootPath);
+                var l = await cs.GetFolderList("/" + RootPath);
                 List<string> retl = new List<string>();
                 foreach (var i in l)
                 {
@@ -128,38 +129,85 @@ namespace MyMixes
             }
         }
 
-        internal async Task<bool> UpdateProjectAsync(string f)
+        private bool isAuthenticated = false;
+        public bool IsAuthenticated
+        {
+            get
+            {
+                return isAuthenticated;
+            }
+            set
+            {
+                isAuthenticated = value;
+                if (!isAuthenticated)
+                {
+                    providers.Remove(CloudProvider);
+                }
+            }
+        }
+
+        public async Task<bool> CheckAuthenitcation()
+        {
+            if (!IsAuthenticated)
+            {
+                ICloudStore cs = await GetCloudProvider(CloudProvider);
+                if(cs != null)
+                {
+                    isAuthenticated = await cs.AuthenticateAsync();
+                }
+            }
+
+            return IsAuthenticated;
+        }
+
+        public async Task<bool> UpdateProjectAsync(string f)
         {
             ICloudStore cs = await GetCloudProviderAsync();
+            bool result = true;
 
             try
             {
-                string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), RootPath + "/" + f);
+                string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), f);
+                string remoteFolderName = "/" + RootPath + "/" + f;
 
-                bool result = true;
-
-                var items = await cs.GetFolderList(RootPath + "/" + f);
+                var items = await cs.GetFolderList(remoteFolderName);
                 foreach (var di in items)
                 {
                     if (isAudioFile(di))
                     {
-                        Stream s = new FileStream(fileName + "/" + di, FileMode.OpenOrCreate);
-
-                        if (!await cs.DownloadFileAsync(di.name, s))
+                        // Is local folder created?
+                        var d = Directory.CreateDirectory(projectPath);
+                        if (d != null)
                         {
-                            result = false;
-                        }
+                            string localFileName = projectPath + "/" + di.name;
+                            DateTime localWriteTime = File.GetLastWriteTime(localFileName);
 
-                        s.Close();
+                            if(localWriteTime < di.modifiedDate)
+                            {
+                                using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
+                                {
+                                    Debug.Print("downloading " + localFileName + "\n");
+                                    if (!await cs.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
+                                    {
+                                        Debug.Print("FAILED " + localFileName + "\n");
+
+                                        result = false;
+                                    }
+
+                                    s.Close();
+                                }
+                            }
+                        }
                     }
                 }
-
-                return result;
             }
             catch (Exception ex)
             {
+                Debug.Print("exception " + ex.Message);
                 throw ex;
             }
+
+            return result;
         }
 
         private bool isAudioFile(CloudFileData di)
@@ -168,6 +216,7 @@ namespace MyMixes
             {
                 case ".wav":
                 case ".mp3":
+                case ".wma":
                     return true;
                 default:
                     return false;

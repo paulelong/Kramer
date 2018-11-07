@@ -137,7 +137,7 @@ namespace MyMixes
 
             if (signedIn == true)
             {
-                string filename = RootPath + "/" + ProjectPath + "/" + cloudfile;
+                string filename = "/" + RootPath + "/" + ProjectPath + "/" + cloudfile;
                 Debug.Print("dest Filename: {0}, pos: {1}, len: {2}\n", filename, localfile.Position, localfile.Length);
 
                 UploadSession us = await graphClient.Me.Drive.Root.ItemWithPath(filename).CreateUploadSession().Request().PostAsync() ;

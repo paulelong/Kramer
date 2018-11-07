@@ -6,30 +6,31 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.AppCenter.Analytics;
 using Xamarin.Forms;
+using CloudStorage;
 
 namespace MyMixes
 {
     public static class CloudStoreUtils
     {
-        public async static Task<bool> Authenticate(ICloudStoreOrg cs)
-        {
-            try
-            {
-                if (cs != null)
-                {
-                    if (await cs.Authenticate(App.UiParent))
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Microsoft.Identity.Client.MsalClientException ex)
-            {
-                Analytics.TrackEvent("Authentication exception " + ex.Message);
-            }
+        //public async static Task<bool> Authenticate(ICloudStore cs)
+        //{
+        //    try
+        //    {
+        //        if (cs != null)
+        //        {
+        //            if (await cs.Authenticate(App.UiParent))
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //    catch (Microsoft.Identity.Client.MsalClientException ex)
+        //    {
+        //        Analytics.TrackEvent("Authentication exception " + ex.Message);
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
     }
 
     public interface ICloudStoreOrg
