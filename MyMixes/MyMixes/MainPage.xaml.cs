@@ -207,6 +207,7 @@ namespace MyMixes
 
         private async Task SyncProjects()
         {
+            Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>(); 
 
             foreach(ProviderInfo pi in PersistentData.MixLocations)
             {
@@ -217,9 +218,46 @@ namespace MyMixes
                     {
                         foreach (string f in l)
                         {
-                            await pi.UpdateProjectAsync(f);
+                            var retList = await pi.UpdateProjectAsync(f);
+                            if(AllSongs.ContainsKey(f))
+                            {
+                                AllSongs[f].AddRange(retList);
+                            }
+                            else
+                            {
+                                AllSongs[f] = retList;
+                            }
                         }
                     }
+                }
+            }
+
+            string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            foreach(string p in Directory.GetDirectories(rootPath))
+            {
+                if (!AllSongs.ContainsKey(Path.GetFileName(p)))
+                {
+                    Debug.Print("Remove dir " + p + "\n");
+                    Directory.Delete(p, true);
+                }
+                else
+                {
+                    foreach(string s in Directory.GetDirectories(p))
+                    {
+                        if(AllSongs[p].Contains(Path.GetFileName(s)))
+                        {
+                            Debug.Print("Remove file " + s + "\n");
+                            File.Delete(s);
+                        }
+                    }
+                }
+            }
+
+            foreach (string p in AllSongs.Keys)
+            {
+                foreach(string f in AllSongs[p])
+                {
+
                 }
             }
 
@@ -278,7 +316,7 @@ namespace MyMixes
             IList<IFile> l = await f.GetFilesAsync();
             foreach (IFile fl in l)
             {
-                if (fl.Name.EndsWith("wav") || fl.Name.EndsWith("mp3"))
+                if (MusicUtils.isAudioFormat(fl.Name))
                     return true;
             }
 

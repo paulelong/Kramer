@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\barbour\CloudStorage\CloudStorage.csproj" />
+    <ProjectReference Include="..\..\..\CloudStorage\CloudStorage\CloudStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

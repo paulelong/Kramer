@@ -160,10 +160,11 @@ namespace MyMixes
             return IsAuthenticated;
         }
 
-        public async Task<bool> UpdateProjectAsync(string f)
+        public async Task<List<string>> UpdateProjectAsync(string f)
         {
+            List<string> UpdatedSongs = new List<string>();
             ICloudStore cs = await GetCloudProviderAsync();
-            bool result = true;
+            //bool result = true;
 
             try
             {
@@ -175,6 +176,8 @@ namespace MyMixes
                 {
                     if (isAudioFile(di))
                     {
+                        UpdatedSongs.Add(di.name);
+
                         // Is local folder created?
                         var d = Directory.CreateDirectory(projectPath);
                         if (d != null)
@@ -190,8 +193,6 @@ namespace MyMixes
                                     if (!await cs.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
                                     {
                                         Debug.Print("FAILED " + localFileName + "\n");
-
-                                        result = false;
                                     }
 
                                     s.Close();
@@ -207,20 +208,12 @@ namespace MyMixes
                 throw ex;
             }
 
-            return result;
+            return UpdatedSongs;
         }
 
         private bool isAudioFile(CloudFileData di)
         {
-            switch (Path.GetExtension(di.name))
-            {
-                case ".wav":
-                case ".mp3":
-                case ".wma":
-                    return true;
-                default:
-                    return false;
-            }
+            return MusicUtils.isAudioFormat(di.name);
         }
     }
 }
