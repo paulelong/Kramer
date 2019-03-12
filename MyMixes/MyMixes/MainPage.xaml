@@ -10,89 +10,60 @@
              ios:Page.UseSafeArea="true"-->
     <ContentPage.Resources>
         <ResourceDictionary>
-            <DataTemplate x:Key="projectfolderTemplate">
+            <DataTemplate x:Key="songListTemplate">
                 <ViewCell>
-                        <Grid Margin="10,0,0,0" BackgroundColor="#404040">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.1*" />
-                                <ColumnDefinition Width="0.8*" />
-                                <ColumnDefinition Width="0.1*" />
-                            </Grid.ColumnDefinitions>
-                            <Image Source="Folder.png" Scale="0.8"/>
-                            <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
-                            <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
-                        </Grid>
-                </ViewCell>
-            </DataTemplate>
-            <DataTemplate x:Key="trackTemplate">
-                <ViewCell>
-                    <Grid Margin="15,0,0,0">
+                    <Grid Margin="0,0,0,0" BackgroundColor="#404040">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.4*" />
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.11*" />
+                            <ColumnDefinition Width="0.78*" />
+                            <ColumnDefinition Width="0.11*" />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
-                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
-                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
-                        <Button Grid.Column="4" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>
-                        <Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>
-                        <Button Grid.Column="6" Clicked="Notes_Clicked" Image="EditBt2.png" Scale=".9"/>
+                        <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
+                        <Button Grid.Column="0" Image="EditBt.png" />
+                        <!--<Label Grid.Column="1" Text="someting to see"/>-->
+                        <StackLayout Grid.Column="1"  Orientation="Vertical">
+                            <Label Text="{Binding Project, Mode=TwoWay}" TextColor="White" FontSize="Micro" />
+                            <Label Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
+                        </StackLayout>
+                        <Button Grid.Column="2" Clicked="DeleteSong_Clicked" Image="TrashBt.png" />
                     </Grid>
                 </ViewCell>
             </DataTemplate>
-            <local:TrackDataTemplateSelector x:Key="trackDataTemplateSelector" ProjectTemplate="{StaticResource projectfolderTemplate}" TrackTemplate="{StaticResource trackTemplate}" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <StackLayout HorizontalOptions="FillAndExpand" x:Name="MainStack">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start">
-                <Label Text="Project Folders" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
-                <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End"/>
-                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" HorizontalOptions="End"/>
+        <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
+                <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
             </StackLayout>
-            <ScrollView x:Name="TrackScroll" Margin="20,10,20,10" VerticalOptions="FillAndExpand">
+            <ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
-                        ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                        ItemTemplate="{StaticResource songListTemplate}" 
                            CachingStrategy="RecycleElement"
                         >
-                    <!--<ListView x:Name="Projects" 
-                    ItemTemplate="{StaticResource trackDataTemplateSelector}" 
-                          CachingStrategy="RecycleElement"
-                        ItemSelected="TrackView_Sel"
-                        >-->
                 </ListView>
             </ScrollView>
-            <ActivityIndicator x:Name="BusySignal" HeightRequest="50" IsVisible="false"/>
-            <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
+            <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
+                <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
+                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
+            </Grid>
+            <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" Margin="20,0,20,0">
                 <!--<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">-->
                     <Label Text="Loop Song List" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
                     <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
                 <!--</StackLayout>-->
             </StackLayout>
-            <Grid HeightRequest="50" VerticalOptions="EndAndExpand">
+            <Grid  VerticalOptions="EndAndExpand">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.9*" />
-                    <ColumnDefinition Width="0.1*" />
-                    <ColumnDefinition Width="0.1*" />
-                    <ColumnDefinition Width="0.1*" />
-                    <ColumnDefinition Width="0.1*" />
+                    <ColumnDefinition Width="0.33*" />
+                    <ColumnDefinition Width="0.33*" />
+                    <ColumnDefinition Width="0.33*" />
                 </Grid.ColumnDefinitions>
-                <!--<Picker x:Name="SongList" SelectedItem="{Binding CurrentSel}"/>-->
-                <Picker x:Name="SongList" ItemsSource="{Binding Tracklist}" ItemDisplayBinding="{Binding Name}" TextColor="White"/>
-                <!--<Picker x:Name="SongList" ItemsSource="{Binding SelTrackList}" SelectedItem="{Binding CurrentSel}"/>-->
-                <!--<Label Grid.Column="0" x:Name="CurrentSong" Text="" TextColor="White" FontSize="Medium"/>-->
-                <Button Grid.Column="1" x:Name="RemoveButton" Clicked="RemoveSong_Clicked" Image="DelBt.png" WidthRequest="37"/>
-                <Button Grid.Column="2" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" />
-                <Button Grid.Column="3" x:Name="NextSongButton" Clicked="NextSong_Clicked" Image="NextBt.png" />
-                <Button Grid.Column="4" x:Name="PlayButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
+                <Button Grid.Column="0" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" WidthRequest="37"/>
+                <Button Grid.Column="1" x:Name="PlaySongButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
+                <Button Grid.Column="2" x:Name="NextSongButton" Clicked="NextSong_Clicked" Image="NextBt.png" />
             </Grid>
         </StackLayout>
     </ContentPage.Content>

@@ -24,95 +24,171 @@ namespace MyMixes
             get; set;
         }
 
+        private ICloudStore cs = null;
         private ICloudStore CloudStore
         {
             get
             {
-                return providers[CloudProvider];
+                return cs;
             }
         }
 
-        public async static Task<ICloudStore> GetCloudProvider(CloudProviders cp)
+        private static Dictionary<string, ProviderInfo> pi_list = new Dictionary<string, ProviderInfo>();
+        public static List<ProviderInfo> Providers
         {
-            if (!providers.ContainsKey(cp))
+            get
             {
-                ICloudStore cs;
-                switch (cp)
+                List<ProviderInfo> ret = new List<ProviderInfo>();
+
+                foreach(KeyValuePair<string, ProviderInfo> kvp in pi_list)
                 {
-                    case CloudProviders.OneDrive:
-                        cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.OneDrive);
-                        Dictionary<string, object> onedriveparams = new Dictionary<string, object>();
-                        onedriveparams[CloudParams.ClientID.ToString()] = "7ba22c7f-29be-4dc7-a274-4209fe0b8b72";
-                        onedriveparams[CloudParams.UIParent.ToString()] = null;
+                    if(kvp.Value != null)
+                    {
+                        ret.Add(kvp.Value);
+                    }
+                }
 
-                        if (cs.Initialize(onedriveparams))
-                        {
-                            bool worked = await cs.AuthenticateAsync();
+                return ret;
+            }
+        }
 
-                            if (!worked)
+        public static ProviderInfo FindProvider(string name)
+        {
+            foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
+            {
+                string[] parts = kvp.Key.Split(':');
+                if(parts[1] == name)
+                {
+                    return kvp.Value;
+                }
+            }
+
+            return null;
+        }
+
+        public static async Task LoadMappings()
+        {
+            List<string> mappings = PersistentData.LoadProjectMappings();
+
+            foreach (string s in mappings)
+            {
+                string[] parts = s.Split(':');
+                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
+                await GetCloudProviderAsync(cp, parts[1]);
+            }
+        }
+
+        public static void SaveMappings()
+        {
+            PersistentData.SaveProjectMappings(pi_list);
+        }
+
+        public async static Task<ProviderInfo> GetCloudProviderAsync(CloudProviders cp, string rootpath = null)
+        {
+            string key = cp.ToString() + ":" + rootpath;
+
+            if (!pi_list.ContainsKey(key))
+            {
+                ICloudStore cs = null ;
+
+                if (!providers.ContainsKey(cp))
+                {
+                    switch (cp)
+                    {
+                        case CloudProviders.OneDrive:
+                            cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.OneDrive);
+                            Dictionary<string, object> onedriveparams = new Dictionary<string, object>();
+                            onedriveparams[CloudParams.ClientID.ToString()] = "7ba22c7f-29be-4dc7-a274-4209fe0b8b72";
+                            onedriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
+
+                            if (cs.Initialize(onedriveparams))
                             {
-                                return null;
-                            }
+                                bool worked = await cs.AuthenticateAsync();
 
-                            return cs;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                        break;
-                    case CloudProviders.GoogleDrive:
-                        cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.GoogleDrive);
-
-                        Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
-                        googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
-                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect";
-                        googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
-                        googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
-                        googledriveparams[CloudParams.GoogleToken.ToString()] = null;
-
-                        if (cs.Initialize(googledriveparams))
-                        {
-                            bool worked = await cs.AuthenticateAsync();
-                            AuthenticationState.Authenticator = cs.GetAuthenticator();
-                            bool authCompletWorked = await cs.CompleteAuthenticateAsync(AuthenticationState.Authenticator);
-                            if (authCompletWorked)
-                            {
-                                return cs;
+                                if (!worked)
+                                {
+                                    return null;
+                                }
                             }
                             else
                             {
                                 return null;
                             }
-                        }
-                        else
-                        {
+                            break;
+                        case CloudProviders.GoogleDrive:
+                            cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.GoogleDrive);
+
+                            Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
+                            googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
+                            googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect";
+                            googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
+                            googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
+                            googledriveparams[CloudParams.GoogleToken.ToString()] = null;
+
+                            if (cs.Initialize(googledriveparams))
+                            {
+                                bool worked = await cs.AuthenticateAsync();
+                                AuthenticationState.Authenticator = cs.GetAuthenticator();
+                                bool authCompletWorked = await cs.CompleteAuthenticateAsync(AuthenticationState.Authenticator);
+                                if (!authCompletWorked)
+                                {
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                            break;
+                        default:
                             return null;
-                        }
-                        break;
-                    default:
-                        return null;
-                        break;
+                            break;
+                    }
+
                 }
+                else
+                {
+                    cs = providers[cp];
+                }
+
+                ProviderInfo pi = new ProviderInfo() { cs = cs, RootPath = rootpath };
+                pi_list[key] = pi;
+                return pi;
             }
             else
             {
-                return providers[cp];
+                return pi_list[key];
             }
         }
 
-        public async Task<ICloudStore> GetCloudProviderAsync()
+        public void UpdatePath(string path)
         {
-            return await GetCloudProvider(CloudProvider);
+            string key = CloudProvider.ToString() + ":" + RootPath;
+
+            RootPath = path;
+            pi_list[key] = null;
+
+            key = CloudProvider.ToString() + ":" + RootPath;
+            pi_list[key] = this;
         }
-        
-        public async Task< List<string> > GetFoldersAsync()
+
+        public void RemoveProvider()
+        {
+            string key = CloudProvider.ToString() + ":" + RootPath;
+
+            pi_list[key] = null;
+        }
+
+        //public async Task<ICloudStore> GetCloudProviderAsync()
+        //{
+        //    return await GetCloudProviderAsync(CloudProvider);
+        //}
+
+        public async Task< List<string> > GetProjectFoldersAsync(string path)
         {
             try
             {
-                ICloudStore cs = await GetCloudProviderAsync();
-
-                var l = await cs.GetFolderList("/" + RootPath);
+                var l = await CloudStore.GetFolderList("/" + path);
                 List<string> retl = new List<string>();
                 foreach (var i in l)
                 {
@@ -122,6 +198,28 @@ namespace MyMixes
                 return retl;
             }
             catch(Exception ex)
+            {
+                Debug.Print(ex.ToString());
+
+                return null;
+            }
+        }
+
+        public async Task<List<string>> GetFoldersAsync(string folder)
+        {
+            try
+            {
+                var l = await CloudStore.GetFolderList(folder);
+                List<string> retl = new List<string>();
+                foreach (var i in l)
+                {
+                    if(i.isFolder)
+                        retl.Add(i.name);
+                }
+
+                return retl;
+            }
+            catch (Exception ex)
             {
                 Debug.Print(ex.ToString());
 
@@ -148,28 +246,22 @@ namespace MyMixes
 
         public async Task<bool> CheckAuthenitcation()
         {
-            if (!IsAuthenticated)
+            if (!isAuthenticated && CloudStore != null)
             {
-                ICloudStore cs = await GetCloudProvider(CloudProvider);
-                if(cs != null)
-                {
-                    isAuthenticated = await cs.AuthenticateAsync();
-                }
+                isAuthenticated = await CloudStore.AuthenticateAsync();
             }
 
-            return IsAuthenticated;
+            return isAuthenticated;
         }
 
-        public async Task<List<string>> UpdateProjectAsync(string f)
+        public async Task<List<string>> UpdateProjectAsync(string root, string project)
         {
             List<string> UpdatedSongs = new List<string>();
-            ICloudStore cs = await GetCloudProviderAsync();
-            //bool result = true;
 
             try
             {
-                string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), f);
-                string remoteFolderName = "/" + RootPath + "/" + f;
+                string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), project);
+                string remoteFolderName = "/" + root + "/" + project;
 
                 var items = await cs.GetFolderList(remoteFolderName);
                 foreach (var di in items)
@@ -190,8 +282,9 @@ namespace MyMixes
                                 using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
                                 {
                                     Debug.Print("downloading " + localFileName + "\n");
-                                    if (!await cs.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
+                                    if (!await CloudStore.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
                                     {
+                                        PersistentData.SetTrackNumber(projectPath, di.name, di.track);
                                         Debug.Print("FAILED " + localFileName + "\n");
                                     }
 
@@ -214,6 +307,11 @@ namespace MyMixes
         private bool isAudioFile(CloudFileData di)
         {
             return MusicUtils.isAudioFormat(di.name);
+        }
+
+        public async Task<bool> DeleteTake(string name)
+        {
+            return true;
         }
     }
 }

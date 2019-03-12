@@ -35,6 +35,8 @@ namespace MyMixes
 
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
+        private List<Track> Playlist = new List<Track>();
+
         public MainPage()
         {
             InitializeComponent();
@@ -47,67 +49,51 @@ namespace MyMixes
             // seed with static data for now REMOVE
             ProviderInfo piA = new ProviderInfo();
 
-            piA.RootPath = "Mixes";
-            piA.CloudProvider = CloudProviders.OneDrive;
-            PersistentData.MixLocations.Add(piA);
+            NavigationPage.SetHasNavigationBar(this, false);
 
-            piA = new ProviderInfo();
-
-            piA.RootPath = "Mixes";
-            piA.CloudProvider = CloudProviders.GoogleDrive;
-            PersistentData.MixLocations.Add(piA);
-
+            ViewModel.CurrentSel = "Add songs to create playlist";
         }
 
         private async void Player_PlaybackEnded(object sender, EventArgs e)
         {
             Device.BeginInvokeOnMainThread(async () =>
-               {
-                   if(currentSong > ViewModel.SongsQueued)
-                   {
-                       currentSong = 1;
-                       SongList.SelectedIndex = currentSong - 1;
-                       if (ViewModel.isLooping)
-                       {
-                           await PlayCurrentSong();
-                       }
-                       else
-                       {
-                           PlayButton.Image = "PlayBt.png";
-                           isSongPlaying = false;
-                       }
-                   }
-                   else
-                   {
-                       currentSong++;
-                       SongList.SelectedIndex = currentSong - 1;
-                       await PlayCurrentSong();
-                   }
-               });
+            {
+                if (currentSong > ViewModel.SongsQueued)
+                {
+                    currentSong = 1;
+                    SetSongIndex(currentSong - 1);
+                    if (ViewModel.isLooping)
+                    {
+                        await PlayCurrentSong();
+                    }
+                    else
+                    {
+                        PlaySongButton.Image = "PlayBt.png";
+                        isSongPlaying = false;
+                    }
+                }
+                else
+                {
+                    currentSong++;
+                    SetSongIndex(currentSong - 1);
+                    await PlayCurrentSong();
+                }
+            });
+        }
+
+        private void SetCurrentSong()
+        {
+            Track t = (Track)Projects.SelectedItem;
+            ViewModel.CurrentProject = Path.GetFileName(t.ProjectPath);
+            
+            ViewModel.CurrentSel = t.Name;
         }
 
         private async void Add_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new FolderPicker());
+            await Navigation.PushModalAsync(new AddSongs());
+            //await Navigation.PushAsync(new FolderPicker());
 
-            var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
-        
-            var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
-
-            // BUGBUG: Not finished
-            ProviderInfo pi = new ProviderInfo();
-            if(action != "Cancel")
-            {
-                ICloudStore cs = await GetCloudProvider((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
-
-                if (cs != null)
-                {
-                    //if (await CloudStoreUtils.Authenticate(cs))
-                    //{
-                    //    //CrossFilePicker.Current.PickFile();
-                    //}
-                }
-            }
         }
 
         private async void LocalPlay_Clicked(object sender, EventArgs e)
@@ -161,7 +147,7 @@ namespace MyMixes
             this.BindingContext = null;
             this.BindingContext = ViewModel;
 
-            SongList.SelectedIndex = currentSong - 1;
+            SetSongIndex(currentSong - 1);
 
             await PlayCurrentSong();
 
@@ -207,18 +193,22 @@ namespace MyMixes
 
         private async Task SyncProjects()
         {
-            Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>(); 
-
-            foreach(ProviderInfo pi in PersistentData.MixLocations)
+            Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
+            
+            //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
+            foreach(ProviderInfo pi in ProviderInfo.Providers)
             {
+                BusyStatus.Text = pi.CloudProvider.ToString() + " " + pi.RootPath;
+
                 if (await pi.CheckAuthenitcation())
                 {
-                    List<string> l = await pi.GetFoldersAsync();
+                    List<string> l = await pi.GetProjectFoldersAsync(pi.RootPath);
                     if (l != null)
                     {
                         foreach (string f in l)
                         {
-                            var retList = await pi.UpdateProjectAsync(f);
+                            BusyStatus.Text = pi.CloudProvider.ToString() + " " + pi.RootPath + " " + f;
+                            var retList = await pi.UpdateProjectAsync(pi.RootPath, f);
                             if(AllSongs.ContainsKey(f))
                             {
                                 AllSongs[f].AddRange(retList);
@@ -238,6 +228,7 @@ namespace MyMixes
                 if (!AllSongs.ContainsKey(Path.GetFileName(p)))
                 {
                     Debug.Print("Remove dir " + p + "\n");
+                    BusyStatus.Text = "Removing " + p;
                     Directory.Delete(p, true);
                 }
                 else
@@ -246,6 +237,7 @@ namespace MyMixes
                     {
                         if(AllSongs[p].Contains(Path.GetFileName(s)))
                         {
+                            BusyStatus.Text = "Removing " + s;
                             Debug.Print("Remove file " + s + "\n");
                             File.Delete(s);
                         }
@@ -257,7 +249,7 @@ namespace MyMixes
             {
                 foreach(string f in AllSongs[p])
                 {
-
+                    BusyStatus.Text = p + " " + f;
                 }
             }
 
@@ -266,57 +258,24 @@ namespace MyMixes
 
         private async Task LoadProjects()
         {
-            IFolder folder = FileSystem.Current.LocalStorage;
-            IList<IFolder> folderList = await folder.GetFoldersAsync();
-            var tracks = new List<Track>();
+            var tracks = PersistentData.LoadQueuedTracks();
 
-            Debug.Print("Project local {0}\n", folder.Path);
+            var p = new QueuedTrack { Name = "Some Song", Project = "ProjectName" };
+            tracks.Add(p);
+            var q = new QueuedTrack { Name = "Big guts", Project = "Pencil" };
+            tracks.Add(q);
 
-            try
-            {
-                foreach (IFolder f in folderList)
-                {
-                    if (await WavDirectory(f))
-                    {
-                        var p = new Track { Name = f.Name, FullPath = f.Path, isProject = true};
-                        tracks.Add(p);
 
-                        if (f.Name == selectedFolder)
-                        {
-                            IList<IFile> fileList = await f.GetFilesAsync();
-                            foreach (IFile fl in fileList)
-                            {
-                                var t = new Track
-                                {
-                                    Name = fl.Name,
-                                    FullPath = fl.Path,
-                                    isProject = false,
-                                    OrderVal = PlayListOrder.ContainsKey(fl.Path) ? PlayListOrder[fl.Path] : 0
-                                };
-                                tracks.Add(t);
-                            }
-                        }
-                    }
-                }
 
-                Projects.ItemsSource = tracks;
-
-            }
-            catch (Exception ex)
-            {
-                Debug.Print(ex.Message);
-            }
-
-            Debug.Print("Project local {0} DONE\n", folder.Path);
-
+            Projects.ItemsSource = tracks;
         }
 
-        private async Task<bool> WavDirectory(IFolder f)
+        private async Task<bool> WavDirectory(string f)
         {
-            IList<IFile> l = await f.GetFilesAsync();
-            foreach (IFile fl in l)
+           // IList<IFile> l = await f.GetFilesAsync();
+            foreach (string fl in Directory.GetFiles(f))
             {
-                if (MusicUtils.isAudioFormat(fl.Name))
+                if (MusicUtils.isAudioFormat(fl))
                     return true;
             }
 
@@ -334,19 +293,19 @@ namespace MyMixes
                     {
                         isSongPlaying = false;
                         player.Pause();
-                        PlayButton.Image = "PlayBt.png";
+                        PlaySongButton.Image = "PlayBt.png";
                     }
                     else
                     {
                         isSongPlaying = true;
                         player.Play();
-                        PlayButton.Image = "PauseBt.png";
+                        PlaySongButton.Image = "PauseBt.png";
                     }
                 }
                 else
                 {
                     isSongPlaying = true;
-                    PlayButton.Image = "PauseBt.png";
+                    PlaySongButton.Image = "PauseBt.png";
 
                     await PlayCurrentSong();
                 }
@@ -355,7 +314,9 @@ namespace MyMixes
 
         private async Task PlayCurrentSong()
         {
-            Track t = (Track)SongList.SelectedItem;
+            Track t = ViewModel.CurrentTrack;
+            //ViewModel.CurrentSel = t.Name;
+            //ViewModel.CurrentProject = t.Project;
 
             string path = Path.GetDirectoryName(t.FullPath);
             string filename = Path.GetFileName(t.FullPath);
@@ -372,7 +333,7 @@ namespace MyMixes
                 {
                     playingSong = t.FullPath;
                     //CurrentSong.Text = filename;
-                    PlayButton.Image = "PauseBt.png";
+                    PlaySongButton.Image = "PauseBt.png";
                     player.Play();
                     isSongPlaying = true;
                 }
@@ -381,6 +342,8 @@ namespace MyMixes
                     await DisplayAlert("Error openning track ", t.FullPath, "OK");
                 }
             }
+
+            SetCurrentSong();
         }
 
         private void DeleteFolder_Clicked(object sender, EventArgs e)
@@ -391,13 +354,12 @@ namespace MyMixes
         private async Task Delete_Clicked(object sender, EventArgs e)
         {
             Track t = (Track)Projects.SelectedItem;
+            ProviderInfo pi = ProviderInfo.FindProvider(t.ProjectPath);
 
-            ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
 
-            if(pm != null)
+            if(pi != null)
             {
-                ICloudStore pi = await GetCloudProvider(pm.provider);
-                bool deleted = await pi.DeleteTake(pm.project + "/" + t.Name);
+                bool deleted = await pi.DeleteTake(t.Name);
                 if (deleted)
                 {
                     bool localDeleted = await DeleteFile(t.FullPath);
@@ -454,27 +416,13 @@ namespace MyMixes
         Track FindTrack(View v)
         {
             Grid g = (Grid)v.Parent;
-
-            List<Track> tl = (List<Track>)Projects.ItemsSource;
-
-            Label l;
-
-            if (g.Children[1] is Label)
-            {
-               l = (Label)(g.Children[1]);
-            }
-            else
-            {
-                l = (Label)(g.Children[1]);
-            }
-
-            Track t = tl.Find((x) => x.Name == l.Text);
+            Track t = (Track)g.BindingContext;
             return t;
         }
 
         private void BusyOn(bool TurnOn)
         {
-            BusySignal.IsVisible = TurnOn;
+            BusyGrid.IsVisible = TurnOn;
             BusySignal.IsRunning = TurnOn;
             MainStack.IsEnabled = !TurnOn;
         }
@@ -486,22 +434,22 @@ namespace MyMixes
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
-            Track t = (Track)e.SelectedItem;
+            //Track t = (Track)e.SelectedItem;
 
-            if (!t.isProject)
-            {
+            //if (!t.isProject)
+            //{
 
-            }
-            else
-            {
-                selectedFolder = t.Name;
+            //}
+            //else
+            //{
+            //    selectedFolder = t.Name;
 
-                double scrollY = TrackScroll.ScrollY;
+            //    double scrollY = TrackScroll.ScrollY;
 
-                await LoadProjects();
+            //    await LoadProjects();
 
-                await TrackScroll.ScrollToAsync(0, scrollY, false);
-            }
+            //    await TrackScroll.ScrollToAsync(0, scrollY, false);
+            //}
 
         }
 
@@ -561,7 +509,7 @@ namespace MyMixes
                 t.OrderButtonText = "+";
                 t.ReadyToAdd = true ;
 
-                if ((currentSong - 1) == SongList.SelectedIndex)
+                if ((currentSong - 1) == ViewModel.CurrentTrackNumer)
                 {
                     if (currentSong >= ViewModel.SongsQueued)
                         currentSong--;
@@ -572,12 +520,14 @@ namespace MyMixes
 
             //var kvp = PlayListOrder.FirstOrDefault((x) => x.Value == currentSong);
 
-            SongList.SelectedIndex = currentSong - 1;
+            SetSongIndex(currentSong - 1);
 
             if (isSongPlaying && ViewModel.SongsQueued > 0 && songStopped)
             {
                 await PlayCurrentSong();
             }
+
+            SetCurrentSong();
         }
 
         private async void Prev_Clicked(object sender, EventArgs e)
@@ -591,7 +541,7 @@ namespace MyMixes
                 currentSong--;
             }
 
-            SongList.SelectedIndex = currentSong - 1;
+            SetSongIndex(currentSong - 1);
             await PlayCurrentSong();
 
         }
@@ -607,13 +557,13 @@ namespace MyMixes
                 currentSong++;
             }
 
-            SongList.SelectedIndex = currentSong - 1;
+            SetSongIndex(currentSong - 1);
             await PlayCurrentSong();
         }
 
         private async void RemoveSong_Clicked(object sender, EventArgs e)
         {
-            Track t = (Track)SongList.SelectedItem;
+            Track t = ViewModel.CurrentTrack;
 
             if (t == null)
                 return;
@@ -649,7 +599,7 @@ namespace MyMixes
             this.BindingContext = null;
             this.BindingContext = ViewModel;
 
-            SongList.SelectedIndex = t.OrderVal;
+            SetSongIndex(t.OrderVal);
             currentOrder--;
 
             if(isSongPlaying)
@@ -661,31 +611,47 @@ namespace MyMixes
                 else
                 {
                     isSongPlaying = false;
-                    PlayButton.Image = "PlayBt.png";
+                    PlaySongButton.Image = "PlayBt.png";
                 }
             }
         }
 
-        private async void ResyncSongClickedAsync(object sender, EventArgs e)
+        private void SetSongIndex(int tracknumber)
         {
-            Track t = (Track)SongList.SelectedItem;
-
-            ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
-
-            if (pm != null)
-            {
-                
-                ICloudStore pi = await GetCloudProvider(pm.provider);
-                if(pi != null)
-                {
-                    //await pi.UpdateProjectAsync(t.FullPath);
-                }
-            }
+            ViewModel.CurrentTrackNumer = tracknumber;
+            SetCurrentSong();
         }
+
+        //private async void ResyncSongClickedAsync(object sender, EventArgs e)
+        //{
+        //    Track t = (Track)SongList.SelectedItem;
+
+        //    ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
+
+        //    if (pm != null)
+        //    {
+                
+        //        ICloudStore pi = await GetCloudProviderAsync(pm.provider);
+        //        if(pi != null)
+        //        {
+        //            //await pi.UpdateProjectAsync(t.FullPath);
+        //        }
+        //    }
+        //}
 
         private void Notes_Clicked(object sender, EventArgs e)
         {
+            Navigation.PushModalAsync(new SongNotes());
+        }
 
+        private void ResyncProjectClickedAsync(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SongNameTapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new PlayListPicker(ViewModel.Tracklist));
         }
     }
 }

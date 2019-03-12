@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMixes.UWP", "MyMixes\MyMi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyMixes", "MyMixes\MyMixes\MyMixes.csproj", "{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudStorage", "..\barbour\CloudStorage\CloudStorage.csproj", "{B2C8B85F-C435-4C01-8A90-B7270640F39E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudStorage", "..\CloudStorage\CloudStorage\CloudStorage.csproj", "{B2C8B85F-C435-4C01-8A90-B7270640F39E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

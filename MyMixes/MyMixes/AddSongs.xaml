@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMixes.AddSongs"
+             Appearing="OnAppearing"
+             xmlns:local="clr-namespace:MyMixes"
+            >
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="projectfolderTemplate">
+                <ViewCell>
+                    <Grid Margin="10,0,0,0" BackgroundColor="#404040">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.68*" />
+                            <ColumnDefinition Width="0.11*" />
+                            <ColumnDefinition Width="0.11*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="Folder.png" Scale="0.6"/>
+                        <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
+                        <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
+                        <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="trackTemplate">
+                <ViewCell>
+                    <Grid Margin="15,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="0.53*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <!--<ColumnDefinition Width="0.12*" />-->
+                            <!--<ColumnDefinition Width="0.12*" />-->
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
+                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
+                        <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
+                        <Button Grid.Column="3" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>
+                        <!--<Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="selectedTracksTemplate">
+                <ViewCell>
+                    <Grid Margin="15,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.53*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.12*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding Project}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
+                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <local:TrackDataTemplateSelector x:Key="trackDataTemplateSelector" ProjectTemplate="{StaticResource projectfolderTemplate}" TrackTemplate="{StaticResource trackTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
+                <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
+                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
+                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" HorizontalOptions="End" VerticalOptions="Center"/>
+            </StackLayout>
+            <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
+                <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
+                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
+            </Grid>
+            <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
+                <ListView x:Name="Projects" 
+                            ItemSelected="TrackView_Sel"
+                            ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                           CachingStrategy="RecycleElement"
+                        >
+                </ListView>
+            <!--</ScrollView>-->
+            <ListView x:Name="SelectedTracks" 
+                            ItemTemplate="{StaticResource selectedTracksTemplate}" 
+                           CachingStrategy="RecycleElement">                
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

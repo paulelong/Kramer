@@ -18,6 +18,16 @@ namespace MyMixes
             }
         }
 
+        public Track CurrentTrack
+        {
+            get
+            {
+                return Tracklist[CurrentTrackNumer];
+            }
+        }
+
+        public int CurrentTrackNumer { get; set; }
+
         List<Track> trackList = new List<Track>();
         public List<Track> Tracklist
         {
@@ -27,6 +37,20 @@ namespace MyMixes
                 if (trackList != value)
                 {
                     trackList = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        string currentProject;
+        public string CurrentProject
+        {
+            get { return currentProject;  }
+            set
+            {
+                if (currentProject != value)
+                {
+                    currentProject = value;
                     OnPropertyChanged();
                 }
             }

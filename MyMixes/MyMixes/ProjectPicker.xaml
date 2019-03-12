@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMixes.ProjectPicker"
+             Appearing="OnAppearing">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <DataTemplate x:Key="mixLocationTemplate">
+                <ViewCell>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.45*" />
+                            <ColumnDefinition Width="0.45*" />
+                            <ColumnDefinition Width="0.1*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding Path}" />
+                        <Label Grid.Column="1" Text="{Binding Provider}" />
+                        <Button Grid.Column="2" Text="D"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <StackLayout HorizontalOptions="FillAndExpand">
+            <Label Text="Mix Locations"/>
+            <ListView x:Name="MixLocationView" VerticalOptions="StartAndExpand"
+                      ItemTemplate="{StaticResource mixLocationTemplate}"/>
+            <StackLayout Orientation="Horizontal" VerticalOptions="Start">
+                <Label x:Name="ProviderName" Text="{Binding ProviderNameText}" WidthRequest="200"/>
+                <Button Text="Change" Pressed="ChangeProvider"/>
+            </StackLayout>
+
+            <ListView x:Name="FolderList" VerticalOptions="StartAndExpand"
+                      />
+            <StackLayout Orientation="Horizontal" VerticalOptions="End">
+                <Button Text="Up" Pressed="UpPressed"/>
+                <Button Text="Open" Pressed="OpenFolder"/>
+                <Button Text="Add" Pressed="SelectPressed"/>
+                <Button Text="Done" Pressed="Cancel"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

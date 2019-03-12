@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyMixes.PlayListPicker"
+             Appearing="OnAppearing">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="SongListTemplate">
+                <ViewCell>
+                    <Grid Margin="10,0,0,0" BackgroundColor="#404040">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.45*" />
+                            <RowDefinition Height="0.55*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Text="{Binding Project}" VerticalOptions="End" TextColor="White" FontAttributes="Bold" FontSize="Micro" VerticalTextAlignment="End"/>
+                        <Label Grid.Row="1" Text="{Binding Name}" VerticalOptions="Start" TextColor="White" FontAttributes="Bold" FontSize="Medium" VerticalTextAlignment="Start"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <ContentPage.Content>
+        <ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">
+            <ListView x:Name="SongList" 
+                        ItemSelected="SongSelected"
+                        ItemTemplate="{StaticResource SongListTemplate}" 
+                           CachingStrategy="RecycleElement"
+                        >
+            </ListView>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

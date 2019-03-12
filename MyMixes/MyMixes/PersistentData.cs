@@ -18,59 +18,71 @@ namespace MyMixes
 
     public static class PersistentData
     {
+        private const string KEY_QUEUED_TRACK_COUNT = "QueuedTrackCount";
+        private const string KEY_QUEUED_TRACK_ID = "QueuedTrack";
+
         public static void Save()
         {
             Application.Current.SavePropertiesAsync();
         }
 
-        private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
-        public static List<ProjectMapping> ProjectMappings
+        //private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
+        //public static List<ProjectMapping> ProjectMappings
+        //{
+        //    get
+        //    {
+        //        if(projectMappings == null)
+        //        {
+        //            projectMappings = new List<ProjectMapping>();
+        //            LoadProjectMappings();
+        //        }
+
+        //        return projectMappings;
+        //    }
+        //}
+
+        public static void SaveProjectMappings(Dictionary<string, ProviderInfo> pi_list)
         {
-            get
+            Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
+
+            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
             {
-                if(projectMappings == null)
-                {
-                    projectMappings = new List<ProjectMapping>();
-                    LoadProjectMappings();
-                }
-
-                return projectMappings;
-            }
-        }
-
-        public static void SaveProjectMappings()
-        {
-            Dictionary<CloudProviders, List<string>> ProjectsByProviders = new Dictionary<CloudProviders, List<string>>();
-
-            foreach(CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
-            {
-                ProjectsByProviders[pmname] = new List<string>();
+                ProjectsByProviders[pmname.ToString()] = new List<string>();
             }
 
-            foreach(ProjectMapping pm in projectMappings)
+            foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
             {
-                ProjectsByProviders[pm.provider].Add(pm.project);
+                var p = kvp.Key.Split(':');
+
+                ProjectsByProviders[p[0]].Add(p[1]);
             }
 
-            foreach(KeyValuePair<CloudProviders, List<string>> kvp in ProjectsByProviders)
+            foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
             {
                 Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
             }
         }
 
-        public static void LoadProjectMappings()
+        public static List<string> LoadProjectMappings()
         {
+            List<string> ProjectMappings = new List<string>();
+
             foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
             {
                 if(Application.Current.Properties.ContainsKey("ProjectMap_" + pmname))
                 {
                     string list = (string)Application.Current.Properties["ProjectMap_" + pmname];
-                    foreach(string p in list.Split(','))
+                    if(!string.IsNullOrEmpty(list))
                     {
-                        projectMappings.Add(new ProjectMapping() { project = p, provider = pmname });
+                        foreach (string p in list.Split(','))
+                        {
+                            ProjectMappings.Add(pmname.ToString() + ":" + p);
+                        }
                     }
                 }
             }
+
+            return ProjectMappings;
         }
 
         public static List<string> GetProjectFoldersData(string provider, string root)
@@ -123,31 +135,31 @@ namespace MyMixes
             return true;
         }
 
-        static List<ProviderInfo> mixLocations = new List<ProviderInfo>();
-        public static List<ProviderInfo> MixLocations
+        static List<LocationMapping> mixLocations = new List<LocationMapping>();
+        public static List<LocationMapping> LocationMappings
         {
             get
             {
-
                 if (Application.Current.Properties.ContainsKey("mixLocCount"))
                 {
                     int count;
                     count = (int)Application.Current.Properties["CloudProviderCount"];
+
+                    mixLocations.Clear();
 
                     for (int n = 0; n < count; n++)
                     {
                         string key = "mixloc" + n.ToString();
                         if (Application.Current.Properties.ContainsKey(key))
                         {
-                            ProviderInfo pi = new ProviderInfo
+                            LocationMapping lm = new LocationMapping
                             {
-                                RootPath = (string)Application.Current.Properties[key],
-                                CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
+                                path = (string)Application.Current.Properties[key],
+                                provider = (CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
                             };
 
-                            mixLocations.Add(pi);
+                            mixLocations.Add(lm);
                         }
-
                     }
                 }
 
@@ -155,20 +167,20 @@ namespace MyMixes
             }
         }
 
-        static void AddLocation(string path, CloudProviders cp)
-        {
-            string key = "mixloc" + ProviderCount.ToString();
+        //static void AddLocation(string path, CloudProviders cp)
+        //{
+        //    string key = "mixloc" + ProviderCount.ToString();
 
-            ProviderInfo pi = new ProviderInfo
-            {
-                RootPath = (string)Application.Current.Properties[key],
-                CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
-            };
+        //    ProviderInfo pi = new ProviderInfo
+        //    {
+        //        RootPath = (string)Application.Current.Properties[key],
+        //        CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
+        //    };
 
-            ProviderCount++;
+        //    ProviderCount++;
 
-            mixLocations.Add(pi);
-        }
+        //    mixLocations.Add(pi);
+        //}
 
         static int ProviderCount
         {
@@ -214,6 +226,67 @@ namespace MyMixes
             }
 
             return null;
+        }
+
+        static private string TrackNumberKey(string project, string trackname)
+        {
+            string key = project + '_' + trackname;
+            return key;
+        }
+
+        static public int GetTrackNumber(string project, string trackname)
+        {
+            string key = TrackNumberKey(project, trackname);
+
+            if (Application.Current.Properties.ContainsKey(key))
+            {
+                int tracknum = (int)Application.Current.Properties[key];
+                return tracknum;
+            }
+
+            return 0;
+        }
+
+        static public void SetTrackNumber(string project, string trackname, int tracknum)
+        {
+            string key = TrackNumberKey(project, trackname);
+            Application.Current.Properties[key] = tracknum;
+        }
+
+        static public List<QueuedTrack> LoadQueuedTracks()
+        {
+            List<QueuedTrack> qt = new List<QueuedTrack>();
+
+            if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_COUNT))
+            {
+                for(int n = 0; n < (int)Application.Current.Properties[KEY_QUEUED_TRACK_COUNT]; n++)
+                {
+                    string key = KEY_QUEUED_TRACK_ID + n.ToString();
+
+                    if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_ID))
+                    {
+                        string value = (string)Application.Current.Properties[key];
+
+                        string[] trackParams = value.Split(',');
+                        qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1] });
+                    }
+
+                }
+            }
+
+            return qt;
+        }
+
+        static public async Task SaveQueuedTracks(List<QueuedTrack> qtlist)
+        {
+            int i = 0;
+            foreach(QueuedTrack qt in qtlist)
+            {
+                string key = KEY_QUEUED_TRACK_ID + i.ToString();
+                Application.Current.Properties[key] = qt.Name + "," + qt.Project;
+            }
+
+            await Application.Current.SavePropertiesAsync();
         }
     }
 }
