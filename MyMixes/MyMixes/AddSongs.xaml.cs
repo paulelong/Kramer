@@ -23,7 +23,7 @@ namespace MyMixes
 		{
 			InitializeComponent ();
 
-            SelectedTracks.ItemsSource = SelectedTrackList;
+           SelectedTracks.ItemsSource = SelectedTrackList;
 		}
 
         private void DeleteFolder_Clicked(object sender, EventArgs e)
@@ -75,12 +75,22 @@ namespace MyMixes
         private void SongOrderClicked(object sender, EventArgs e)
         {
 
-            Track t = (Track)Projects.SelectedItem;
+            Track t = FindTrack((View)sender);
 
-            if(SelectedTrackList.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
+            var list = (List<QueuedTrack>)SelectedTracks.ItemsSource;
+            if (list.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
             {
-                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
+                list.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
             }
+
+            //SelectedTracks.ItemsSource = SelectedTrackList;
+
+            //if (SelectedTrackList.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
+            //{
+            //    SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
+            //}
+
+            //SelectedTracks.ItemsSource = SelectedTrackList;
         }
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
@@ -127,6 +137,12 @@ namespace MyMixes
             MainStack.IsEnabled = !TurnOn;
         }
 
+        Track FindTrack(View v)
+        {
+            Grid g = (Grid)v.Parent;
+            Track t = (Track)g.BindingContext;
+            return t;
+        }
 
         private async Task SyncProjects()
         {
