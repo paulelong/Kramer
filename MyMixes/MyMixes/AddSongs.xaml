@@ -47,13 +47,14 @@
                 <ViewCell>
                     <Grid Margin="15,0,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.53*" />
-                            <ColumnDefinition Width="0.12*" />
-                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.92*" />
+                            <ColumnDefinition Width="0.08*" />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Text="{Binding Project}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
-                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
-                        <Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
+                        <StackLayout Grid.Column="0"  Orientation="Vertical">
+                            <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"/>
+                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
+                        </StackLayout>
+                        <Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>

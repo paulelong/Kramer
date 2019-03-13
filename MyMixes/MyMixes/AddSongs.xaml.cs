@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,14 +18,18 @@ namespace MyMixes
         private string selectedFolder = "";
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        List<QueuedTrack> SelectedTrackList = new List<QueuedTrack>();
+        ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
+        ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
 
         public AddSongs ()
 		{
 			InitializeComponent ();
 
-           SelectedTracks.ItemsSource = SelectedTrackList;
-		}
+            SelectedTracks.ItemsSource = SelectedTrackList;
+            Projects.ItemsSource = LoadedTracks;
+
+            PersistentData.LoadQueuedTracks(SelectedTrackList);
+        }
 
         private void DeleteFolder_Clicked(object sender, EventArgs e)
         {
@@ -72,23 +77,31 @@ namespace MyMixes
 
         }
 
-        private void SongOrderClicked(object sender, EventArgs e)
+        private async void SongOrderClicked(object sender, EventArgs e)
         {
 
             Track t = FindTrack((View)sender);
 
-            var list = (List<QueuedTrack>)SelectedTracks.ItemsSource;
-            if (list.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
-            {
-                list.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
-            }
+            //var list = (List<QueuedTrack>)SelectedTracks.ItemsSource;
+            //if (list.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
+            //{
+            //    list.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
+            //}
 
             //SelectedTracks.ItemsSource = SelectedTrackList;
+            int i = 0;
+            for(;i < SelectedTrackList.Count; i++)
+            {
+                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
+                    break;
+            }
 
-            //if (SelectedTrackList.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
-            //{
-            //    SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
-            //}
+            if (i >= SelectedTrackList.Count)
+            {
+                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
+            }
+
+            await PersistentData.SaveQueuedTracks(SelectedTrackList);
 
             //SelectedTracks.ItemsSource = SelectedTrackList;
         }
@@ -213,7 +226,8 @@ namespace MyMixes
         {
             //Directory folder = Directory.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // FileSystem.Current.LocalStorage;
             //IList<IFolder> folderList = await folder.GetFoldersAsync();
-            var tracks = new List<Track>();
+            //var tracks = new List<Track>();
+            LoadedTracks.Clear();
 
             Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 
@@ -225,7 +239,7 @@ namespace MyMixes
                     if (await WavDirectory(projFolder))
                     {
                         var p = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
-                        tracks.Add(p);
+                        LoadedTracks.Add(p);
 
                         if (selectedFolder == Path.GetFileName(projFolder))
                         {
@@ -246,19 +260,16 @@ namespace MyMixes
 
                                 if (tracknum != 0)
                                 {
-                                    tracks.Insert(tracknum - 1, t);
+                                    LoadedTracks.Insert(tracknum - 1, t);
                                 }
                                 else
                                 {
-                                    tracks.Add(t);
+                                    LoadedTracks.Add(t);
                                 }
                             }
                         }
                     }
                 }
-
-                Projects.ItemsSource = tracks;
-
             }
             catch (Exception ex)
             {

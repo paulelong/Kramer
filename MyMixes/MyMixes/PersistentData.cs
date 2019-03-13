@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 using CloudStorage;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace MyMixes
 {
@@ -253,39 +255,47 @@ namespace MyMixes
             Application.Current.Properties[key] = tracknum;
         }
 
-        static public List<QueuedTrack> LoadQueuedTracks()
+        static public void LoadQueuedTracks(ObservableCollection<QueuedTrack> qt)
         {
-            List<QueuedTrack> qt = new List<QueuedTrack>();
+            qt.Clear();
 
-            if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_COUNT))
+            try
             {
-                for(int n = 0; n < (int)Application.Current.Properties[KEY_QUEUED_TRACK_COUNT]; n++)
+                if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_COUNT))
                 {
-                    string key = KEY_QUEUED_TRACK_ID + n.ToString();
-
-                    if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_ID))
+                    for (int n = 0; n < (int)Application.Current.Properties[KEY_QUEUED_TRACK_COUNT]; n++)
                     {
-                        string value = (string)Application.Current.Properties[key];
+                        string key = KEY_QUEUED_TRACK_ID + n.ToString();
 
-                        string[] trackParams = value.Split(',');
-                        qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1] });
+                        if (Application.Current.Properties.ContainsKey(key))
+                        {
+                            string value = (string)Application.Current.Properties[key];
+
+                            string[] trackParams = value.Split(',');
+                            qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1] });
+                        }
+
                     }
-
                 }
             }
+            catch(InvalidCastException ex)
+            {
+                Debug.Print(ex.Message);
+            }
 
-            return qt;
         }
 
-        static public async Task SaveQueuedTracks(List<QueuedTrack> qtlist)
+        static public async Task SaveQueuedTracks(ObservableCollection<QueuedTrack> qtlist)
         {
             int i = 0;
             foreach(QueuedTrack qt in qtlist)
             {
                 string key = KEY_QUEUED_TRACK_ID + i.ToString();
                 Application.Current.Properties[key] = qt.Name + "," + qt.Project;
+                i++;
             }
 
+            Application.Current.Properties[KEY_QUEUED_TRACK_COUNT] = qtlist.Count;
             await Application.Current.SavePropertiesAsync();
         }
     }

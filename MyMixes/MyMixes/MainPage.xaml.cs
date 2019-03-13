@@ -15,6 +15,7 @@ using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
 using static MyMixes.ProviderInfo;
 using CloudStorage;
+using System.Collections.ObjectModel;
 
 namespace MyMixes
 {
@@ -35,7 +36,9 @@ namespace MyMixes
 
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        private List<Track> Playlist = new List<Track>();
+        //private ObservableCollection<Track> Playlist = new ObservableCollection<Track>();
+        ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
+
 
         public MainPage()
         {
@@ -52,6 +55,8 @@ namespace MyMixes
             NavigationPage.SetHasNavigationBar(this, false);
 
             ViewModel.CurrentSel = "Add songs to create playlist";
+
+            Projects.ItemsSource = PlayingTracks;
         }
 
         private async void Player_PlaybackEnded(object sender, EventArgs e)
@@ -91,7 +96,9 @@ namespace MyMixes
 
         private async void Add_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new AddSongs());
+            await Navigation.PushAsync(new AddSongs());
+
+
             //await Navigation.PushAsync(new FolderPicker());
 
         }
@@ -258,16 +265,14 @@ namespace MyMixes
 
         private async Task LoadProjects()
         {
-            var tracks = PersistentData.LoadQueuedTracks();
+            PersistentData.LoadQueuedTracks(PlayingTracks);
 
-            var p = new QueuedTrack { Name = "Some Song", Project = "ProjectName" };
-            tracks.Add(p);
-            var q = new QueuedTrack { Name = "Big guts", Project = "Pencil" };
-            tracks.Add(q);
+            //var p = new QueuedTrack { Name = "Some Song", Project = "ProjectName" };
+            //tracks.Add(p);
+            //var q = new QueuedTrack { Name = "Big guts", Project = "Pencil" };
+            //tracks.Add(q);
 
-
-
-            Projects.ItemsSource = tracks;
+            //Projects.ItemsSource = tracks;
         }
 
         private async Task<bool> WavDirectory(string f)
@@ -355,7 +360,6 @@ namespace MyMixes
         {
             Track t = (Track)Projects.SelectedItem;
             ProviderInfo pi = ProviderInfo.FindProvider(t.ProjectPath);
-
 
             if(pi != null)
             {
@@ -641,7 +645,7 @@ namespace MyMixes
 
         private void Notes_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new SongNotes());
+            Navigation.PushAsync(new SongNotes());
         }
 
         private void ResyncProjectClickedAsync(object sender, EventArgs e)
@@ -651,7 +655,7 @@ namespace MyMixes
 
         private void SongNameTapped(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new PlayListPicker(ViewModel.Tracklist));
+            Navigation.PushAsync(new PlayListPicker(ViewModel.Tracklist));
         }
     }
 }
