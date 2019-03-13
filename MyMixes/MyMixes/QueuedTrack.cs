@@ -11,6 +11,7 @@ namespace MyMixes
 
         public string Name { get; set; }
         public string Project { get; set; }
+        public string FullPath { get; set; }
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

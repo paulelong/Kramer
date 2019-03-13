@@ -23,6 +23,7 @@
                     </Grid>
                 </ViewCell>
             </DataTemplate>
+            
             <DataTemplate x:Key="trackTemplate">
                 <ViewCell>
                     <Grid Margin="15,0,0,0">
@@ -43,6 +44,7 @@
                     </Grid>
                 </ViewCell>
             </DataTemplate>
+            
             <DataTemplate x:Key="selectedTracksTemplate">
                 <ViewCell>
                     <Grid Margin="15,0,0,0">
@@ -52,12 +54,13 @@
                         </Grid.ColumnDefinitions>
                         <StackLayout Grid.Column="0"  Orientation="Vertical">
                             <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"/>
-                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
+                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>
+                        <Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
+            
             <local:TrackDataTemplateSelector x:Key="trackDataTemplateSelector" ProjectTemplate="{StaticResource projectfolderTemplate}" TrackTemplate="{StaticResource trackTemplate}" />
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -73,14 +76,13 @@
                 <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
                 <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
             </Grid>
-            <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
-                <ListView x:Name="Projects" 
-                            ItemSelected="TrackView_Sel"
-                            ItemTemplate="{StaticResource trackDataTemplateSelector}" 
-                           CachingStrategy="RecycleElement"
-                        >
-                </ListView>
-            <!--</ScrollView>-->
+            <ListView x:Name="Projects" 
+                        ItemSelected="TrackView_Sel"
+                        ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                        CachingStrategy="RecycleElement"
+                    >
+            </ListView>
+            <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
             <ListView x:Name="SelectedTracks" 
                             ItemTemplate="{StaticResource selectedTracksTemplate}" 
                            CachingStrategy="RecycleElement">                

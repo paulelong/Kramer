@@ -79,16 +79,8 @@ namespace MyMixes
 
         private async void SongOrderClicked(object sender, EventArgs e)
         {
-
             Track t = FindTrack((View)sender);
 
-            //var list = (List<QueuedTrack>)SelectedTracks.ItemsSource;
-            //if (list.Find((item) => item.Project == t.Project && item.Name == t.Name) == null)
-            //{
-            //    list.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
-            //}
-
-            //SelectedTracks.ItemsSource = SelectedTrackList;
             int i = 0;
             for(;i < SelectedTrackList.Count; i++)
             {
@@ -98,12 +90,10 @@ namespace MyMixes
 
             if (i >= SelectedTrackList.Count)
             {
-                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project });
+                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
             }
 
             await PersistentData.SaveQueuedTracks(SelectedTrackList);
-
-            //SelectedTracks.ItemsSource = SelectedTrackList;
         }
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
@@ -154,6 +144,13 @@ namespace MyMixes
         {
             Grid g = (Grid)v.Parent;
             Track t = (Track)g.BindingContext;
+            return t;
+        }
+
+        QueuedTrack FindQueuedTrack(View v)
+        {
+            Grid g = (Grid)v.Parent;
+            QueuedTrack t = (QueuedTrack)g.BindingContext;
             return t;
         }
 
@@ -291,9 +288,20 @@ namespace MyMixes
             return false;
         }
 
-        private void DeleteSong_Clicked(object sender, EventArgs e)
+        private async void DeleteSong_Clicked(object sender, EventArgs e)
         {
+            QueuedTrack t = FindQueuedTrack((View)sender);
 
+            for (int i = 0; i < SelectedTrackList.Count; i++)
+            {
+                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
+                {
+                    SelectedTrackList.RemoveAt(i);
+                    break;
+                }
+            }
+
+            await PersistentData.SaveQueuedTracks(SelectedTrackList);
         }
     }
 }

@@ -219,6 +219,24 @@ namespace MyMixes
             }
         }
 
+        public static int LastPlayedSongIndex
+        {
+            get
+            {
+                if (Application.Current.Properties.ContainsKey("CurrentSongIndex"))
+                {
+                    int s = (int)Application.Current.Properties["CurrentSongIndex"];
+                    return s;
+                }
+
+                return 0;
+            }
+            set
+            {
+                Application.Current.Properties["CurrentSongIndex"] = value;
+            }
+        }
+
         static private string LoadPersitedValue(string storedName)
         {
             if (Application.Current.Properties.ContainsKey(storedName))
@@ -272,7 +290,10 @@ namespace MyMixes
                             string value = (string)Application.Current.Properties[key];
 
                             string[] trackParams = value.Split(',');
-                            qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1] });
+                            if(trackParams.Length >= 3)
+                            {
+                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2] });
+                            }
                         }
 
                     }
@@ -291,7 +312,7 @@ namespace MyMixes
             foreach(QueuedTrack qt in qtlist)
             {
                 string key = KEY_QUEUED_TRACK_ID + i.ToString();
-                Application.Current.Properties[key] = qt.Name + "," + qt.Project;
+                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath;
                 i++;
             }
 

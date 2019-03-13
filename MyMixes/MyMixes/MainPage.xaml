@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
-              
+             xmlns:transport="clr-namespace:MyMixes.Transport" 
             x:Class="MyMixes.MainPage"
              Appearing="OnAppearing"
+             BindingContext="x:Static MyMixes.MainPage.TrasnportVMInstance"
              >
     <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"-->
@@ -25,7 +26,7 @@
                             <Label Text="{Binding Project, Mode=TwoWay}" TextColor="White" FontSize="Micro" />
                             <Label Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="2" Clicked="DeleteSong_Clicked" Image="TrashBt.png" />
+                        <Button Grid.Column="2" Clicked="DeleteSong_Clicked" Image="DelBt.png" />
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -37,14 +38,15 @@
             <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
                 <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
             </StackLayout>
-            <ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">
+            <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
-                           CachingStrategy="RecycleElement"
+                        ItemsSource ="{Binding PlayingTracks}"
+                        CachingStrategy="RecycleElement"
                         >
                 </ListView>
-            </ScrollView>
+            <!--</ScrollView>-->
             <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
                 <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
                 <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
@@ -55,7 +57,8 @@
                     <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
                 <!--</StackLayout>-->
             </StackLayout>
-            <Grid  VerticalOptions="EndAndExpand">
+            <ContentView x:Name="TransportControl" ControlTemplate="{StaticResource TransportControl}"/>
+            <!--<Grid  VerticalOptions="EndAndExpand">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.33*" />
                     <ColumnDefinition Width="0.33*" />
@@ -64,7 +67,7 @@
                 <Button Grid.Column="0" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" WidthRequest="37"/>
                 <Button Grid.Column="1" x:Name="PlaySongButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
                 <Button Grid.Column="2" x:Name="NextSongButton" Clicked="NextSong_Clicked" Image="NextBt.png" />
-            </Grid>
+            </Grid>-->
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
