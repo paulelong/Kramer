@@ -17,7 +17,7 @@ namespace MyMixes
     partial class TransportViewModel : INotifyPropertyChanged
     {
         // Transport Player control
-        public ICommand PlayCommand { get; private set; }
+        public Command PlayCommand { get; set; }
         public ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
         public ISimpleAudioPlayer player { get; set; }
 
@@ -25,6 +25,10 @@ namespace MyMixes
         private bool isSongPlaying;
         private int currentSong = 0;
 
+        public TransportViewModel()
+        {
+            PlayCommand = new Command(PlaySong);
+        }
 
         public void ConfigureTransport()
         {
@@ -32,8 +36,6 @@ namespace MyMixes
             player.PlaybackEnded += Player_PlaybackEnded;
 
             //Projects.ItemsSource = ViewModel.PlayingTracks;
-
-            PlayCommand = new Command(PlaySong);
 
             currentSong = PersistentData.LastPlayedSongIndex;
         }
