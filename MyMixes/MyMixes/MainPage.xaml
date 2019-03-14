@@ -5,8 +5,10 @@
              xmlns:transport="clr-namespace:MyMixes.Transport" 
             x:Class="MyMixes.MainPage"
              Appearing="OnAppearing"
-             BindingContext="x:Static MyMixes.MainPage.TrasnportVMInstance"
+             PlayCommand="{Binding PlayCommand}"
              >
+    <!--xmlns:viewModels="clr-namespace:MyMixes.MainPage; assembly=MyMixes.MainPage"
+             BindingContext="viewModels:TrasnportVMInstance"-->
     <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"-->
     <ContentPage.Resources>
@@ -42,9 +44,8 @@
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
-                        ItemsSource ="{Binding PlayingTracks}"
                         CachingStrategy="RecycleElement"
-                        >
+                >
                 </ListView>
             <!--</ScrollView>-->
             <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">

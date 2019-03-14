@@ -35,13 +35,27 @@ namespace MyMixes
 
         //private ObservableCollection<Track> Playlist = new ObservableCollection<Track>();
 
+        public static readonly BindableProperty TapCommandProperty = BindableProperty.Create("PlayCommand", typeof(Command), typeof(MainPage), null);
+
+        public Command PlayCommand
+        {
+            set
+            {
+                SetValue(TapCommandProperty, value);
+            }
+            get
+            {
+                return (Command)GetValue(TapCommandProperty);
+            }
+        }
+
         public MainPage()
         {
 
             InitializeComponent();
 
             //this.BindingContext = TrasnportVMInstance;
-            //Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
+            Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
 
             // seed with static data for now REMOVE
             ProviderInfo piA = new ProviderInfo();

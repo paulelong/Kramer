@@ -14,7 +14,7 @@
                         <ColumnDefinition Width="0.33*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" x:Name="PrevSongButton" Command="{TemplateBinding PrevCommand}" Image="PrevBt.png"/>
-                    <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding PlayCommand}" Image="PlayBt.png" />
+                    <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding Parent.PlayCommand}" Image="PlayBt.png" />
                     <Button Grid.Column="2" x:Name="NextSongButton" Command="{TemplateBinding NextCommand}"  Image="NextBt.png" />
                     <!--<Button Grid.Column="0" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" WidthRequest="37"/>
                 <Button Grid.Column="1" x:Name="PlaySongButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
