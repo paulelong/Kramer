@@ -52,7 +52,7 @@
             </Grid>
             <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" Margin="20,0,20,0">
                 <!--<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">-->
-                    <Label Text="Loop Song List" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+                    <Label Text="Loop" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
                     <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
                 <!--</StackLayout>-->
             </StackLayout>
