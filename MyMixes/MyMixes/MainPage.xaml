@@ -6,8 +6,10 @@
             x:Class="MyMixes.MainPage"
              Appearing="OnAppearing"
              PlayCommand="{Binding PlayCommand}"
-             BindingContext="local:TransportViewModel"
              >
+    <ContentPage.BindingContext>
+        <local:TransportViewModel/>
+    </ContentPage.BindingContext>
     <!--xmlns:viewModels="clr-namespace:MyMixes.MainPage; assembly=MyMixes.MainPage"
              BindingContext="viewModels:TrasnportVMInstance"-->
     <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 

@@ -72,7 +72,7 @@ namespace MyMixes
             CurrentSel = t.Name;
         }
 
-        private async void PlaySong()
+        public async void PlaySong()
         {
             if (SongsQueued > 0)
             //if (currentSong > = 0 !string.IsNullOrEmpty(playingSong))
