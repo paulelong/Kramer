@@ -2,10 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
-             xmlns:transport="clr-namespace:MyMixes.Transport" 
-            x:Class="MyMixes.MainPage"
-             Appearing="OnAppearing"
+             x:Class="MyMixes.MainPage"
              PlayCommand="{Binding PlayCommand}"
+             Appearing="OnAppearing"
              >
     <ContentPage.BindingContext>
         <local:TransportViewModel/>
@@ -61,7 +60,7 @@
                     <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
                 <!--</StackLayout>-->
             </StackLayout>
-            <ContentView x:Name="TransportControl" ControlTemplate="{StaticResource TransportControl}"/>
+            <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}"/>
             <!--<Grid  VerticalOptions="EndAndExpand">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.33*" />

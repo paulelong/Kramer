@@ -46,7 +46,7 @@ namespace MyMixes
 
         }
 
-        private async Task AddFolder_Clicked(object sender, EventArgs e)
+        private async void AddFolder_Clicked(object sender, EventArgs e)
         {
             var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
 
@@ -116,7 +116,7 @@ namespace MyMixes
             }
         }
 
-        private async Task OnAppearing(object sender, EventArgs e)
+        private async void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
             await ProviderInfo.LoadMappings();
