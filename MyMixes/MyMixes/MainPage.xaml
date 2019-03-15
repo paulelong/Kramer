@@ -3,16 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
              x:Class="MyMixes.MainPage"
-             PlayCommand="{Binding PlayCommand}"
              Appearing="OnAppearing"
              >
     <ContentPage.BindingContext>
         <local:TransportViewModel/>
     </ContentPage.BindingContext>
-    <!--xmlns:viewModels="clr-namespace:MyMixes.MainPage; assembly=MyMixes.MainPage"
-             BindingContext="viewModels:TrasnportVMInstance"-->
-    <!--xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
-             ios:Page.UseSafeArea="true"-->
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="songListTemplate">
@@ -61,16 +57,6 @@
                 <!--</StackLayout>-->
             </StackLayout>
             <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}"/>
-            <!--<Grid  VerticalOptions="EndAndExpand">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.33*" />
-                    <ColumnDefinition Width="0.33*" />
-                    <ColumnDefinition Width="0.33*" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" WidthRequest="37"/>
-                <Button Grid.Column="1" x:Name="PlaySongButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
-                <Button Grid.Column="2" x:Name="NextSongButton" Clicked="NextSong_Clicked" Image="NextBt.png" />
-            </Grid>-->
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -5,7 +5,6 @@
              x:Class="MyMixes.App">
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
-             <!--Application resource dictionary-->
             <ControlTemplate x:Key="TransportControl">
                 <Grid  VerticalOptions="EndAndExpand">
                     <Grid.ColumnDefinitions>
@@ -13,18 +12,11 @@
                         <ColumnDefinition Width="0.33*" />
                         <ColumnDefinition Width="0.33*" />
                     </Grid.ColumnDefinitions>
-                    <!--<Button Grid.Column="0" x:Name="PrevSongButton" Command="{TemplateBinding PrevCommand}" Image="PrevBt.png"/>-->
-                    <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding Parent.BindingContext.PlayCommand}" Image="PlayBt.png" />
-                    <!--<Button Grid.Column="2" x:Name="NextSongButton" Command="{TemplateBinding NextCommand}"  Image="NextBt.png" />-->
-                    <!--<Button Grid.Column="0" x:Name="PrevSongButton" Clicked="Prev_Clicked" Image="PrevBt.png" WidthRequest="37"/>
-                <Button Grid.Column="1" x:Name="PlaySongButton" Clicked="GlobalPlaySong_Clicked" Image="PlayBt.png" />
-                <Button Grid.Column="2" x:Name="NextSongButton" Clicked="NextSong_Clicked" Image="NextBt.png" />-->
+                    <Button Grid.Column="0" x:Name="PrevSongButton" Command="{TemplateBinding Parent.BindingContext.PrevCommand}" Image="PrevBt.png"/>
+                    <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding Parent.BindingContext.PlayCommand}" Image="{TemplateBinding Parent.BindingContext.PlayButtonStateImage}" />
+                    <Button Grid.Column="2" x:Name="NextSongButton" Command="{TemplateBinding Parent.BindingContext.NextCommand}" Image="NextBt.png" />
                 </Grid>
             </ControlTemplate>
         </ResourceDictionary>
-        <!-- Application resource dictionary -->
-
-
-
     </Application.Resources>
 </Application>

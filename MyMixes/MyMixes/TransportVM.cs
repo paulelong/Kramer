@@ -18,8 +18,27 @@ namespace MyMixes
     {
         // Transport Player control
         public Command PlayCommand { get; set; }
+        public Command PrevCommand { get; set; }
+        public Command NextCommand { get; set; }
         public ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
         public ISimpleAudioPlayer player { get; set; }
+
+        public string playButtonStateImage;
+        public string PlayButtonStateImage
+        {
+            get
+            {
+                return playButtonStateImage;
+            }
+            set
+            {
+                if (playButtonStateImage != value)
+                {
+                    playButtonStateImage = value;
+                    OnPropertyChanged("PlayButtonStateImage");
+                }
+            }
+        }
 
         private string playingSong;
         private bool isSongPlaying;
@@ -28,26 +47,26 @@ namespace MyMixes
         public TransportViewModel()
         {
             PlayCommand = new Command(PlaySong);
-        }
+            PrevCommand = new Command(PrevSong);
+            NextCommand = new Command(NextSong);
 
-        public void ConfigureTransport()
-        {
             player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+            player.Loop = false;
             player.PlaybackEnded += Player_PlaybackEnded;
 
-            //Projects.ItemsSource = ViewModel.PlayingTracks;
-
             currentSong = PersistentData.LastPlayedSongIndex;
+
+            PlayButtonStateImage = "PlayBt.png";
         }
 
         private async void Player_PlaybackEnded(object sender, EventArgs e)
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                currentSong++;
-                if (currentSong > SongsQueued)
+                CurrentTrackNumber++;
+                if (CurrentTrackNumber >= SongsQueued)
                 {
-                    currentSong = 0;
+                    CurrentTrackNumber = 0;
                     if (isLooping)
                     {
                         await PlayCurrentSong();
@@ -55,6 +74,8 @@ namespace MyMixes
                     else
                     {
                         isSongPlaying = false;
+                        player.Stop();
+                        PlayButtonStateImage = "PlayBt.png";
                     }
                 }
                 else
@@ -66,7 +87,6 @@ namespace MyMixes
 
         public void SetCurrentSong(Track t)
         {
-            //Track t = (Track)Projects.SelectedItem;
             CurrentProject = Path.GetFileName(t.ProjectPath);
 
             CurrentSel = t.Name;
@@ -75,7 +95,6 @@ namespace MyMixes
         public async void PlaySong()
         {
             if (SongsQueued > 0)
-            //if (currentSong > = 0 !string.IsNullOrEmpty(playingSong))
             {
                 if (player.CurrentPosition > 0)
                 {
@@ -83,22 +102,50 @@ namespace MyMixes
                     {
                         isSongPlaying = false;
                         player.Pause();
-                        //PlaySongButton.Image = "PlayBt.png";
+                        PlayButtonStateImage = "PlayBt.png";
                     }
                     else
                     {
                         isSongPlaying = true;
                         player.Play();
-                        //PlaySongButton.Image = "PauseBt.png";
+                        PlayButtonStateImage = "PauseBt.png";
                     }
                 }
                 else
                 {
                     isSongPlaying = true;
-                    //PlaySongButton.Image = "PauseBt.png";
+                    PlayButtonStateImage = "PauseBt.png";
 
                     await PlayCurrentSong();
                 }
+            }
+        }
+
+        public void NextSong()
+        {
+            CurrentTrackNumber++;
+            if(CurrentTrackNumber >= SongsQueued)
+            {
+                CurrentTrackNumber = 0;
+            }
+
+            if(isSongPlaying)
+            {
+                PlayCurrentSong();
+            }
+        }
+
+        public void PrevSong()
+        {
+            CurrentTrackNumber--;
+            if (CurrentTrackNumber < 0)
+            {
+                CurrentTrackNumber = SongsQueued - 1;
+            }
+
+            if (isSongPlaying)
+            {
+                PlayCurrentSong();
             }
         }
 
@@ -108,12 +155,18 @@ namespace MyMixes
             //ViewModel.CurrentSel = t.Name;
             //ViewModel.CurrentProject = t.Project;
 
-            string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumer].FullPath);
-            string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumer].FullPath);
+            string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
+            string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
 
             Debug.Print("playing {0} {1}\n", filename, path);
 
-            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path); ;
+            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path);
+            if(folder == null)
+            {
+                Debug.Print("Error folder is null, why woudl that happen? No sync?");
+                return ;
+            }
+
             IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
 
             player.Stop();
@@ -139,13 +192,6 @@ namespace MyMixes
         public void LoadProjects()
         {
             PersistentData.LoadQueuedTracks(PlayingTracks);
-
-            //var p = new QueuedTrack { Name = "Some Song", Project = "ProjectName" };
-            //tracks.Add(p);
-            //var q = new QueuedTrack { Name = "Big guts", Project = "Pencil" };
-            //tracks.Add(q);
-
-            //Projects.ItemsSource = tracks;
         }
 
         public void RemoveSong(Track t)
@@ -218,15 +264,7 @@ namespace MyMixes
             }
         }
 
-        //public Track CurrentTrack
-        //{
-        //    get
-        //    {
-        //        return Tracklist[CurrentTrackNumer];
-        //    }
-        //}
-
-        public int CurrentTrackNumer { get; set; }
+        public int CurrentTrackNumber { get; set; }
 
         List<Track> trackList = new List<Track>();
         public List<Track> Tracklist
