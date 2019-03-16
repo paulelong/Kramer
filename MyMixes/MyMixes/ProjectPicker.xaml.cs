@@ -66,7 +66,7 @@ namespace MyMixes
 
             foreach (ProviderInfo pi in ProviderInfo.Providers)
             {
-                ml_list.Add(new MixLocations { Path = pi.RootPath, Provider = pi.CloudProvider.ToString() });
+                ml_list.Add(new MixLocations { Path = pi.RootPath == null ? "" : pi.RootPath, Provider = pi.CloudProvider.ToString() });
             }
 
             MixLocationView.ItemsSource = ml_list;

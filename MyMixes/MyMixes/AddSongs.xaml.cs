@@ -74,7 +74,6 @@ namespace MyMixes
                     }
                 }
             }
-
         }
 
         private async void SongOrderClicked(object sender, EventArgs e)

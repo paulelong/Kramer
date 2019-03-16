@@ -41,7 +41,6 @@ namespace MyMixes
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
-
         private async void Add_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new AddSongs());
