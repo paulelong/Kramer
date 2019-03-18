@@ -48,32 +48,34 @@ namespace MyMixes
 
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
-            var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
+            ProjectPicker pp = new ProjectPicker();
+            await Navigation.PushModalAsync(pp);
 
+            //var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
 
-            var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
-            //            string action = await DisplayActionSheet("Which", "cancel", null, "1", "2", "3");
-            //var action = await DisplayActionSheet("ActionSheet: Save Photo?", "Cancel", "Delete", "Photo Roll", "Email");
-            //string action = "GoogleDrive";
+            //var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
+            ////            string action = await DisplayActionSheet("Which", "cancel", null, "1", "2", "3");
+            ////var action = await DisplayActionSheet("ActionSheet: Save Photo?", "Cancel", "Delete", "Photo Roll", "Email");
+            ////string action = "GoogleDrive";
 
-            // BUGBUG: Not finished
-            if (action != "Cancel")
-            {
-                ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
+            //// BUGBUG: Not finished
+            //if (action != "Cancel")
+            //{
+            //    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
 
-                if (pi != null)
-                {
-                    ProjectPicker pp = new ProjectPicker(pi);
-                    await Navigation.PushModalAsync(pp);
+            //    if (pi != null)
+            //    {
+            //        ProjectPicker pp = new ProjectPicker(pi);
+            //        await Navigation.PushModalAsync(pp);
 
-                    // No directory was selected.
-                    if (pi.RootPath == null)
-                    {
-                        pi.RemoveProvider();
-                        pi = null;
-                    }
-                }
-            }
+            //        // No directory was selected.
+            //        if (pi.RootPath == null)
+            //        {
+            //            pi.RemoveProvider();
+            //            pi = null;
+            //        }
+            //    }
+            //}
         }
 
         private async void SongOrderClicked(object sender, EventArgs e)

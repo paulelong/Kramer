@@ -237,6 +237,30 @@ namespace MyMixes
             }
         }
 
+        static public string LastFolder
+        {
+            get
+            {
+                return LoadPersitedValue("LastFolder");
+            }
+            set
+            {
+                Application.Current.Properties["LastFolder"] = value;
+            }
+        }
+
+        static public string LastCloud
+        {
+            get
+            {
+                return LoadPersitedValue("LastCloud");
+            }
+            set
+            {
+                Application.Current.Properties["LastCloud"] = value;
+            }
+        }
+
         static private string LoadPersitedValue(string storedName)
         {
             if (Application.Current.Properties.ContainsKey(storedName))

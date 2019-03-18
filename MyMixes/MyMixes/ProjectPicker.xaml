@@ -29,7 +29,9 @@
             <ListView x:Name="MixLocationView" VerticalOptions="StartAndExpand"
                       ItemTemplate="{StaticResource mixLocationTemplate}"/>
             <StackLayout Orientation="Horizontal" VerticalOptions="Start">
-                <Label x:Name="ProviderName" Text="{Binding ProviderNameText}" WidthRequest="200"/>
+                <!--<Label x:Name="ProviderName" Text="{Binding ProviderNameText}" WidthRequest="200"/>-->
+                <Picker x:Name="CloudProivder" SelectedItem="{Binding ProviderNameText, Mode=TwoWay}" ItemsSource="{Binding ProviderList}" WidthRequest="200"
+                        SelectedIndexChanged="OnProviderChanged"/>
                 <Button Text="Change" Pressed="ChangeProvider"/>
             </StackLayout>
 

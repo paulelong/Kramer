@@ -23,11 +23,32 @@ namespace MyMixes
     {
         ProviderInfo pi;
 
+        public string providerName;
         public string ProviderNameText
         {
             get
             {
-                return pi.CloudProvider.ToString();
+                return providerName;
+            }
+            set
+            {
+                if (providerName != value)
+                {
+                    providerName = value;
+                    OnPropertyChanged("ProviderNameText");
+                }
+            }
+        }
+
+        public CloudStorage.CloudProviders CurrentProvider
+        {
+            get
+            {
+                return (CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName);
+            }
+            set
+            {
+                providerName = value.ToString();
             }
         }
 
@@ -36,23 +57,46 @@ namespace MyMixes
         {
             get { return currentFolder; }
         }
+
+        private List<string> providerList = null;
+        public List<string> ProviderList
+        {
+            get
+            {
+                if(providerList == null)
+                {
+                    providerList = new List<string>();
+                    
+                    providerList.Add(CloudStorage.CloudProviders.OneDrive.ToString());
+                    providerList.Add(CloudStorage.CloudProviders.GoogleDrive.ToString());
+                }
+
+                return providerList;
+            }
+        }
         
-		public ProjectPicker (ProviderInfo pi)
+		public ProjectPicker ()
 		{
-            this.pi = pi;
-            currentFolder = "";
+            currentFolder = PersistentData.LastFolder;
+            providerName = PersistentData.LastCloud;
 
             BindingContext = this;
 
 			InitializeComponent ();
-
 		}
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            if(!(await pi.CheckAuthenitcation()))
+            if(string.IsNullOrEmpty(CurrentFolder) && !string.IsNullOrEmpty(providerName))
             {
-                await Navigation.PopAsync();
+                pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName), currentFolder);
+
+                if (!(await pi.CheckAuthenitcation()))
+                {
+                    await Navigation.PopAsync();
+                }
+
+
             }
 
             LoadMixLocations();
@@ -62,11 +106,14 @@ namespace MyMixes
 
         private void LoadMixLocations()
         {
+            List<string> mappings = PersistentData.LoadProjectMappings();
             List<MixLocations> ml_list = new List<MixLocations>();
 
-            foreach (ProviderInfo pi in ProviderInfo.Providers)
+            foreach (string s in mappings)
             {
-                ml_list.Add(new MixLocations { Path = pi.RootPath == null ? "" : pi.RootPath, Provider = pi.CloudProvider.ToString() });
+                string[] parts = s.Split(':');
+                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
+                ml_list.Add(new MixLocations { Path =parts[1], Provider = parts[0] });
             }
 
             MixLocationView.ItemsSource = ml_list;
@@ -121,6 +168,14 @@ namespace MyMixes
         private void ChangeProvider(object sender, EventArgs e)
         {
 
+        }
+
+        private async void OnProviderChanged(object sender, EventArgs e)
+        {
+            currentFolder = "/";
+            pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider, currentFolder);
+            
+            await UpdateFolderList();
         }
     }
 }   
