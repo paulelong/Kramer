@@ -65,6 +65,22 @@ namespace MyMixes
             }
         }
 
+        public static void SaveProjectMappings(List<ProviderInfo> pi_list)
+        {
+            Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
+
+            foreach (ProviderInfo pi in pi_list)
+            {
+                ProjectsByProviders[pi.CloudProvider.ToString()].Add(pi.RootPath);
+            }
+
+            foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
+            {
+                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
+            }
+        }
+
+
         public static List<string> LoadProjectMappings()
         {
             List<string> ProjectMappings = new List<string>();

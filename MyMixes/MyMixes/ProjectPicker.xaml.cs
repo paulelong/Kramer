@@ -9,6 +9,7 @@ using Xamarin.Forms.Xaml;
 
 using CloudStorage;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace MyMixes
 {
@@ -22,6 +23,7 @@ namespace MyMixes
     public partial class ProjectPicker : ContentPage, INotifyPropertyChanged
     {
         ProviderInfo pi;
+        ObservableCollection<MixLocations> ml_list = new ObservableCollection<MixLocations>();
 
         public string providerName;
         public string ProviderNameText
@@ -99,6 +101,8 @@ namespace MyMixes
 
             }
 
+            MixLocationView.ItemsSource = ml_list;
+
             LoadMixLocations();
 
             UpdateFolderList();
@@ -106,23 +110,21 @@ namespace MyMixes
 
         private void LoadMixLocations()
         {
-            List<string> mappings = PersistentData.LoadProjectMappings();
-            List<MixLocations> ml_list = new List<MixLocations>();
+            //List<string> mappings = PersistentData.LoadProjectMappings();
 
-            foreach (string s in mappings)
+            foreach (ProviderInfo pi in ProviderInfo.Providers)
             {
-                string[] parts = s.Split(':');
-                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-                ml_list.Add(new MixLocations { Path =parts[1], Provider = parts[0] });
+                ml_list.Add(new MixLocations { Path = pi.RootPath, Provider = pi.CloudProvider.ToString() });
             }
-
-            MixLocationView.ItemsSource = ml_list;
         }
 
         private async Task UpdateFolderList()
         {
-            List<string> folders = await pi.GetFoldersAsync(currentFolder);
-            FolderList.ItemsSource = folders;
+            if(await pi.CheckAuthenitcation())
+            {
+                List<string> folders = await pi.GetFoldersAsync(currentFolder);
+                FolderList.ItemsSource = folders;
+            }
         }
 
         private async void SelectPressed(object sender, EventArgs e)
@@ -134,8 +136,6 @@ namespace MyMixes
             ProviderInfo.SaveMappings();
             //
             //base.OnBackButtonPressed();
-
-            await Navigation.PopModalAsync();
         }
 
         private async void OpenFolder(object sender, EventArgs e)
@@ -149,7 +149,6 @@ namespace MyMixes
 
         private async void Cancel(object sender, EventArgs e)
         {
-            await Navigation.PopModalAsync();
         }
 
         private async void UpPressed(object sender, EventArgs e)

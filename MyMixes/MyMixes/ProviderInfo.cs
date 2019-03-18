@@ -34,53 +34,71 @@ namespace MyMixes
         }
 
         private static Dictionary<string, ProviderInfo> pi_list = new Dictionary<string, ProviderInfo>();
+        private static List<ProviderInfo> providerList = null;
         public static List<ProviderInfo> Providers
         {
             get
             {
-                List<ProviderInfo> ret = new List<ProviderInfo>();
-
-                foreach(KeyValuePair<string, ProviderInfo> kvp in pi_list)
+                if(providerList == null)
                 {
-                    if(kvp.Value != null)
+                    List<string> mappings = PersistentData.LoadProjectMappings();
+
+                    foreach (string s in mappings)
                     {
-                        ret.Add(kvp.Value);
+                        string[] parts = s.Split(':');
+                        CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
+                        providerList.Add(new ProviderInfo() { CloudProvider = cp, RootPath = parts[0] });
                     }
                 }
+                //List<ProviderInfo> ret = new List<ProviderInfo>();
 
-                return ret;
+                //foreach(KeyValuePair<string, ProviderInfo> kvp in pi_list)
+                //{
+                //    if(kvp.Value != null)
+                //    {
+                //        ret.Add(kvp.Value);
+                //    }
+                //}
+
+                return providerList;
             }
         }
 
-        public static ProviderInfo FindProvider(string name)
-        {
-            foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
-            {
-                string[] parts = kvp.Key.Split(':');
-                if(parts[1] == name)
-                {
-                    return kvp.Value;
-                }
-            }
+        //public static ProviderInfo FindProvider(string name)
+        //{
+        //    foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
+        //    {
+        //        string[] parts = kvp.Key.Split(':');
+        //        if(parts[1] == name)
+        //        {
+        //            return kvp.Value;
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        public static async Task LoadMappings()
-        {
-            List<string> mappings = PersistentData.LoadProjectMappings();
+        //public static async Task LoadMappings()
+        //{
+        //    List<string> mappings = PersistentData.LoadProjectMappings();
 
-            foreach (string s in mappings)
-            {
-                string[] parts = s.Split(':');
-                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-                await GetCloudProviderAsync(cp, parts[1]);
-            }
-        }
+        //    foreach (string s in mappings)
+        //    {
+        //        string[] parts = s.Split(':');
+        //        CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
+        //        await GetCloudProviderAsync(cp, parts[1]);
+        //    }
+        //}
 
         public static void SaveMappings()
         {
-            PersistentData.SaveProjectMappings(pi_list);
+            PersistentData.SaveProjectMappings(providerList);
+        }
+
+        public async Task<ProviderInfo> GetCloudProviderAsync()
+        {
+            ProviderInfo pi = await GetCloudProviderAsync(CloudProvider, RootPath);
+            return pi;
         }
 
         public async static Task<ProviderInfo> GetCloudProviderAsync(CloudProviders cp, string rootpath = null)
@@ -246,6 +264,11 @@ namespace MyMixes
 
         public async Task<bool> CheckAuthenitcation()
         {
+            if(CloudStore == null)
+            {
+                await GetCloudProviderAsync();
+            }
+
             if (!isAuthenticated && CloudStore != null)
             {
                 isAuthenticated = await CloudStore.AuthenticateAsync();

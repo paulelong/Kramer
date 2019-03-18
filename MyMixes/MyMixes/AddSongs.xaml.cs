@@ -120,7 +120,7 @@ namespace MyMixes
         private async void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
-            await ProviderInfo.LoadMappings();
+            //await ProviderInfo.LoadMappings();
             await LoadProjects();
             BusyOn(false);
         }
