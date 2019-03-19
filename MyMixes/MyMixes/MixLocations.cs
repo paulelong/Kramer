@@ -12,13 +12,13 @@ namespace MyMixes
         public CloudStorage.CloudProviders provider;
     }
 
-    class MixLocation
+    class MixLocationOld
     {
-        private static List<MixLocation> mixLocations;
+        private static List<MixLocationOld> mixLocations;
         private string path;
         private ICloudStore cloudStore;
 
-        public MixLocation(string path, ICloudStore cloudStore)
+        public MixLocationOld(string path, ICloudStore cloudStore)
         {
             this.path = path;
             this.cloudStore = cloudStore;

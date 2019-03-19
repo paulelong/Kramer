@@ -13,9 +13,9 @@ using System.Collections.ObjectModel;
 
 namespace MyMixes
 {
-    public class MixLocations
+    public class MixLocation
     {
-        public string Provider { get; set; }
+        public CloudProviders Provider { get; set; }
         public string Path { get; set; }
     }
 
@@ -23,7 +23,7 @@ namespace MyMixes
     public partial class ProjectPicker : ContentPage, INotifyPropertyChanged
     {
         ProviderInfo pi;
-        ObservableCollection<MixLocations> ml_list = new ObservableCollection<MixLocations>();
+        ObservableCollection<MixLocation> MixLocationList;
 
         public string providerName;
         public string ProviderNameText
@@ -50,7 +50,7 @@ namespace MyMixes
             }
             set
             {
-                providerName = value.ToString();
+                ProviderNameText = value.ToString();
             }
         }
 
@@ -77,21 +77,23 @@ namespace MyMixes
             }
         }
         
-		public ProjectPicker ()
+		public ProjectPicker (ObservableCollection<MixLocation> list)
 		{
-            currentFolder = PersistentData.LastFolder;
-            providerName = PersistentData.LastCloud;
+			InitializeComponent ();
 
             BindingContext = this;
 
-			InitializeComponent ();
-		}
+            currentFolder = PersistentData.LastFolder;
+            ProviderNameText = PersistentData.LastCloud;
+
+            MixLocationList = list;
+        }
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(CurrentFolder) && !string.IsNullOrEmpty(providerName))
+            if(!string.IsNullOrEmpty(providerName))
             {
-                pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName), currentFolder);
+                pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
 
                 if (!(await pi.CheckAuthenitcation()))
                 {
@@ -99,26 +101,14 @@ namespace MyMixes
                 }
             }
 
-            MixLocationView.ItemsSource = ml_list;
+            MixLocationView.ItemsSource = MixLocationList;
 
-            LoadMixLocations();
-
-            UpdateFolderList();
-        }
-
-        private void LoadMixLocations()
-        {
-            //List<string> mappings = PersistentData.LoadProjectMappings();
-
-            foreach (ProviderInfo pi in ProviderInfo.Providers)
-            {
-                ml_list.Add(new MixLocations { Path = pi.RootPath, Provider = pi.CloudProvider.ToString() });
-            }
+            await UpdateFolderList();
         }
 
         private async Task UpdateFolderList()
         {
-            if(await ProviderInfo.CheckAuthenitcation(CurrentProvider))
+            if(pi != null && await pi.CheckAuthenitcation())
             {
                 List<string> folders = await pi.GetFoldersAsync(currentFolder);
                 FolderList.ItemsSource = folders;
@@ -127,13 +117,8 @@ namespace MyMixes
 
         private async void SelectPressed(object sender, EventArgs e)
         {
-            currentFolder = (string)FolderList.SelectedItem;
-
-            pi.UpdatePath(currentFolder);
-
-            ProviderInfo.SaveMappings();
-            //
-            //base.OnBackButtonPressed();
+            string p = string.IsNullOrEmpty(currentFolder) ? "" : (currentFolder + "/");
+            MixLocationList.Add(new MixLocation() { Path = p + (string)FolderList.SelectedItem, Provider = pi.CloudProvider });
         }
 
         private async void OpenFolder(object sender, EventArgs e)
@@ -169,10 +154,30 @@ namespace MyMixes
 
         private async void OnProviderChanged(object sender, EventArgs e)
         {
-            currentFolder = "/";
-            //pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider, currentFolder);
+            currentFolder = "";
+            pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
             
             await UpdateFolderList();
+        }
+
+        private void OnDisappearing(object sender, EventArgs e)
+        {
+            PersistentData.LastFolder = currentFolder;
+            PersistentData.LastCloud = ProviderNameText;
+
+            Application.Current.SavePropertiesAsync();
+        }
+
+        private void LocationDeleted(object sender, EventArgs e)
+        {
+            MixLocationList.Remove(FindMixLocation((View)sender));
+        }
+
+        MixLocation FindMixLocation(View v)
+        {
+            Grid g = (Grid)v.Parent;
+            MixLocation t = (MixLocation)g.BindingContext;
+            return t;
         }
     }
 }   

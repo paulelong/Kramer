@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MyMixes.ProjectPicker"
-             Appearing="OnAppearing">
+             Appearing="OnAppearing" Disappearing="OnDisappearing">
     <ContentPage.Resources>
         <ResourceDictionary>
 
@@ -16,7 +16,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Text="{Binding Path}" />
                         <Label Grid.Column="1" Text="{Binding Provider}" />
-                        <Button Grid.Column="2" Text="D"/>
+                        <Button Grid.Column="2" Text="D" Pressed="LocationDeleted"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>

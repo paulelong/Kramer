@@ -21,8 +21,8 @@ namespace MyMixes
 {
     public partial class MainPage : ContentPage
     {
-
         private TransportViewModel TrasnportVMInstance;
+        ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
         //private SelectedTracksVM SelectedTracks = new SelectedTracksVM();
         //private List<string> tl = new List<string>();
         //private List<Track> SelectedTracks = new List<Track>();
@@ -35,6 +35,8 @@ namespace MyMixes
             TrasnportVMInstance = (TransportViewModel)this.BindingContext;
             Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
 
+            PersistentData.LoadMixLocations(MixLocationList);
+
             // seed with static data for now REMOVE
             //ProviderInfo piA = new ProviderInfo();
 
@@ -43,7 +45,7 @@ namespace MyMixes
 
         private async void Add_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AddSongs());
+            await Navigation.PushAsync(new AddSongs(MixLocationList));
         }
 
         private async Task SyncProjects()
@@ -51,19 +53,21 @@ namespace MyMixes
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
             
             //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
-            foreach(ProviderInfo pi in ProviderInfo.Providers)
+            foreach(MixLocation ml in MixLocationList)
             {
-                BusyStatus.Text = pi.CloudProvider.ToString() + " " + pi.RootPath;
+                BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
+
+                ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
 
                 if (await pi.CheckAuthenitcation())
                 {
-                    List<string> l = await pi.GetProjectFoldersAsync(pi.RootPath);
+                    List<string> l = await pi.GetFoldersAsync(ml.Path);
                     if (l != null)
                     {
                         foreach (string f in l)
                         {
-                            BusyStatus.Text = pi.CloudProvider.ToString() + " " + pi.RootPath + " " + f;
-                            var retList = await pi.UpdateProjectAsync(pi.RootPath, f);
+                            BusyStatus.Text = pi.CloudProvider.ToString() + " " + ml.Path + " " + f;
+                            var retList = await pi.UpdateProjectAsync(ml.Path, f);
                             if(AllSongs.ContainsKey(f))
                             {
                                 AllSongs[f].AddRange(retList);

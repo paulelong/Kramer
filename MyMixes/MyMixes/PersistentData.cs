@@ -28,6 +28,39 @@ namespace MyMixes
             Application.Current.SavePropertiesAsync();
         }
 
+        internal static void LoadMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        {
+            foreach (CloudProviders cpn in Enum.GetValues(typeof(CloudProviders)))
+            {
+                if (Application.Current.Properties.ContainsKey("ProjectMap_" + cpn))
+                {
+                    string list = (string)Application.Current.Properties["ProjectMap_" + cpn];
+                    if (!string.IsNullOrEmpty(list))
+                    {
+                        foreach (string p in list.Split(','))
+                        {
+                            mixLocationList.Add(new MixLocation() { Provider = cpn, Path = p });
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static void SaveMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        {
+            Dictionary<CloudProviders, List<string>> ProjectsByProviders = new Dictionary<CloudProviders, List<string>>();
+
+            foreach (MixLocation ml in mixLocationList)
+            {
+                ProjectsByProviders[ml.Provider].Add(ml.Path);
+            }
+
+            foreach (KeyValuePair<CloudProviders, List<string>> kvp in ProjectsByProviders)
+            {
+                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
+            }
+        }
+
         //private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
         //public static List<ProjectMapping> ProjectMappings
         //{
@@ -65,20 +98,20 @@ namespace MyMixes
             }
         }
 
-        public static void SaveProjectMappings(List<ProviderInfo> pi_list)
-        {
-            Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
+        //public static void SaveProjectMappings(List<ProviderInfo> pi_list)
+        //{
+        //    Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
 
-            foreach (ProviderInfo pi in pi_list)
-            {
-                ProjectsByProviders[pi.CloudProvider.ToString()].Add(pi.RootPath);
-            }
+        //    foreach (ProviderInfo pi in pi_list)
+        //    {
+        //        ProjectsByProviders[pi.CloudProvider.ToString()].Add(pi.RootPath);
+        //    }
 
-            foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
-            {
-                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
-            }
-        }
+        //    foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
+        //    {
+        //        Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
+        //    }
+        //}
 
 
         public static List<string> LoadProjectMappings()
