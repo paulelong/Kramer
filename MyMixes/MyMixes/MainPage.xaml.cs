@@ -36,7 +36,7 @@ namespace MyMixes
             Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
 
             // seed with static data for now REMOVE
-            ProviderInfo piA = new ProviderInfo();
+            //ProviderInfo piA = new ProviderInfo();
 
             NavigationPage.SetHasNavigationBar(this, false);
         }

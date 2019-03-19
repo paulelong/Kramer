@@ -97,8 +97,6 @@ namespace MyMixes
                 {
                     await Navigation.PopAsync();
                 }
-
-
             }
 
             MixLocationView.ItemsSource = ml_list;
