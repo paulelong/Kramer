@@ -201,6 +201,33 @@ namespace MyMixes
         //{
         //    return await GetCloudProviderAsync(CloudProvider);
         //}
+        public static async Task<List<string>> GetProjectFoldersAsync(CloudProviders cp, string path)
+        {
+            if(providers.ContainsKey(cp))
+            {
+                ICloudStore cs = providers[cp];
+
+                try
+                {
+                    var l = await cs.GetFolderList("/" + path);
+                    List<string> retl = new List<string>();
+                    foreach (var i in l)
+                    {
+                        retl.Add(i.name);
+                    }
+
+                    return retl;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print(ex.ToString());
+
+                    return null;
+                }
+            }
+
+            return null;
+        }
 
         public async Task< List<string> > GetProjectFoldersAsync(string path)
         {
@@ -264,7 +291,7 @@ namespace MyMixes
 
         public async Task<bool> CheckAuthenitcation()
         {
-            if(CloudStore == null)
+            if (CloudStore == null)
             {
                 await GetCloudProviderAsync();
             }
@@ -275,6 +302,17 @@ namespace MyMixes
             }
 
             return isAuthenticated;
+        }
+
+        public static async Task<bool> CheckAuthenitcation(CloudProviders cp)
+        {
+            if (providers.ContainsKey(cp))
+            {
+                ICloudStore cs = providers[cp];
+                return await cs.AuthenticateAsync();
+            }
+
+            return false;
         }
 
         public async Task<List<string>> UpdateProjectAsync(string root, string project)

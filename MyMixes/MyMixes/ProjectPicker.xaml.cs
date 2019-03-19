@@ -118,7 +118,7 @@ namespace MyMixes
 
         private async Task UpdateFolderList()
         {
-            if(await pi.CheckAuthenitcation())
+            if(await ProviderInfo.CheckAuthenitcation(CurrentProvider))
             {
                 List<string> folders = await pi.GetFoldersAsync(currentFolder);
                 FolderList.ItemsSource = folders;
@@ -170,7 +170,7 @@ namespace MyMixes
         private async void OnProviderChanged(object sender, EventArgs e)
         {
             currentFolder = "/";
-            pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider, currentFolder);
+            //pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider, currentFolder);
             
             await UpdateFolderList();
         }
