@@ -52,6 +52,11 @@ namespace MyMixes
 
             foreach (MixLocation ml in mixLocationList)
             {
+                if(!ProjectsByProviders.ContainsKey(ml.Provider))
+                {
+                    ProjectsByProviders[ml.Provider] = new List<string>();
+                }
+
                 ProjectsByProviders[ml.Provider].Add(ml.Path);
             }
 
