@@ -55,32 +55,6 @@ namespace MyMixes
         {
             ProjectPicker pp = new ProjectPicker(MixLocationList);
             await Navigation.PushModalAsync(pp);
-
-            //var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
-
-            //var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
-            ////            string action = await DisplayActionSheet("Which", "cancel", null, "1", "2", "3");
-            ////var action = await DisplayActionSheet("ActionSheet: Save Photo?", "Cancel", "Delete", "Photo Roll", "Email");
-            ////string action = "GoogleDrive";
-
-            //// BUGBUG: Not finished
-            //if (action != "Cancel")
-            //{
-            //    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
-
-            //    if (pi != null)
-            //    {
-            //        ProjectPicker pp = new ProjectPicker(pi);
-            //        await Navigation.PushModalAsync(pp);
-
-            //        // No directory was selected.
-            //        if (pi.RootPath == null)
-            //        {
-            //            pi.RemoveProvider();
-            //            pi = null;
-            //        }
-            //    }
-            //}
         }
 
         private async void SongOrderClicked(object sender, EventArgs e)
@@ -114,18 +88,13 @@ namespace MyMixes
             {
                 selectedFolder = t.Name;
 
-                //double scrollY = TrackScroll.ScrollY;
-
                 await LoadProjects();
-
-                //await TrackScroll.ScrollToAsync(0, scrollY, false);
             }
         }
 
         private async void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
-            //await ProviderInfo.LoadMappings();
             await LoadProjects();
             BusyOn(false);
         }
@@ -164,7 +133,6 @@ namespace MyMixes
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
-            //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
             foreach (MixLocation ml in MixLocationList)
             {
                 BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
@@ -229,9 +197,6 @@ namespace MyMixes
 
         private async Task LoadProjects()
         {
-            //Directory folder = Directory.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // FileSystem.Current.LocalStorage;
-            //IList<IFolder> folderList = await folder.GetFoldersAsync();
-            //var tracks = new List<Track>();
             LoadedTracks.Clear();
 
             Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
@@ -286,7 +251,6 @@ namespace MyMixes
 
         private async Task<bool> WavDirectory(string f)
         {
-            // IList<IFile> l = await f.GetFilesAsync();
             foreach (string fl in Directory.GetFiles(f))
             {
                 if (MusicUtils.isAudioFormat(fl))
