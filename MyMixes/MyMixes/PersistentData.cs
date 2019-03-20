@@ -61,81 +61,6 @@ namespace MyMixes
             }
         }
 
-        //private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
-        //public static List<ProjectMapping> ProjectMappings
-        //{
-        //    get
-        //    {
-        //        if(projectMappings == null)
-        //        {
-        //            projectMappings = new List<ProjectMapping>();
-        //            LoadProjectMappings();
-        //        }
-
-        //        return projectMappings;
-        //    }
-        //}
-
-        public static void SaveProjectMappings(Dictionary<string, ProviderInfo> pi_list)
-        {
-            Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
-
-            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
-            {
-                ProjectsByProviders[pmname.ToString()] = new List<string>();
-            }
-
-            foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
-            {
-                var p = kvp.Key.Split(':');
-
-                ProjectsByProviders[p[0]].Add(p[1]);
-            }
-
-            foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
-            {
-                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
-            }
-        }
-
-        //public static void SaveProjectMappings(List<ProviderInfo> pi_list)
-        //{
-        //    Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
-
-        //    foreach (ProviderInfo pi in pi_list)
-        //    {
-        //        ProjectsByProviders[pi.CloudProvider.ToString()].Add(pi.RootPath);
-        //    }
-
-        //    foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
-        //    {
-        //        Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
-        //    }
-        //}
-
-
-        public static List<string> LoadProjectMappings()
-        {
-            List<string> ProjectMappings = new List<string>();
-
-            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
-            {
-                if(Application.Current.Properties.ContainsKey("ProjectMap_" + pmname))
-                {
-                    string list = (string)Application.Current.Properties["ProjectMap_" + pmname];
-                    if(!string.IsNullOrEmpty(list))
-                    {
-                        foreach (string p in list.Split(','))
-                        {
-                            ProjectMappings.Add(pmname.ToString() + ":" + p);
-                        }
-                    }
-                }
-            }
-
-            return ProjectMappings;
-        }
-
         public static List<string> GetProjectFoldersData(string provider, string root)
         {
             string key = provider + "_" + root;
@@ -160,8 +85,6 @@ namespace MyMixes
 
         public static async Task<bool> isRemoteNewer(string path, DateTime lastModified)
         {
-            //IFolder rootfolder = FileSystem.Current.LocalStorage;
-
             string filepath = Path.GetDirectoryName(path);
             string name = Path.GetFileName(path);
 
@@ -185,53 +108,6 @@ namespace MyMixes
             Application.Current.Properties[path] = lastModified;
             return true;
         }
-
-        static List<LocationMapping> mixLocations = new List<LocationMapping>();
-        public static List<LocationMapping> LocationMappings
-        {
-            get
-            {
-                if (Application.Current.Properties.ContainsKey("mixLocCount"))
-                {
-                    int count;
-                    count = (int)Application.Current.Properties["CloudProviderCount"];
-
-                    mixLocations.Clear();
-
-                    for (int n = 0; n < count; n++)
-                    {
-                        string key = "mixloc" + n.ToString();
-                        if (Application.Current.Properties.ContainsKey(key))
-                        {
-                            LocationMapping lm = new LocationMapping
-                            {
-                                path = (string)Application.Current.Properties[key],
-                                provider = (CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
-                            };
-
-                            mixLocations.Add(lm);
-                        }
-                    }
-                }
-
-                return mixLocations;
-            }
-        }
-
-        //static void AddLocation(string path, CloudProviders cp)
-        //{
-        //    string key = "mixloc" + ProviderCount.ToString();
-
-        //    ProviderInfo pi = new ProviderInfo
-        //    {
-        //        RootPath = (string)Application.Current.Properties[key],
-        //        CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
-        //    };
-
-        //    ProviderCount++;
-
-        //    mixLocations.Add(pi);
-        //}
 
         static int ProviderCount
         {

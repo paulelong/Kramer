@@ -19,11 +19,6 @@ namespace MyMixes
             get; set;
         }
 
-        //public string RootPath
-        //{
-        //    get; set;
-        //}
-
         private ICloudStore cs = null;
         private ICloudStore CloudStore
         {
@@ -38,75 +33,6 @@ namespace MyMixes
             this.cs = cs;
             this.CloudProvider = cp;
         }
-
-        //private static Dictionary<string, ProviderInfo> pi_list = new Dictionary<string, ProviderInfo>();
-        //private static List<ProviderInfo> providerList = null;
-        //public static List<ProviderInfo> Providers
-        //{
-        //    get
-        //    {
-        //        if(providerList == null)
-        //        {
-        //            providerList = new List<ProviderInfo>();
-        //            List<string> mappings = PersistentData.LoadProjectMappings();
-
-        //            foreach (string s in mappings)
-        //            {
-        //                string[] parts = s.Split(':');
-        //                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-        //                providerList.Add(new ProviderInfo() { CloudProvider = cp, RootPath = parts[1] });
-        //            }
-        //        }
-        //        //List<ProviderInfo> ret = new List<ProviderInfo>();
-
-        //        //foreach(KeyValuePair<string, ProviderInfo> kvp in pi_list)
-        //        //{
-        //        //    if(kvp.Value != null)
-        //        //    {
-        //        //        ret.Add(kvp.Value);
-        //        //    }
-        //        //}
-
-        //        return providerList;
-        //    }
-        //}
-
-        //public static ProviderInfo FindProvider(string name)
-        //{
-        //    foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
-        //    {
-        //        string[] parts = kvp.Key.Split(':');
-        //        if(parts[1] == name)
-        //        {
-        //            return kvp.Value;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public static async Task LoadMappings()
-        //{
-        //    List<string> mappings = PersistentData.LoadProjectMappings();
-
-        //    foreach (string s in mappings)
-        //    {
-        //        string[] parts = s.Split(':');
-        //        CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-        //        await GetCloudProviderAsync(cp, parts[1]);
-        //    }
-        //}
-
-        //public static void SaveMappings()
-        //{
-        //    PersistentData.SaveProjectMappings(providerList);
-        //}
-
-        //public async Task<ProviderInfo> GetCloudProviderAsync()
-        //{
-        //    ProviderInfo pi = await GetCloudProviderAsync(CloudProvider, RootPath);
-        //    return pi;
-        //}
 
         public async static Task<ProviderInfo> GetCloudProviderAsync(CloudProviders cp)
         {
@@ -174,77 +100,6 @@ namespace MyMixes
             return null;
         }
 
-        //public void UpdatePath(string path)
-        //{
-        //    string key = CloudProvider.ToString() + ":" + RootPath;
-
-        //    RootPath = path;
-        //    pi_list[key] = null;
-
-        //    key = CloudProvider.ToString() + ":" + RootPath;
-        //    pi_list[key] = this;
-        //}
-
-        //public void RemoveProvider()
-        //{
-        //    string key = CloudProvider.ToString() + ":" + RootPath;
-
-        //    pi_list[key] = null;
-        //}
-
-        //public async Task<ICloudStore> GetCloudProviderAsync()
-        //{
-        //    return await GetCloudProviderAsync(CloudProvider);
-        //}
-        //public static async Task<List<string>> GetProjectFoldersAsync(string path)
-        //{
-        //    if(providers.ContainsKey(cp))
-        //    {
-        //        ICloudStore cs = providers[cp];
-
-        //        try
-        //        {
-        //            var l = await cs.GetFolderList("/" + path);
-        //            List<string> retl = new List<string>();
-        //            foreach (var i in l)
-        //            {
-        //                retl.Add(i.name);
-        //            }
-
-        //            return retl;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Debug.Print(ex.ToString());
-
-        //            return null;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public async Task< List<string> > GetProjectFoldersAsync(string path)
-        //{
-        //    try
-        //    {
-        //        var l = await CloudStore.GetFolderList("/" + path);
-        //        List<string> retl = new List<string>();
-        //        foreach (var i in l)
-        //        {
-        //            retl.Add(i.name);
-        //        }
-
-        //        return retl;
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Debug.Print(ex.ToString());
-
-        //        return null;
-        //    }
-        //}
-
         public async Task<List<string>> GetFoldersAsync(string folder)
         {
             try
@@ -296,17 +151,6 @@ namespace MyMixes
 
             return isAuthenticated;
         }
-
-        //public static async Task<bool> CheckAuthenitcation(CloudProviders cp)
-        //{
-        //    if (providers.ContainsKey(cp))
-        //    {
-        //        ICloudStore cs = providers[cp];
-        //        return await cs.AuthenticateAsync();
-        //    }
-
-        //    return false;
-        //}
 
         public async Task<List<string>> UpdateProjectAsync(string root, string project)
         {

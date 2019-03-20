@@ -23,9 +23,6 @@ namespace MyMixes
     {
         private TransportViewModel TrasnportVMInstance;
         ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
-        //private SelectedTracksVM SelectedTracks = new SelectedTracksVM();
-        //private List<string> tl = new List<string>();
-        //private List<Track> SelectedTracks = new List<Track>();
 
         public MainPage()
         {
@@ -36,9 +33,6 @@ namespace MyMixes
             Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
 
             PersistentData.LoadMixLocations(MixLocationList);
-
-            // seed with static data for now REMOVE
-            //ProviderInfo piA = new ProviderInfo();
 
             NavigationPage.SetHasNavigationBar(this, false);
         }
@@ -52,7 +46,6 @@ namespace MyMixes
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
             
-            //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
             foreach(MixLocation ml in MixLocationList)
             {
                 BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
@@ -171,84 +164,7 @@ namespace MyMixes
 
         }
 
-        //private async void SongOrderClicked(object sender, EventArgs e)
-        //{
-        //    bool songStopped = false;
-
-        //    Track t = FindTrack((View)sender);
-
-        //    if (!PlayListOrder.ContainsKey(t.FullPath) || PlayListOrder[t.FullPath] == 0)
-        //    {
-        //        PlayListOrder[t.FullPath] = ++currentOrder;
-        //        t.OrderButtonText = "-";
-        //        t.ReadyToAdd = false;
-                
-        //        //SelectedTracks.Add(t);
-        //        TrasnportVMInstance.Tracklist.Add(t);
-
-        //        this.BindingContext = null;
-        //        this.BindingContext = TrasnportVMInstance;
-
-        //        //SongList.Items.Add(t.Name);
-        //        //t.OrderVal = currentOrder++;
-        //    }
-        //    else
-        //    {
-        //        if (isSongPlaying && currentSong == t.OrderVal)
-        //        {
-        //            player.Stop();
-        //            songStopped = true;
-        //        }
-
-        //        currentOrder--;
-
-        //        foreach (string key in PlayListOrder.Keys.ToArray())
-        //        {
-        //            if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] > t.OrderVal)
-        //            {
-        //                PlayListOrder[key]--;
-        //            }
-        //        }
-
-        //        foreach (Track ct in (List<Track>)Projects.ItemsSource)
-        //        {
-        //            if (ct.OrderVal > t.OrderVal)
-        //            {
-        //                ct.OrderVal--;
-        //            }
-        //        }
-        //        PlayListOrder[t.FullPath] = 0;
-        //        //SongList.Items.Remove(t.Name);
-        //        //SelectedTracks.Remove(t);
-        //        TrasnportVMInstance.Tracklist.Remove(t);
-        //        this.BindingContext = null;
-        //        this.BindingContext = TrasnportVMInstance;
-
-        //        t.OrderButtonText = "+";
-        //        t.ReadyToAdd = true ;
-
-        //        if ((currentSong - 1) == TrasnportVMInstance.CurrentTrackNumer)
-        //        {
-        //            if (currentSong >= TrasnportVMInstance.SongsQueued)
-        //                currentSong--;
-        //        }
-        //    }
-
-        //    t.OrderVal = PlayListOrder[t.FullPath];
-
-        //    //var kvp = PlayListOrder.FirstOrDefault((x) => x.Value == currentSong);
-
-        //    SetSongIndex(currentSong - 1);
-
-        //    if (isSongPlaying && TrasnportVMInstance.SongsQueued > 0 && songStopped)
-        //    {
-        //        await PlayCurrentSong();
-        //    }
-
-        //    SetCurrentSong();
-        //}
-
-
+    
         private async void RemoveSong_Clicked(object sender, EventArgs e)
         {
             //Track t = TrasnportVMInstance.CurrentTrack;
@@ -305,32 +221,10 @@ namespace MyMixes
         }
 
 
-        //private async void ResyncSongClickedAsync(object sender, EventArgs e)
-        //{
-        //    Track t = (Track)SongList.SelectedItem;
-
-        //    ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
-
-        //    if (pm != null)
-        //    {
-                
-        //        ICloudStore pi = await GetCloudProviderAsync(pm.provider);
-        //        if(pi != null)
-        //        {
-        //            //await pi.UpdateProjectAsync(t.FullPath);
-        //        }
-        //    }
-        //}
-
         private void Notes_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new SongNotes());
         }
-
-        //private void ResyncProjectClickedAsync(object sender, EventArgs e)
-        //{
-
-        //}
 
         private void SongNameTapped(object sender, EventArgs e)
         {
