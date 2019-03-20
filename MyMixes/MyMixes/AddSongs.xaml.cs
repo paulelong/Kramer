@@ -15,7 +15,8 @@ namespace MyMixes
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AddSongs : ContentPage
 	{
-        private string selectedFolder = "";
+        //private string selectedFolder = "";
+        private Track selectedTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
         ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
@@ -54,7 +55,7 @@ namespace MyMixes
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
             ProjectPicker pp = new ProjectPicker(MixLocationList);
-            await Navigation.PushModalAsync(pp);
+            await Navigation.PushAsync(pp);
         }
 
         private async void SongOrderClicked(object sender, EventArgs e)
@@ -78,6 +79,7 @@ namespace MyMixes
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
+            Debug.Print("Track selected\n");
             Track t = (Track)e.SelectedItem;
 
             if (!t.isProject)
@@ -86,7 +88,14 @@ namespace MyMixes
             }
             else
             {
-                selectedFolder = t.Name;
+                if(selectedTrack != t)
+                {
+                    selectedTrack = t;
+                }
+                else
+                {
+                    selectedTrack = null;
+                }
 
                 await LoadProjects();
             }
@@ -197,46 +206,138 @@ namespace MyMixes
 
         private async Task LoadProjects()
         {
-            LoadedTracks.Clear();
+            for (int i = LoadedTracks.Count - 1; i >= 0; i--)
+            {
+                if (!LoadedTracks[i].isProject)
+                {
+                    LoadedTracks.RemoveAt(i);
+                }
+            }
 
-            Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            LoadProjectFolders();
 
+            if (selectedTrack != null)
+            {
+                LoadProjectTracks();
+            }
+        }
+
+        private void LoadProjectTracks()
+        {
+            try
+            {
+                string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + selectedTrack.Name;
+                int projectIndex = LoadedTracks.IndexOf(selectedTrack) + 1;
+                int insTrackNumber = 0;
+
+                foreach (string songFile in Directory.GetFiles(newProjectPath))
+                {
+                    int tracknum = PersistentData.GetTrackNumber(newProjectPath, Path.GetFileNameWithoutExtension(songFile));
+
+                    var t = new Track
+                    {
+                        Name = Path.GetFileNameWithoutExtension(songFile),
+                        FullPath = songFile,
+                        isProject = false,
+                        ProjectPath = newProjectPath,
+                        OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
+                        TrackNum = tracknum,
+                    };
+
+                    if (tracknum != 0)
+                    {
+                        LoadedTracks.Insert(projectIndex + tracknum - 1, t);
+                    }
+                    else
+                    {
+                        LoadedTracks.Insert(projectIndex + insTrackNumber, t);
+                    }
+
+                    insTrackNumber++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print(ex.Message);
+            }
+
+
+            //Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+
+            //try
+            //{
+            //    foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
+            //    //foreach (IFolder f in folderList)
+            //    {
+            //        if (await WavDirectory(projFolder))
+            //        {
+            //            var p = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
+            //            LoadedTracks.Add(p);
+
+            //            if (selectedFolder == Path.GetFileName(projFolder))
+            //            {
+            //                //IList<IFile> fileList = await f.GetFilesAsync();
+            //                foreach (string songFile in Directory.GetFiles(projFolder))
+            //                {
+            //                    int tracknum = PersistentData.GetTrackNumber(projFolder, Path.GetFileNameWithoutExtension(songFile));
+
+            //                    var t = new Track
+            //                    {
+            //                        Name = Path.GetFileNameWithoutExtension(songFile),
+            //                        FullPath = songFile,
+            //                        isProject = false,
+            //                        ProjectPath = projFolder,
+            //                        OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
+            //                        TrackNum = tracknum,                                    
+            //                    };
+
+            //                    if (tracknum != 0)
+            //                    {
+            //                        LoadedTracks.Insert(tracknum - 1, t);
+            //                    }
+            //                    else
+            //                    {
+            //                        LoadedTracks.Add(t);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Debug.Print(ex.Message);
+            //}
+        }
+
+        private void LoadProjectFolders()
+        {
             try
             {
                 foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
-                //foreach (IFolder f in folderList)
                 {
-                    if (await WavDirectory(projFolder))
+                    if (WavDirectory(projFolder))
                     {
-                        var p = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
-                        LoadedTracks.Add(p);
+                        Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
 
-                        if (selectedFolder == Path.GetFileName(projFolder))
+                        int i;
+                        for(i = 0; i < LoadedTracks.Count; i++)
                         {
-                            //IList<IFile> fileList = await f.GetFilesAsync();
-                            foreach (string songFile in Directory.GetFiles(projFolder))
+                            // if it's already inserted don't insert again.  This is typical if we've added them already.
+                            if(t.Name == LoadedTracks[i].Name)
                             {
-                                int tracknum = PersistentData.GetTrackNumber(projFolder, Path.GetFileNameWithoutExtension(songFile));
-
-                                var t = new Track
-                                {
-                                    Name = Path.GetFileNameWithoutExtension(songFile),
-                                    FullPath = songFile,
-                                    isProject = false,
-                                    ProjectPath = projFolder,
-                                    OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
-                                    TrackNum = tracknum,                                    
-                                };
-
-                                if (tracknum != 0)
-                                {
-                                    LoadedTracks.Insert(tracknum - 1, t);
-                                }
-                                else
-                                {
-                                    LoadedTracks.Add(t);
-                                }
+                                i = -1;
+                                break;
                             }
+                            if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        if(i >= 0)
+                        {
+                            LoadedTracks.Insert(i, t);
                         }
                     }
                 }
@@ -245,11 +346,9 @@ namespace MyMixes
             {
                 Debug.Print(ex.Message);
             }
-
-            Debug.Print("Project local {0} DONE\n");
         }
 
-        private async Task<bool> WavDirectory(string f)
+        private bool WavDirectory(string f)
         {
             foreach (string fl in Directory.GetFiles(f))
             {
