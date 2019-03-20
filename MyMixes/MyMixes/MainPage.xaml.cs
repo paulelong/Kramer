@@ -124,13 +124,6 @@ namespace MyMixes
             BusyOn(false);
         }
 
-        Track FindTrack(View v)
-        {
-            Grid g = (Grid)v.Parent;
-            Track t = (Track)g.BindingContext;
-            return t;
-        }
-
         private void BusyOn(bool TurnOn)
         {
             BusyGrid.IsVisible = TurnOn;
@@ -145,22 +138,6 @@ namespace MyMixes
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
-            //Track t = (Track)e.SelectedItem;
-
-            //if (!t.isProject)
-            //{
-
-            //}
-            //else
-            //{
-            //    selectedFolder = t.Name;
-
-            //    double scrollY = TrackScroll.ScrollY;
-
-            //    await LoadProjects();
-
-            //    await TrackScroll.ScrollToAsync(0, scrollY, false);
-            //}
 
         }
 
@@ -226,9 +203,9 @@ namespace MyMixes
             Navigation.PushAsync(new SongNotes());
         }
 
-        private void SongNameTapped(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new PlayListPicker(TrasnportVMInstance.Tracklist));
-        }
+        //private void SongNameTapped(object sender, EventArgs e)
+        //{
+        //    Navigation.PushAsync(new PlayListPicker(TrasnportVMInstance.Tracklist));
+        //}
     }
 }
