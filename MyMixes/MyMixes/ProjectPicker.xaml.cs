@@ -119,6 +119,7 @@ namespace MyMixes
         {
             string p = string.IsNullOrEmpty(currentFolder) ? "" : (currentFolder + "/");
             MixLocationList.Add(new MixLocation() { Path = p + (string)FolderList.SelectedItem, Provider = pi.CloudProvider });
+            PersistentData.SaveMixLocations(MixLocationList);
         }
 
         private async void OpenFolder(object sender, EventArgs e)
