@@ -16,6 +16,8 @@ namespace MyMixes
         public string ProjectPath { get; set; }
         public bool isProject { get; set; }
         public int TrackNum { get; set; }
+        public string CloudProvider { get; set; }
+        public string CloudRoot { get; set; }
 
         public string Project
         {
