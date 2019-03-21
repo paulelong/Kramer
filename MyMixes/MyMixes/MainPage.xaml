@@ -4,20 +4,26 @@
              xmlns:local="clr-namespace:MyMixes"
              x:Class="MyMixes.MainPage"
              Appearing="OnAppearing"
+             xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
+             BackgroundColor="{DynamicResource backgroundColor}"
+             Style="{DynamicResource dark:DarkThemeResources}"
              >
     <ContentPage.BindingContext>
         <local:TransportViewModel/>
     </ContentPage.BindingContext>
-
+    
     <ContentPage.Resources>
-        <ResourceDictionary>
+        <ResourceDictionary  MergedWith="dark:DarkThemeResources">
+            <Color x:Key="backgroundColor">#33202e</Color>
+            <Color x:Key="textColor">Blue</Color>
+
             <DataTemplate x:Key="songListTemplate">
                 <ViewCell>
                     <Grid Margin="0,0,0,0" BackgroundColor="#404040">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.11*" />
                             <ColumnDefinition Width="0.78*" />
-                            <ColumnDefinition Width="0.11*" />
+                            <ColumnDefinition Width="0.10*" />
                         </Grid.ColumnDefinitions>
                         <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
                         <Button Grid.Column="0" Image="EditBt.png" />
@@ -33,7 +39,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ContentPage.Content>
+    <ContentPage.Content>        
         <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
             <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
                 <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
@@ -42,7 +48,7 @@
                 <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
-                        CachingStrategy="RecycleElement"
+                        CachingStrategy="RecycleElement"  ItemsSource="{Binding .}"
                 >
                 </ListView>
             <!--</ScrollView>-->
@@ -52,7 +58,7 @@
             </Grid>
             <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" Margin="20,0,20,0">
                 <!--<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">-->
-                    <Label Text="Loop" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+                    <Label Text="Loopd" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
                     <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
                 <!--</StackLayout>-->
             </StackLayout>
