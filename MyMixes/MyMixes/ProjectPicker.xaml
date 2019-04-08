@@ -2,10 +2,19 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MyMixes.ProjectPicker"
-             Appearing="OnAppearing" Disappearing="OnDisappearing">
+             Appearing="OnAppearing" Disappearing="OnDisappearing"
+             BackgroundColor="{DynamicResource backgroundColor}">
     <ContentPage.Resources>
         <ResourceDictionary>
-
+            <Color x:Key="backgroundColor">#333333</Color>
+            <Color x:Key="textColor">Blue</Color>
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Gray"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="Gray"/>
+            </Style>
             <DataTemplate x:Key="mixLocationTemplate">
                 <ViewCell>
                     <Grid>
@@ -14,7 +23,7 @@
                             <ColumnDefinition Width="0.45*" />
                             <ColumnDefinition Width="0.1*" />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Text="{Binding Path}" />
+                        <Label Grid.Column="0" Text="{Binding Path}" TextColor="White" />
                         <Label Grid.Column="1" Text="{Binding Provider}" />
                         <Button Grid.Column="2" Text="D" Pressed="LocationDeleted"/>
                     </Grid>
@@ -27,7 +36,7 @@
         <StackLayout HorizontalOptions="FillAndExpand">
             <Label Text="Mix Locations"/>
             <ListView x:Name="MixLocationView" VerticalOptions="StartAndExpand"
-                      ItemTemplate="{StaticResource mixLocationTemplate}"/>
+                      ItemTemplate="{StaticResource mixLocationTemplate}"   ItemsSource="{Binding .}"/>
             <StackLayout Orientation="Horizontal" VerticalOptions="Start">
                 <!--<Label x:Name="ProviderName" Text="{Binding ProviderNameText}" WidthRequest="200"/>-->
                 <Picker x:Name="CloudProivder" SelectedItem="{Binding ProviderNameText, Mode=TwoWay}" ItemsSource="{Binding ProviderList}" WidthRequest="200"
@@ -35,7 +44,7 @@
                 <Button Text="Change" Pressed="ChangeProvider"/>
             </StackLayout>
 
-            <ListView x:Name="FolderList" VerticalOptions="StartAndExpand"
+            <ListView x:Name="FolderList" VerticalOptions="StartAndExpand"   ItemsSource="{Binding .}"
                       />
             <StackLayout Orientation="Horizontal" VerticalOptions="End">
                 <Button Text="Up" Pressed="UpPressed"/>

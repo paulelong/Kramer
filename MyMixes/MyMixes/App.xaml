@@ -6,7 +6,7 @@
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
             <ControlTemplate x:Key="TransportControl">
-                <Grid  VerticalOptions="EndAndExpand">
+                <Grid  VerticalOptions="End" Margin="5,0,5,0" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.33*" />
                         <ColumnDefinition Width="0.33*" />

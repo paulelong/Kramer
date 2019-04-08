@@ -20,6 +20,7 @@ namespace MyMixes
         public Command PlayCommand { get; set; }
         public Command PrevCommand { get; set; }
         public Command NextCommand { get; set; }
+
         public ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
         public ISimpleAudioPlayer player { get; set; }
 
@@ -46,15 +47,18 @@ namespace MyMixes
 
         public TransportViewModel()
         {
-            PlayCommand = new Command(PlaySong);
-            PrevCommand = new Command(PrevSong);
-            NextCommand = new Command(NextSong);
+            if (!DesignMode.IsDesignModeEnabled)
+            {
+                PlayCommand = new Command(PlaySong);
+                PrevCommand = new Command(PrevSong);
+                NextCommand = new Command(NextSong);
 
-            player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-            player.Loop = false;
-            player.PlaybackEnded += Player_PlaybackEnded;
+                player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+                player.Loop = false;
+                player.PlaybackEnded += Player_PlaybackEnded;
 
-            currentSong = PersistentData.LastPlayedSongIndex;
+                currentSong = PersistentData.LastPlayedSongIndex;
+            }
 
             PlayButtonStateImage = "PlayBt.png";
         }
@@ -119,6 +123,20 @@ namespace MyMixes
                     await PlayCurrentSong();
                 }
             }
+        }
+
+        public async void PlaySongTrack(QueuedTrack t)
+        {
+            for(CurrentTrackNumber = 0; CurrentTrackNumber < PlayingTracks.Count; CurrentTrackNumber++)
+            {
+                if(PlayingTracks[CurrentTrackNumber] == t)
+                {
+                    break;
+                }
+
+            }
+
+            await PlayCurrentSong();
         }
 
         public void NextSong()
@@ -255,6 +273,7 @@ namespace MyMixes
 
 
         public bool isLooping { get; set; }
+        public bool isAligned { get; set; }
 
         public int SongsQueued
         {
@@ -320,6 +339,11 @@ namespace MyMixes
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public void LoadSampleData()
+        {
+            PlayingTracks.Add(new QueuedTrack() { Name = "Brother hammond", Project = "A Birds Nest" });
         }
     }
 }

@@ -21,7 +21,7 @@ namespace MyMixes
 {
     public partial class MainPage : ContentPage
     {
-        private TransportViewModel TrasnportVMInstance;
+        private TransportViewModel TransportVMInstance;
         ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
 
         public MainPage()
@@ -29,12 +29,22 @@ namespace MyMixes
 
             InitializeComponent();
 
-            TrasnportVMInstance = (TransportViewModel)this.BindingContext;
-            Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
+            TransportVMInstance = (TransportViewModel)this.BindingContext;
+            Projects.ItemsSource = TransportVMInstance.PlayingTracks;
 
-            PersistentData.LoadMixLocations(MixLocationList);
+            if (DesignMode.IsDesignModeEnabled)
+            {
+                // Previewer only code  
+                //TrasnportVMInstance.LoadProjects();
+                //TrasnportVMInstance.LoadSampleData();
+            }
+            else
+            {
 
-            NavigationPage.SetHasNavigationBar(this, false);
+                PersistentData.LoadMixLocations(MixLocationList);
+
+                NavigationPage.SetHasNavigationBar(this, false);
+            }
         }
 
         private async void Add_Clicked(object sender, EventArgs e)
@@ -111,7 +121,7 @@ namespace MyMixes
         private void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
-            TrasnportVMInstance.LoadProjects();
+            TransportVMInstance.LoadProjects();
             BusyOn(false);
         }
 
@@ -120,7 +130,7 @@ namespace MyMixes
             // DCR: Maybe we don't sync all the time
             BusyOn(true);
             await SyncProjects();
-            TrasnportVMInstance.LoadProjects();
+            TransportVMInstance.LoadProjects();
             BusyOn(false);
         }
 
@@ -138,7 +148,7 @@ namespace MyMixes
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
-
+            TransportVMInstance.PlaySongTrack((QueuedTrack)e.SelectedItem);
         }
 
     
@@ -201,6 +211,11 @@ namespace MyMixes
         private void Notes_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new SongNotes());
+        }
+
+        private void EditPressed_Clicked(object sender, EventArgs e)
+        {
+
         }
 
         //private void SongNameTapped(object sender, EventArgs e)

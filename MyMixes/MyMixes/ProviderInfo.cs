@@ -104,7 +104,7 @@ namespace MyMixes
         {
             try
             {
-                var l = await CloudStore.GetFolderList(folder);
+                var l = await CloudStore.GetFolderListAsync(folder);
                 List<string> retl = new List<string>();
                 foreach (var i in l)
                 {
@@ -161,7 +161,7 @@ namespace MyMixes
                 string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), project);
                 string remoteFolderName = "/" + root + "/" + project;
 
-                var items = await cs.GetFolderList(remoteFolderName);
+                var items = await cs.GetFolderListAsync(remoteFolderName);
                 foreach (var di in items)
                 {
                     if (isAudioFile(di))

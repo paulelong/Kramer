@@ -4,9 +4,26 @@
              x:Class="MyMixes.AddSongs"
              Appearing="OnAppearing"
              xmlns:local="clr-namespace:MyMixes"
-            >
+             BackgroundColor="{DynamicResource backgroundColor}"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+             >
     <ContentPage.Resources>
         <ResourceDictionary>
+            <Color x:Key="backgroundColor">#252525</Color>
+            <Color x:Key="textColor">Blue</Color>
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Gray"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="Gray"/>
+            </Style>
+            <Style TargetType="Label">
+                <!--<Setter Property="BackgroundColor" Value="Gray"/>-->
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
             <DataTemplate x:Key="projectfolderTemplate">
                 <ViewCell>
                     <Grid Margin="10,0,0,0" BackgroundColor="#404040">
@@ -49,8 +66,8 @@
                 <ViewCell>
                     <Grid Margin="15,0,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.92*" />
-                            <ColumnDefinition Width="0.08*" />
+                            <ColumnDefinition Width="0.90*" />
+                            <ColumnDefinition Width="0.10*" />
                         </Grid.ColumnDefinitions>
                         <StackLayout Grid.Column="0"  Orientation="Vertical">
                             <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"/>
@@ -67,11 +84,7 @@
     
     <ContentPage.Content>
         <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
-                <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
-                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
-                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" HorizontalOptions="End" VerticalOptions="Center"/>
-            </StackLayout>
+            <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,0,0"/>
             <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
                 <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
                 <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
@@ -79,14 +92,35 @@
             <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
-                        CachingStrategy="RecycleElement"
+                        CachingStrategy="RecycleElement"                        
+                        RowHeight="50"
                     >
+                <d:ListView.ItemsSource>
+                    <x:Array Type="{x:Type local:Track}">
+                        <local:Track Name="Riffs Reaf" Project="Figure of Speach" isProject="True"  />
+                        <local:Track Name="Riffs Reaf" Project="Figure of Speach" isProject="False"  />
+                        <local:Track Name="Sick or Throwing Up" Project="Figure of Speach" isProject="False" />
+                    </x:Array>
+                </d:ListView.ItemsSource>            
             </ListView>
-            <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Medium" Margin="10,20,0,0"/>
+            <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,0,0"/>
             <ListView x:Name="SelectedTracks" 
-                            ItemTemplate="{StaticResource selectedTracksTemplate}" 
-                           CachingStrategy="RecycleElement">                
+                        HeightRequest="400"
+                        ItemTemplate="{StaticResource selectedTracksTemplate}" 
+                        CachingStrategy="RecycleElement"
+                        RowHeight="50"
+                >
+                <d:ListView.ItemsSource>
+                    <x:Array Type="{x:Type local:QueuedTrack}">
+                        <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
+                        <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                    </x:Array>
+                </d:ListView.ItemsSource>
             </ListView>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
+                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
+                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" HorizontalOptions="End" VerticalOptions="Center"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
