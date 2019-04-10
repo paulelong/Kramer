@@ -10,8 +10,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -25,7 +23,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>MyMixes</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.MyMixes</string>
+	<string>com.PaulysHotel.MyMixes</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleIconFiles</key>
@@ -50,5 +48,20 @@
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
 	<string>MyMixes</string>
-</dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.PaulysHotel.MyMixes</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>msal7ba22c7f-29be-4dc7-a274-4209fe0b8b72</string>
+				<string>com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k</string>
+				<string>xamarin-auth</string>
+			</array>
+		</dict>
+	</array>
+	</dict>
 </plist>

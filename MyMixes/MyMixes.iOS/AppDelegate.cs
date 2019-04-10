@@ -4,6 +4,8 @@ using System.Linq;
 
 using Foundation;
 using UIKit;
+using Microsoft.Identity.Client;
+using OAuthNativeFlow;
 
 namespace MyMixes.iOS
 {
@@ -33,6 +35,20 @@ namespace MyMixes.iOS
 
 
             return base.FinishedLaunching(app, options);
+        }
+        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        {
+            if (url.AbsoluteString.Contains("google"))
+            {
+                var uri_netfx = new Uri(url.AbsoluteString);
+                AuthenticationState.Authenticator.OnPageLoading(uri_netfx);
+            }
+            else
+            {
+                AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+            }
+
+            return true;
         }
     }
 }
