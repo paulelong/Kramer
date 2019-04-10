@@ -17,35 +17,25 @@
     
     <ContentPage.Resources>
         <ResourceDictionary  MergedWith="dark:DarkThemeResources">
-            <Color x:Key="backgroundColor">#333333</Color>
-            <Color x:Key="textColor">White</Color>
-
-            <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="Gray"/>
-            </Style>
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="White"/>
-            </Style>
-
             <DataTemplate x:Key="songListTemplate">
                 <ViewCell>
-                    <Grid Margin="0,5,0,0" BackgroundColor="Transparent" >
+                    <Grid Margin="0,2,0,2" BackgroundColor="Transparent" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.17*" />
                             <ColumnDefinition Width="0.76*" />
                             <ColumnDefinition Width="0.17*" />
                         </Grid.ColumnDefinitions>
                         <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
-                        <Button Grid.Column="0" Image="EditBt.png" />
-                        <!--<Label Grid.Column="1" Text="someting to see"/>-->
+                        <Button x:Name="EditSong" Grid.Column="0" Image="EditBt.png" Scale=".9"/>
+
                         <StackLayout Grid.Column="1"  Orientation="Vertical" Margin="5,0,0,0">
-                            <Label Text="{Binding Project, Mode=TwoWay}" 
+                            <Label Text="{Binding Project, Mode=TwoWay}"
                                    TextColor="White" FontSize="Micro" 
                                    VerticalTextAlignment="End" HeightRequest="20"/>
                             <Label Text="{Binding Name, Mode=TwoWay}" 
                                    TextColor="White" FontAttributes="Bold" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="2" Image="DelBt.png">
+                        <Button Grid.Column="2" Image="DelBt.png" Scale=".9">
                            
                         </Button>
                     </Grid>
@@ -62,7 +52,6 @@
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
                         CachingStrategy="RecycleElement"  
-                        
                         RowHeight="55" Margin="10,5,10,5"
             >
                 <d:ListView.ItemsSource>

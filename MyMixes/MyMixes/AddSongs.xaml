@@ -4,59 +4,51 @@
              x:Class="MyMixes.AddSongs"
              Appearing="OnAppearing"
              xmlns:local="clr-namespace:MyMixes"
-             BackgroundColor="{DynamicResource backgroundColor}"
                 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
              >
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Color x:Key="backgroundColor">#252525</Color>
-            <Color x:Key="textColor">Blue</Color>
-            <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="Gray"/>
-                <Setter Property="TextColor" Value="White"/>
-            </Style>
-            <Style TargetType="Picker">
-                <Setter Property="BackgroundColor" Value="Gray"/>
-            </Style>
-            <Style TargetType="Label">
-                <!--<Setter Property="BackgroundColor" Value="Gray"/>-->
-                <Setter Property="TextColor" Value="White"/>
-            </Style>
             <DataTemplate x:Key="projectfolderTemplate">
                 <ViewCell>
-                    <Grid Margin="10,0,0,0" BackgroundColor="#404040">
+                    <Grid Margin="0,2,5,2" BackgroundColor="#404040">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.68*" />
-                            <ColumnDefinition Width="0.11*" />
-                            <ColumnDefinition Width="0.11*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.64*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.12*" />
                         </Grid.ColumnDefinitions>
-                        <Image Source="Folder.png" Scale="0.6"/>
-                        <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
-                        <Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
-                        <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>
+                        <Image Source="Folder.png" Scale="0.8"/>
+                        <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" 
+                               TextColor="White" FontAttributes="Bold" FontSize="Medium"
+                               VerticalOptions="Center"/>
+                        <Button Grid.Column="2" Image="TrashBt.png" Scale="0.9"/>
+                        <Button Grid.Column="3" Image="ResyncBt3.png" Scale="0.9"/>
+                        <!--<Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
+                        <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
                 </ViewCell>
             </DataTemplate>
             
             <DataTemplate x:Key="trackTemplate">
                 <ViewCell>
-                    <Grid Margin="15,0,0,0">
+                    <Grid Margin="5,1,0,1" BackgroundColor="#242424">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.1*" />
-                            <ColumnDefinition Width="0.53*" />
+                            <ColumnDefinition Width="0.12*" />
+                            <ColumnDefinition Width="0.64*" />
                             <ColumnDefinition Width="0.12*" />
                             <ColumnDefinition Width="0.12*" />
-                            <!--<ColumnDefinition Width="0.12*" />-->
-                            <!--<ColumnDefinition Width="0.12*" />-->
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="Medium"/>
+                        <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" 
+                               VerticalTextAlignment="Center" HorizontalTextAlignment="Center" 
+                               FontSize="Large" />
                         <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
+                        <!--<Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
+                        <Button Grid.Column="3" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>-->
+                        <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"/>
+                        <Button Grid.Column="3" Image="PlayBt.png" Scale="0.9"/>
                         <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
-                        <Button Grid.Column="3" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>
                         <!--<Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
                 </ViewCell>
@@ -64,16 +56,18 @@
             
             <DataTemplate x:Key="selectedTracksTemplate">
                 <ViewCell>
-                    <Grid Margin="15,0,0,0">
+                    <Grid Margin="5,0,5,0" BackgroundColor="#242424">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.90*" />
-                            <ColumnDefinition Width="0.10*" />
+                            <ColumnDefinition Width="0.88*" />
+                            <ColumnDefinition Width="0.12*" />
                         </Grid.ColumnDefinitions>
-                        <StackLayout Grid.Column="0"  Orientation="Vertical">
-                            <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"/>
+                        <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
+                            <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"
+                                   VerticalTextAlignment="End" HeightRequest="20"/>
                             <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>
+                        <!--<Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>-->
+                        <Button Grid.Column="1" Image="DelBt.png" Scale=".7"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -83,43 +77,60 @@
     </ContentPage.Resources>
     
     <ContentPage.Content>
-        <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
-            <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,0,0"/>
-            <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
-                <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
-                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
+        <StackLayout x:Name="MainStack" Margin="5,5,5,5">
+            <Grid HorizontalOptions="Fill" x:Name="BusyGrid" IsVisible="False" HeightRequest="70" BackgroundColor="Black">
+                <ActivityIndicator x:Name="BusySignal" HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
+                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"  VerticalOptions="Center"/>
             </Grid>
-            <ListView x:Name="Projects" 
+            <Grid VerticalOptions="FillAndExpand">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="6*"/>
+                </Grid.RowDefinitions>
+                <StackLayout>
+                    <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,5,0,0"/>
+                    <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         CachingStrategy="RecycleElement"                        
-                        RowHeight="50"
+                        RowHeight="45"
                     >
-                <d:ListView.ItemsSource>
-                    <x:Array Type="{x:Type local:Track}">
-                        <local:Track Name="Riffs Reaf" Project="Figure of Speach" isProject="True"  />
-                        <local:Track Name="Riffs Reaf" Project="Figure of Speach" isProject="False"  />
-                        <local:Track Name="Sick or Throwing Up" Project="Figure of Speach" isProject="False" />
-                    </x:Array>
-                </d:ListView.ItemsSource>            
-            </ListView>
-            <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,0,0"/>
-            <ListView x:Name="SelectedTracks" 
-                        HeightRequest="400"
+                        <d:ListView.ItemsSource>
+                            <x:Array Type="{x:Type local:Track}">
+                                <local:Track Name="Figure of Speach" isProject="True"  />
+                                <local:Track Name="Riffs Reaf" isProject="False" Order="1" />
+                                <!--<local:Track Name="Sick or Throwing Up" isProject="False" />
+                                <local:Track Name="The Blasted" isProject="True"  />
+                                <local:Track Name="Demo X" isProject="True"  />
+                                <local:Track Name="Demo X" isProject="True"  />
+                                <local:Track Name="Demo X" isProject="True"  />-->
+                            </x:Array>
+                        </d:ListView.ItemsSource>
+                    </ListView>
+                </StackLayout >
+                <StackLayout Grid.Row="1">
+                    <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
+                    <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
                         CachingStrategy="RecycleElement"
                         RowHeight="50"
                 >
-                <d:ListView.ItemsSource>
-                    <x:Array Type="{x:Type local:QueuedTrack}">
-                        <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
-                        <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
-                    </x:Array>
-                </d:ListView.ItemsSource>
-            </ListView>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
-                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
-                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" HorizontalOptions="End" VerticalOptions="Center"/>
+                        <d:ListView.ItemsSource>
+                            <x:Array Type="{x:Type local:QueuedTrack}">
+                                <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
+                                <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                                <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                                <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                            </x:Array>
+                        </d:ListView.ItemsSource>
+                    </ListView>
+                </StackLayout>
+            </Grid>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Margin="10,0,10,0" HeightRequest="35">
+                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" 
+                       />
+                <Button Image="ResyncBt.png" Clicked="ResyncAllClickedAsync" 
+                        />
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
