@@ -27,7 +27,14 @@ namespace MyMixes
         public MainPage()
         {
 
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch(Exception ex)
+            {
+                Debug.Print(ex.ToString());
+            }
 
             TransportVMInstance = (TransportViewModel)this.BindingContext;
             Projects.ItemsSource = TransportVMInstance.PlayingTracks;
