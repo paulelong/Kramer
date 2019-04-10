@@ -24,7 +24,7 @@ namespace MyMixes
         public ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
         public ISimpleAudioPlayer player { get; set; }
 
-        public string playButtonStateImage;
+        private string playButtonStateImage;
         public string PlayButtonStateImage
         {
             get
