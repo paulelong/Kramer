@@ -87,7 +87,12 @@ namespace MyMixes
             }
             set
             {
-                OnPropertyChanged("Order");
+                int neworder = 0;
+                if(int.TryParse(value, out neworder))
+                {
+                    order = neworder;
+                    OnPropertyChanged("Order");
+                }
             }
 
         }
