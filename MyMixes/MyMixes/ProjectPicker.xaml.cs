@@ -25,7 +25,7 @@ namespace MyMixes
         ProviderInfo pi;
         ObservableCollection<MixLocation> MixLocationList;
 
-        public string providerName;
+        public string providerName = "nothing";
         public string ProviderNameText
         {
             get
@@ -38,6 +38,11 @@ namespace MyMixes
                 {
                     providerName = value;
                     OnPropertyChanged("ProviderNameText");
+
+                    if(CurrentProvider == CloudProviders.NULL)
+                    {
+                        providerName = "select provider...";
+                    }
                 }
             }
         }
@@ -46,7 +51,17 @@ namespace MyMixes
         {
             get
             {
-                return (CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName);
+                CloudStorage.CloudProviders cp;
+                if(Enum.TryParse<CloudStorage.CloudProviders>(providerName, out cp))
+                {
+                    return cp;
+                }
+                else
+                {
+                    return CloudProviders.NULL;
+                }
+                //= (CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName);
+                //return (CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), providerName);
             }
             set
             {
@@ -58,6 +73,14 @@ namespace MyMixes
         public string CurrentFolder
         {
             get { return currentFolder; }
+            set
+            {
+                if(currentFolder != value)
+                {
+                    OnPropertyChanged("CurrentFolder");
+                    currentFolder = value;
+                }
+            }
         }
 
         private List<string> providerList = null;
@@ -68,7 +91,7 @@ namespace MyMixes
                 if(providerList == null)
                 {
                     providerList = new List<string>();
-                    
+                    providerList.Add("select provider...");
                     providerList.Add(CloudStorage.CloudProviders.OneDrive.ToString());
                     providerList.Add(CloudStorage.CloudProviders.GoogleDrive.ToString());
                 }
@@ -83,7 +106,9 @@ namespace MyMixes
 
             BindingContext = this;
 
-            currentFolder = PersistentData.LastFolder;
+            CloudProivder.ItemsSource = ProviderList;
+
+            CurrentFolder = PersistentData.LastFolder;
             ProviderNameText = PersistentData.LastCloud;
 
             MixLocationList = list;
@@ -110,14 +135,14 @@ namespace MyMixes
         {
             if(pi != null && await pi.CheckAuthenitcation())
             {
-                List<string> folders = await pi.GetFoldersAsync(currentFolder);
+                List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
                 FolderList.ItemsSource = folders;
             }
         }
 
         private async void SelectPressed(object sender, EventArgs e)
         {
-            string p = string.IsNullOrEmpty(currentFolder) ? "" : (currentFolder + "/");
+            string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
             MixLocationList.Add(new MixLocation() { Path = p + (string)FolderList.SelectedItem, Provider = pi.CloudProvider });
             PersistentData.SaveMixLocations(MixLocationList);
         }
@@ -126,7 +151,7 @@ namespace MyMixes
         {
             if(FolderList.SelectedItem != null)
             {
-                currentFolder += "/" + (string)FolderList.SelectedItem;
+                CurrentFolder += "/" + (string)FolderList.SelectedItem;
                 await UpdateFolderList();
             }
         }
@@ -137,12 +162,12 @@ namespace MyMixes
 
         private async void UpPressed(object sender, EventArgs e)
         {
-            if(!string.IsNullOrEmpty(currentFolder))
+            if(!string.IsNullOrEmpty(CurrentFolder))
             {
-                int idx = currentFolder.LastIndexOf('/');
+                int idx = CurrentFolder.LastIndexOf('/');
                 if(idx >= 0)
                 {
-                    currentFolder = currentFolder.Substring(0, idx);
+                    CurrentFolder = CurrentFolder.Substring(0, idx);
                     await UpdateFolderList();
                 }
             }
@@ -155,15 +180,18 @@ namespace MyMixes
 
         private async void OnProviderChanged(object sender, EventArgs e)
         {
-            currentFolder = "";
-            pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
-            
-            await UpdateFolderList();
+            CurrentFolder = "";
+            if(CurrentProvider != CloudProviders.NULL)
+            {
+                pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
+
+                await UpdateFolderList();
+            }
         }
 
         private void OnDisappearing(object sender, EventArgs e)
         {
-            PersistentData.LastFolder = currentFolder;
+            PersistentData.LastFolder = CurrentFolder;
             PersistentData.LastCloud = ProviderNameText;
 
             Application.Current.SavePropertiesAsync();
