@@ -59,94 +59,11 @@ namespace MyMixes
             await Navigation.PushAsync(new AddSongs(MixLocationList));
         }
 
-        private async Task SyncProjects()
-        {
-            Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
-            
-            foreach(MixLocation ml in MixLocationList)
-            {
-                BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
-
-                ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
-
-                if (await pi.CheckAuthenitcation())
-                {
-                    List<string> l = await pi.GetFoldersAsync(ml.Path);
-                    if (l != null)
-                    {
-                        foreach (string f in l)
-                        {
-                            BusyStatus.Text = pi.CloudProvider.ToString() + " " + ml.Path + " " + f;
-                            var retList = await pi.UpdateProjectAsync(ml.Path, f);
-                            if(AllSongs.ContainsKey(f))
-                            {
-                                AllSongs[f].AddRange(retList);
-                            }
-                            else
-                            {
-                                AllSongs[f] = retList;
-                            }
-                        }
-                    }
-                }
-            }
-
-            string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            foreach(string p in Directory.GetDirectories(rootPath))
-            {
-                if (!AllSongs.ContainsKey(Path.GetFileName(p)))
-                {
-                    Debug.Print("Remove dir " + p + "\n");
-                    BusyStatus.Text = "Removing " + p;
-                    Directory.Delete(p, true);
-                }
-                else
-                {
-                    foreach(string s in Directory.GetDirectories(p))
-                    {
-                        if(AllSongs[p].Contains(Path.GetFileName(s)))
-                        {
-                            BusyStatus.Text = "Removing " + s;
-                            Debug.Print("Remove file " + s + "\n");
-                            File.Delete(s);
-                        }
-                    }
-                }
-            }
-
-            foreach (string p in AllSongs.Keys)
-            {
-                foreach(string f in AllSongs[p])
-                {
-                    BusyStatus.Text = p + " " + f;
-                }
-            }
-
-            PersistentData.Save();
-        }
-
         private void OnAppearing(object sender, EventArgs e)
         {
-            BusyOn(true);
             TransportVMInstance.LoadProjects();
-            BusyOn(false);
         }
 
-        private async void ResyncAllClickedAsync(object sender, EventArgs e)
-        {
-            // DCR: Maybe we don't sync all the time
-            BusyOn(true);
-            await SyncProjects();
-            TransportVMInstance.LoadProjects();
-            BusyOn(false);
-        }
-
-        private void BusyOn(bool TurnOn)
-        {
-            BusyGrid.IsVisible = TurnOn;
-            BusySignal.IsRunning = TurnOn;
-            MainStack.IsEnabled = !TurnOn;
-        }
 
         private void DeleteSong_Clicked(object sender, EventArgs e)
         {

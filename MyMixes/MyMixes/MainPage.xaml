@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
              x:Class="MyMixes.MainPage"
-             Appearing="OnAppearing"
              xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
-             BackgroundColor="{DynamicResource backgroundColor}"
              Style="{DynamicResource dark:DarkThemeResources}"
                 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
+             Appearing="OnAppearing"
              >
     <ContentPage.BindingContext>
         <local:TransportViewModel/>
@@ -62,10 +61,10 @@
                 </d:ListView.ItemsSource>
             </ListView>
             <!--</ScrollView>-->
-            <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False" HeightRequest="100">
+            <!--<Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False" HeightRequest="100">
                 <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
                 <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
-            </Grid>
+            </Grid>-->
             <Grid HorizontalOptions="FillAndExpand" HeightRequest="80">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.5*" />
@@ -82,9 +81,7 @@
             </Grid>
 
             <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
-            <!--<StackLayout Orientation="Horizontal" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,0,10,0">-->
-                <Button Text="Add Music" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160"/>
-            <!--</StackLayout>-->
+            <Button Text="Add Music" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
