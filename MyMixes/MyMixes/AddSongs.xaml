@@ -1,13 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MyMixes.AddSongs"
-             Appearing="OnAppearing"
              xmlns:local="clr-namespace:MyMixes"
+             x:Class="MyMixes.AddSongs"
                 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
+             Appearing="OnAppearing"
              >
+
+    <ContentPage.BindingContext>
+        <local:ProjectPickerData/>
+    </ContentPage.BindingContext>
+    
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="projectfolderTemplate">
@@ -78,10 +83,13 @@
     
     <ContentPage.Content>
         <StackLayout x:Name="MainStack" Margin="5,5,5,5">
-            <Grid HorizontalOptions="Fill" x:Name="BusyGrid" IsVisible="False" HeightRequest="70" BackgroundColor="Black">
+            <ContentView ControlTemplate="{StaticResource BusyControl}" IsVisible="True" HorizontalOptions="FillAndExpand">
+            </ContentView>
+
+            <!--<Grid HorizontalOptions="Fill" x:Name="BusyGrid" IsVisible="False" HeightRequest="70" BackgroundColor="Black">
                 <ActivityIndicator x:Name="BusySignal" HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
                 <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"  VerticalOptions="Center"/>
-            </Grid>
+            </Grid>-->
             <Grid VerticalOptions="FillAndExpand">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="4*"/>

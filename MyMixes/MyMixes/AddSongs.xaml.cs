@@ -19,10 +19,12 @@ namespace MyMixes
         private Track selectedTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
-        ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
+        private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
+        private ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
 
-        ObservableCollection<MixLocation> MixLocationList = null;
+        private ObservableCollection<MixLocation> MixLocationList = null;
+
+        private ProjectPickerData ppd;// = new ProjectPickerData();
 
 
         public AddSongs (ObservableCollection<MixLocation> list)
@@ -31,6 +33,10 @@ namespace MyMixes
 
             SelectedTracks.ItemsSource = SelectedTrackList;
             Projects.ItemsSource = LoadedTracks;
+
+            //this.BindingContext = ppd;
+            ppd = (ProjectPickerData)this.BindingContext;
+            ppd.BusyText = "Somethign to see";
 
             MixLocationList = list;
 
@@ -119,8 +125,11 @@ namespace MyMixes
 
         private void BusyOn(bool TurnOn)
         {
-            BusyGrid.IsVisible = TurnOn;
-            BusySignal.IsRunning = TurnOn;
+            //BusyGrid.IsVisible = TurnOn;
+            //BusySignal.IsRunning = TurnOn;
+            ppd.IsRunning = TurnOn;
+            ppd.IsVisible = TurnOn;
+
             MainStack.IsEnabled = !TurnOn;
         }
 
@@ -144,7 +153,7 @@ namespace MyMixes
 
             foreach (MixLocation ml in MixLocationList)
             {
-                BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
+                ppd.BusyText = ml.Provider.ToString() + " " + ml.Path;
 
                 ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
 
@@ -155,7 +164,7 @@ namespace MyMixes
                     {
                         foreach (string f in l)
                         {
-                            BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path  + " " + f;
+                            ppd.BusyText = ml.Provider.ToString() + " " + ml.Path  + " " + f;
                             var retList = await pi.UpdateProjectAsync(ml.Path, f);
                             if (AllSongs.ContainsKey(f))
                             {
@@ -176,7 +185,7 @@ namespace MyMixes
                 if (!AllSongs.ContainsKey(Path.GetFileName(p)))
                 {
                     Debug.Print("Remove dir " + p + "\n");
-                    BusyStatus.Text = "Removing " + p;
+                    ppd.BusyText = "Removing " + p;
                     Directory.Delete(p, true);
                 }
                 else
@@ -185,7 +194,7 @@ namespace MyMixes
                     {
                         if (AllSongs[p].Contains(Path.GetFileName(s)))
                         {
-                            BusyStatus.Text = "Removing " + s;
+                            ppd.BusyText = "Removing " + s;
                             Debug.Print("Remove file " + s + "\n");
                             File.Delete(s);
                         }
@@ -197,7 +206,7 @@ namespace MyMixes
             {
                 foreach (string f in AllSongs[p])
                 {
-                    BusyStatus.Text = p + " " + f;
+                    ppd.BusyText = p + " " + f;
                 }
             }
 
