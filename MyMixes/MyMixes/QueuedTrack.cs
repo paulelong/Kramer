@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using Xamarin.Forms;
 
 namespace MyMixes
 {
@@ -20,6 +21,13 @@ namespace MyMixes
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        static public QueuedTrack FindQueuedTrack(View v)
+        {
+            Grid g = (Grid)v.Parent;
+            QueuedTrack t = (QueuedTrack)g.BindingContext;
+            return t;
         }
     }
 }
