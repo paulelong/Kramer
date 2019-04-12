@@ -83,7 +83,6 @@ namespace MyMixes
                         break;
                     default:
                         return null;
-                        break;
                 }
 
                 if(newProvider != null)
