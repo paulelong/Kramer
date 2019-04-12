@@ -25,6 +25,8 @@ namespace MyMixes
         ProviderInfo pi;
         ObservableCollection<MixLocation> MixLocationList;
 
+        private ProjectPickerData ppd;
+
         public string providerName = "nothing";
         public string ProviderNameText
         {
@@ -104,7 +106,9 @@ namespace MyMixes
 		{
 			InitializeComponent ();
 
-            BindingContext = this;
+//            BindingContext = this;
+            CloudProivder.BindingContext = this;
+            PathBreadCrumbs.BindingContext = this;
 
             CloudProivder.ItemsSource = ProviderList;
 
@@ -112,6 +116,8 @@ namespace MyMixes
             ProviderNameText = PersistentData.LastCloud;
 
             MixLocationList = list;
+
+            ppd = (ProjectPickerData)this.BindingContext;
         }
 
         private async void OnAppearing(object sender, EventArgs e)
@@ -135,8 +141,10 @@ namespace MyMixes
         {
             if(pi != null && await pi.CheckAuthenitcation())
             {
+                BusyOn(true);
                 List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
                 FolderList.ItemsSource = folders;
+                BusyOn(false);
             }
         }
 
@@ -207,6 +215,13 @@ namespace MyMixes
             Grid g = (Grid)v.Parent;
             MixLocation t = (MixLocation)g.BindingContext;
             return t;
+        }
+        private void BusyOn(bool TurnOn)
+        {
+            ppd.IsRunning = TurnOn;
+            ppd.IsVisible = TurnOn;
+
+            MainStack.IsEnabled = !TurnOn;
         }
     }
 }   

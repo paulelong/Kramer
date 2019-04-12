@@ -41,9 +41,7 @@ namespace MyMixes
             }
         }
 
-        private string playingSong;
         private bool isSongPlaying;
-        private int currentSong = 0;
 
         public TransportViewModel()
         {
@@ -57,10 +55,29 @@ namespace MyMixes
                 player.Loop = false;
                 player.PlaybackEnded += Player_PlaybackEnded;
 
-                currentSong = PersistentData.LastPlayedSongIndex;
+                CurrentTrackNumber = PersistentData.LastPlayedSongIndex;
             }
 
             PlayButtonStateImage = "PlayBt.png";
+        }
+
+        internal object GetSelectedProject()
+        {
+            return PlayingTracks[PersistentData.LastPlayedSongIndex];
+        }
+
+        public void MoveSongDown(QueuedTrack t)
+        {
+            int i = PlayingTracks.IndexOf(t);
+
+            if (i + 1 < PlayingTracks.Count)
+            {
+                PlayingTracks.Move(i, i + 1);
+            }
+            else
+            {
+                PlayingTracks.Move(i, 0);
+            }
         }
 
         private async void Player_PlaybackEnded(object sender, EventArgs e)
@@ -89,11 +106,13 @@ namespace MyMixes
             });
         }
 
-        public void SetCurrentSong(Track t)
+        public async Task SetCurrentSong(QueuedTrack t)
         {
-            CurrentProject = Path.GetFileName(t.ProjectPath);
-
-            CurrentSel = t.Name;
+            CurrentTrackNumber = PlayingTracks.IndexOf(t);
+            if(isSongPlaying)
+            {
+                await PlayCurrentSong();
+            }
         }
 
         public async void PlaySong()
@@ -111,7 +130,7 @@ namespace MyMixes
                     else
                     {
                         isSongPlaying = true;
-                        player.Play();
+                        await PlayCurrentSong();
                         PlayButtonStateImage = "PauseBt.png";
                     }
                 }
@@ -212,57 +231,19 @@ namespace MyMixes
             PersistentData.LoadQueuedTracks(PlayingTracks);
         }
 
-        public void RemoveSong(Track t)
+        public void RemoveSong(QueuedTrack t)
         {
-            //if (t == null)
-            //    return;
+            if (t == null)
+                return;
 
-            //if (player.CurrentPosition > 0 && currentSong == t.OrderVal)
-            //{
-            //    player.Stop();
-            //}
+            int i = PlayingTracks.IndexOf(t);
 
-            //foreach (string key in PlayListOrder.Keys.ToArray())
-            //{
-            //    if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= t.OrderVal)
-            //    {
-            //        PlayListOrder[key]--;
-            //    }
-            //}
+            if (player.CurrentPosition > 0 && CurrentTrackNumber == i)
+            {
+                player.Stop();
+            }
 
-            //foreach (Track ct in (List<Track>)Projects.ItemsSource)
-            //{
-            //    if (ct.OrderVal >= t.OrderVal && ct.OrderVal > 0)
-            //    {
-            //        ct.OrderVal--;
-            //        if (ct.OrderVal == 0)
-            //        {
-            //            ct.OrderButtonText = "+";
-            //            ct.ReadyToAdd = true;
-            //        }
-            //    }
-            //}
-            //PlayListOrder[t.FullPath] = 0;
-
-            //TrasnportVMInstance.Tracklist.Remove(t);
-            //this.BindingContext = null;
-            //this.BindingContext = TrasnportVMInstance;
-
-            //SetSongIndex(t.OrderVal);
-            //currentOrder--;
-
-            //if (isSongPlaying)
-            //{
-            //    if (TrasnportVMInstance.SongsQueued > 0)
-            //    {
-            //        await PlayCurrentSong();
-            //    }
-            //    else
-            //    {
-            //        isSongPlaying = false;
-            //        //PlaySongButton.Image = "PlayBt.png";
-            //    }
-            //}
+            PlayingTracks.Remove(t);
         }
 
         //private void SetSongIndex(int tracknumber)
@@ -339,11 +320,6 @@ namespace MyMixes
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
-
-        public void LoadSampleData()
-        {
-            PlayingTracks.Add(new QueuedTrack() { Name = "Brother hammond", Project = "A Birds Nest" });
         }
     }
 }

@@ -26,7 +26,6 @@ namespace MyMixes
 
         public MainPage()
         {
-
             try
             {
                 InitializeComponent();
@@ -62,17 +61,18 @@ namespace MyMixes
         private void OnAppearing(object sender, EventArgs e)
         {
             TransportVMInstance.LoadProjects();
+            Projects.SelectedItem = TransportVMInstance.GetSelectedProject();
         }
 
 
         private void DeleteSong_Clicked(object sender, EventArgs e)
         {
-
+            TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
         }
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
-            TransportVMInstance.PlaySongTrack((QueuedTrack)e.SelectedItem);
+            await TransportVMInstance.SetCurrentSong((QueuedTrack)e.SelectedItem);
         }
 
     
@@ -140,6 +140,13 @@ namespace MyMixes
         private void EditPressed_Clicked(object sender, EventArgs e)
         {
 
+        }
+
+        private void DownPosition_Clicked(object sender, EventArgs e)
+        {
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+            
+            TransportVMInstance.MoveSongDown(t);
         }
 
         //private void SongNameTapped(object sender, EventArgs e)

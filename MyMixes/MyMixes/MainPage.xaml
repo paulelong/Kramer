@@ -18,10 +18,11 @@
         <ResourceDictionary  MergedWith="dark:DarkThemeResources">
             <DataTemplate x:Key="songListTemplate">
                 <ViewCell>
-                    <Grid Margin="0,2,0,2" BackgroundColor="Transparent" >
+                    <Grid Margin="0,0,0,0" BackgroundColor="Transparent" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.17*" />
                             <ColumnDefinition Width="0.76*" />
+                            <ColumnDefinition Width="0.17*" />
                             <ColumnDefinition Width="0.17*" />
                         </Grid.ColumnDefinitions>
                         <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
@@ -34,9 +35,8 @@
                             <Label Text="{Binding Name, Mode=TwoWay}" 
                                    TextColor="White" FontAttributes="Bold" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="2" Image="DelBt.png" Scale=".9">
-                           
-                        </Button>
+                        <Button Grid.Column="2" Image="DownBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
+                        <Button Grid.Column="3" Image="DelBt.png" Scale=".88" Clicked="DeleteSong_Clicked"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -51,7 +51,7 @@
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
                         CachingStrategy="RecycleElement"  
-                        RowHeight="55" Margin="10,5,10,5"
+                        RowHeight="55" Margin="0,0,0,0"
             >
                 <d:ListView.ItemsSource>
                     <x:Array Type="{x:Type local:QueuedTrack}">

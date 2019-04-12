@@ -24,12 +24,12 @@ namespace MyMixes
 
         private ObservableCollection<MixLocation> MixLocationList = null;
 
-        private ProjectPickerData ppd;// = new ProjectPickerData();
+        private ProjectPickerData ppd;
 
 
-        public AddSongs (ObservableCollection<MixLocation> list)
-		{
-			InitializeComponent ();
+        public AddSongs(ObservableCollection<MixLocation> list)
+        {
+            InitializeComponent();
 
             SelectedTracks.ItemsSource = SelectedTrackList;
             Projects.ItemsSource = LoadedTracks;
@@ -40,7 +40,12 @@ namespace MyMixes
 
             MixLocationList = list;
 
-            PersistentData.LoadQueuedTracks(SelectedTrackList);            
+            PersistentData.LoadQueuedTracks(SelectedTrackList);
+
+            if (DesignMode.IsDesignModeEnabled)
+            {
+                ppd.BusyText = "Something here";
+            }
         }
 
         private void DeleteFolder_Clicked(object sender, EventArgs e)
@@ -121,13 +126,13 @@ namespace MyMixes
             await SyncProjects();
             await LoadProjects();
             BusyOn(false);
+
+            Projects.EndRefresh();
         }
 
         private void BusyOn(bool TurnOn)
         {
-            //BusyGrid.IsVisible = TurnOn;
-            //BusySignal.IsRunning = TurnOn;
-            ppd.IsRunning = TurnOn;
+            //ppd.IsRunning = TurnOn;
             ppd.IsVisible = TurnOn;
 
             MainStack.IsEnabled = !TurnOn;
@@ -137,13 +142,6 @@ namespace MyMixes
         {
             Grid g = (Grid)v.Parent;
             Track t = (Track)g.BindingContext;
-            return t;
-        }
-
-        QueuedTrack FindQueuedTrack(View v)
-        {
-            Grid g = (Grid)v.Parent;
-            QueuedTrack t = (QueuedTrack)g.BindingContext;
             return t;
         }
 
@@ -370,7 +368,7 @@ namespace MyMixes
 
         private async void DeleteSong_Clicked(object sender, EventArgs e)
         {
-            QueuedTrack t = FindQueuedTrack((View)sender);
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
             for (int i = 0; i < SelectedTrackList.Count; i++)
             {
@@ -382,6 +380,22 @@ namespace MyMixes
             }
 
             await PersistentData.SaveQueuedTracks(SelectedTrackList);
+        }
+
+        private void SongDownPosition_Clicked(object sender, EventArgs e)
+        {
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+
+            int i = SelectedTrackList.IndexOf(t);
+            
+            if(i+1 < SelectedTrackList.Count)
+            {
+                SelectedTrackList.Move(i, i + 1);
+            }
+            else
+            {
+                SelectedTrackList.Move(i, 0);
+            }
         }
     }
 }

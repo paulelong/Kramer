@@ -9,6 +9,10 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
              >
+    <ContentPage.BindingContext>
+        <local:ProjectPickerData/>
+    </ContentPage.BindingContext>
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="mixLocationTemplate">
@@ -21,7 +25,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Text="{Binding Path}" TextColor="White" VerticalTextAlignment="Center"/>
                         <Label Grid.Column="1" Text="{Binding Provider}" VerticalTextAlignment="Center"/>
-                        <Button Grid.Column="2" Image="DelBt.png"/>
+                        <Button Grid.Column="2" Image="DelBt.png"  Pressed="LocationDeleted"/>
                         <!--<Button Grid.Column="2" Image="DelBt.png" Pressed="LocationDeleted"/>-->
                     </Grid>
                 </ViewCell>
@@ -30,7 +34,8 @@
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <StackLayout HorizontalOptions="FillAndExpand" Margin="5,5,5,5">
+        <StackLayout x:Name="MainStack" HorizontalOptions="FillAndExpand" Margin="5,5,5,5">
+            <ContentView x:Name="busyControl" HeightRequest="120" ControlTemplate="{StaticResource BusyControl}" HorizontalOptions="FillAndExpand" d:IsVisible="True" IsVisible="{Binding IsVisible}"/>
             <Grid>
                 <Grid.RowDefinitions >
                     <RowDefinition Height="3*"/>
@@ -82,7 +87,7 @@
                     </ListView>
                 </StackLayout>
             </Grid>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
                 <Button Text="Up" Pressed="UpPressed"/>
                 <Button Text="Open" Pressed="OpenFolder"/>
                 <Button Text="Add" Pressed="SelectPressed"/>
