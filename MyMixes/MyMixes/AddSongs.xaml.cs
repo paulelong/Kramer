@@ -83,7 +83,7 @@ namespace MyMixes
             await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
-        private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
+        private void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
             Debug.Print("Track selected\n");
             Track t = (Track)e.SelectedItem;
@@ -103,14 +103,14 @@ namespace MyMixes
                     selectedTrack = null;
                 }
 
-                await LoadProjectsAsync();
+                LoadProjects();
             }
         }
 
-        private async void OnAppearing(object sender, EventArgs e)
+        private void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
-            await LoadProjectsAsync();
+            LoadProjects();
             BusyOn(false);
         }
 
@@ -119,7 +119,7 @@ namespace MyMixes
             // DCR: Maybe we don't sync all the time
             BusyOn(true);
             await SyncProjectsAsync();
-            await LoadProjectsAsync();
+            LoadProjects();
             BusyOn(false);
 
             Projects.EndRefresh();
@@ -151,7 +151,7 @@ namespace MyMixes
 
                 ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
 
-                if (await pi.CheckAuthenitcation())
+                if (await pi.CheckAuthenitcationAsync())
                 {
                     List<string> l = await pi.GetFoldersAsync(ml.Path);
                     if (l != null)
@@ -207,7 +207,7 @@ namespace MyMixes
             PersistentData.Save();
         }
 
-        private async Task LoadProjectsAsync()
+        private void LoadProjects()
         {
             for (int i = LoadedTracks.Count - 1; i >= 0; i--)
             {
@@ -263,54 +263,6 @@ namespace MyMixes
             {
                 Debug.Print(ex.Message);
             }
-
-
-            //Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-
-            //try
-            //{
-            //    foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
-            //    //foreach (IFolder f in folderList)
-            //    {
-            //        if (await WavDirectory(projFolder))
-            //        {
-            //            var p = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
-            //            LoadedTracks.Add(p);
-
-            //            if (selectedFolder == Path.GetFileName(projFolder))
-            //            {
-            //                //IList<IFile> fileList = await f.GetFilesAsync();
-            //                foreach (string songFile in Directory.GetFiles(projFolder))
-            //                {
-            //                    int tracknum = PersistentData.GetTrackNumber(projFolder, Path.GetFileNameWithoutExtension(songFile));
-
-            //                    var t = new Track
-            //                    {
-            //                        Name = Path.GetFileNameWithoutExtension(songFile),
-            //                        FullPath = songFile,
-            //                        isProject = false,
-            //                        ProjectPath = projFolder,
-            //                        OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
-            //                        TrackNum = tracknum,                                    
-            //                    };
-
-            //                    if (tracknum != 0)
-            //                    {
-            //                        LoadedTracks.Insert(tracknum - 1, t);
-            //                    }
-            //                    else
-            //                    {
-            //                        LoadedTracks.Add(t);
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.Print(ex.Message);
-            //}
         }
 
         private void LoadProjectFolders()
