@@ -139,7 +139,7 @@ namespace MyMixes
             }
         }
 
-        public async Task<bool> CheckAuthenitcation()
+        public async Task<bool> CheckAuthenitcationAsync()
         {
             if(!isAuthenticated)
             {
