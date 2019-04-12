@@ -2,7 +2,11 @@
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
-             x:Class="MyMixes.App">
+             x:Class="MyMixes.App"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+             >
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
 
@@ -24,8 +28,8 @@
                       IsVisible="{TemplateBinding Parent.BindingContext.IsVisible}" 
                       HeightRequest="50">
                     <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"
-                                       IsRunning="{TemplateBinding Parent.BindingContext.IsRunning}" BackgroundColor="Gray"/>
-                    <Label Text="{TemplateBinding Parent.BindingContext.BusyText}" HorizontalOptions="CenterAndExpand"/>
+                                       IsRunning="{TemplateBinding Parent.BindingContext.IsRunning}" BackgroundColor="#050505"/>
+                    <Label Text="{TemplateBinding Parent.BindingContext.BusyText}" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
                 </Grid>
             </ControlTemplate>
 
