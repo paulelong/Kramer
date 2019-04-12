@@ -42,7 +42,6 @@ namespace MyMixes
             }
             else
             {
-
                 PersistentData.LoadMixLocations(MixLocationList);
 
                 NavigationPage.SetHasNavigationBar(this, false);
@@ -53,88 +52,28 @@ namespace MyMixes
 #pragma warning disable AvoidAsyncVoid
         private async void Add_Clicked(object sender, EventArgs e)
         {
+            PersistentData.Save();
             await Navigation.PushAsync(new AddSongs(MixLocationList));
         }
 #pragma warning restore AvoidAsyncVoid
 
+        private void Notes_Clicked(object sender, EventArgs e)
+        {
+            PersistentData.Save();
+            Navigation.PushAsync(new SongNotes());
+        }
+
         private void OnAppearing(object sender, EventArgs e)
         {
             TransportVMInstance.LoadProjects();
-            TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex;
-            //Projects.SelectedItem = TransportVMInstance.GetSelectedProject();
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
+            
         }
-
 
         private void DeleteSong_Clicked(object sender, EventArgs e)
         {
             TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
         }
-
-        //private async void RemoveSong_Clicked(object sender, EventArgs e)
-        //{
-        //    //Track t = TrasnportVMInstance.CurrentTrack;
-
-        //    //if (t == null)
-        //    //    return;
-
-        //    //if (player.CurrentPosition > 0 && currentSong == t.OrderVal)
-        //    //{
-        //    //    player.Stop();
-        //    //}
-
-        //    //foreach (string key in PlayListOrder.Keys.ToArray())
-        //    //{
-        //    //    if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= t.OrderVal)
-        //    //    {
-        //    //        PlayListOrder[key]--;
-        //    //    }
-        //    //}
-
-        //    //foreach (Track ct in (List<Track>)Projects.ItemsSource)
-        //    //{
-        //    //    if (ct.OrderVal >= t.OrderVal && ct.OrderVal > 0)
-        //    //    {
-        //    //        ct.OrderVal--;
-        //    //        if(ct.OrderVal == 0)
-        //    //        {
-        //    //            ct.OrderButtonText = "+";
-        //    //            ct.ReadyToAdd = true;
-        //    //        }
-        //    //    }
-        //    //}
-        //    //PlayListOrder[t.FullPath] = 0;
-
-        //    //TrasnportVMInstance.Tracklist.Remove(t);
-        //    //this.BindingContext = null;
-        //    //this.BindingContext = TrasnportVMInstance;
-
-        //    //SetSongIndex(t.OrderVal);
-        //    //currentOrder--;
-
-        //    //if(isSongPlaying)
-        //    //{
-        //    //    if(TrasnportVMInstance.SongsQueued > 0)
-        //    //    {
-        //    //        await PlayCurrentSong();
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        isSongPlaying = false;
-        //    //        //PlaySongButton.Image = "PlayBt.png";
-        //    //    }
-        //    //}
-        //}
-
-
-        private void Notes_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new SongNotes());
-        }
-
-        //private void EditPressed_Clicked(object sender, EventArgs e)
-        //{
-
-        //}
 
         private void DownPosition_Clicked(object sender, EventArgs e)
         {

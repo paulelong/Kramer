@@ -42,9 +42,14 @@ namespace MyMixes
             {
                 if (value != selectedSong)
                 {
-                    currentTrackNumber = PlayingTracks.IndexOf(value);
                     selectedSong = value;
+                    currentTrackNumber = PlayingTracks.IndexOf(value);
                     OnPropertyChanged("SelectedSong");
+                    PersistentData.LastPlayedSongIndex = currentTrackNumber;
+                    if(isSongPlaying)
+                    {
+                        PlayCurrentSongAsync();
+                    }
                 }
             }
         }
@@ -61,8 +66,8 @@ namespace MyMixes
                 if(currentTrackNumber != value)
                 {
                     currentTrackNumber = value;
-                    SelectedSong = PlayingTracks[currentTrackNumber];
                 }
+                SelectedSong = PlayingTracks[currentTrackNumber];
             }
 
         }
@@ -207,7 +212,8 @@ namespace MyMixes
                     else
                     {
                         isSongPlaying = true;
-                        await PlayCurrentSongAsync();
+                        player.Play();
+//                        await PlayCurrentSongAsync();
                         PlayButtonStateImage = "PauseBt.png";
                     }
                 }
