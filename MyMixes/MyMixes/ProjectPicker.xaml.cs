@@ -128,7 +128,7 @@ namespace MyMixes
 
         private async Task UpdateFolderList()
         {
-            if(pi != null && await pi.CheckAuthenitcation())
+            if(pi != null && await pi.CheckAuthenitcationAsync())
             {
                 BusyOn(true);
                 List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
