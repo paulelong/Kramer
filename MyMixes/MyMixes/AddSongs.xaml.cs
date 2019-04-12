@@ -34,7 +34,6 @@ namespace MyMixes
             SelectedTracks.ItemsSource = SelectedTrackList;
             Projects.ItemsSource = LoadedTracks;
 
-            //this.BindingContext = ppd;
             ppd = (ProjectPickerData)this.BindingContext;
             ppd.BusyText = "Somethign to see";
 
@@ -53,16 +52,12 @@ namespace MyMixes
 
         }
 
-        private void ResyncProjectClickedAsync(object sender, EventArgs e)
-        {
-
-        }
-
         private void LocalPlay_Clicked(object sender, EventArgs e)
         {
 
         }
 
+#pragma warning disable AvoidAsyncVoid
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
             ProjectPicker pp = new ProjectPicker(MixLocationList);
@@ -85,7 +80,7 @@ namespace MyMixes
                 SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
             }
 
-            await PersistentData.SaveQueuedTracks(SelectedTrackList);
+            await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
@@ -108,14 +103,14 @@ namespace MyMixes
                     selectedTrack = null;
                 }
 
-                await LoadProjects();
+                await LoadProjectsAsync();
             }
         }
 
         private async void OnAppearing(object sender, EventArgs e)
         {
             BusyOn(true);
-            await LoadProjects();
+            await LoadProjectsAsync();
             BusyOn(false);
         }
 
@@ -123,12 +118,13 @@ namespace MyMixes
         {
             // DCR: Maybe we don't sync all the time
             BusyOn(true);
-            await SyncProjects();
-            await LoadProjects();
+            await SyncProjectsAsync();
+            await LoadProjectsAsync();
             BusyOn(false);
 
             Projects.EndRefresh();
         }
+#pragma warning restore AvoidAsync
 
         private void BusyOn(bool TurnOn)
         {
@@ -145,7 +141,7 @@ namespace MyMixes
             return t;
         }
 
-        private async Task SyncProjects()
+        private async Task SyncProjectsAsync()
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
@@ -211,7 +207,7 @@ namespace MyMixes
             PersistentData.Save();
         }
 
-        private async Task LoadProjects()
+        private async Task LoadProjectsAsync()
         {
             for (int i = LoadedTracks.Count - 1; i >= 0; i--)
             {
@@ -379,7 +375,7 @@ namespace MyMixes
                 }
             }
 
-            await PersistentData.SaveQueuedTracks(SelectedTrackList);
+            await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private void SongDownPosition_Clicked(object sender, EventArgs e)
@@ -396,6 +392,11 @@ namespace MyMixes
             {
                 SelectedTrackList.Move(i, 0);
             }
+        }
+
+        private void ResyncProjectClickedAsync(object sender, EventArgs e)
+        {
+
         }
     }
 }

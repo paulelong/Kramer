@@ -28,8 +28,8 @@
                         <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" 
                                TextColor="White" FontAttributes="Bold" FontSize="Medium"
                                VerticalOptions="Center"/>
-                        <Button Grid.Column="2" Image="TrashBt.png" Scale="0.9"   Clicked="ResyncProjectClickedAsync"/>
-                        <Button Grid.Column="3" Image="ResyncBt3.png" Scale="0.9" Clicked="DeleteFolder_Clicked" />
+                        <Button Grid.Column="2" Image="TrashBt.png" Scale="0.9"   Clicked="DeleteFolder_Clicked"/>
+                        <Button Grid.Column="3" Image="ResyncBt3.png" Scale="0.9" Clicked="ResyncProjectClickedAsync" />
                         <!--<Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
                         <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>

@@ -36,7 +36,7 @@ namespace MyMixes
             }
 
             TransportVMInstance = (TransportViewModel)this.BindingContext;
-            Projects.ItemsSource = TransportVMInstance.PlayingTracks;
+            //Projects.ItemsSource = TransportVMInstance.playingTracks;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -51,6 +51,7 @@ namespace MyMixes
 
                 NavigationPage.SetHasNavigationBar(this, false);
             }
+
         }
 
         private async void Add_Clicked(object sender, EventArgs e)
@@ -61,7 +62,8 @@ namespace MyMixes
         private void OnAppearing(object sender, EventArgs e)
         {
             TransportVMInstance.LoadProjects();
-            Projects.SelectedItem = TransportVMInstance.GetSelectedProject();
+            TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex;
+            //Projects.SelectedItem = TransportVMInstance.GetSelectedProject();
         }
 
 
@@ -70,10 +72,10 @@ namespace MyMixes
             TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
         }
 
-        private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
-        {
-            await TransportVMInstance.SetCurrentSong((QueuedTrack)e.SelectedItem);
-        }
+        //private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
+        //{
+        //    await TransportVMInstance.SetCurrentSong((QueuedTrack)e.SelectedItem);
+        //}
 
     
         private async void RemoveSong_Clicked(object sender, EventArgs e)

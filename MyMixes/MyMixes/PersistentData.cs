@@ -88,7 +88,7 @@ namespace MyMixes
             Application.Current.Properties[key] = value;
         }
 
-        public static async Task<bool> isRemoteNewer(string path, DateTime lastModified)
+        public static async Task<bool> isRemoteNewerAsync(string path, DateTime lastModified)
         {
             string filepath = Path.GetDirectoryName(path);
             string name = Path.GetFileName(path);
@@ -260,7 +260,7 @@ namespace MyMixes
 
         }
 
-        static public async Task SaveQueuedTracks(ObservableCollection<QueuedTrack> qtlist)
+        static public async Task SaveQueuedTracksAsync(ObservableCollection<QueuedTrack> qtlist)
         {
             int i = 0;
             foreach(QueuedTrack qt in qtlist)

@@ -106,7 +106,6 @@ namespace MyMixes
 		{
 			InitializeComponent ();
 
-//            BindingContext = this;
             CloudProivder.BindingContext = this;
             PathBreadCrumbs.BindingContext = this;
 
@@ -122,16 +121,6 @@ namespace MyMixes
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            //if(!string.IsNullOrEmpty(providerName))
-            //{
-            //    pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
-
-            //    if (!(await pi.CheckAuthenitcation()))
-            //    {
-            //        await Navigation.PopAsync();
-            //    }
-            //}
-
             MixLocationView.ItemsSource = MixLocationList;
 
             await UpdateFolderList();

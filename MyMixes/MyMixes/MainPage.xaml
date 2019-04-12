@@ -9,6 +9,7 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
              Appearing="OnAppearing"
+             
              >
     <ContentPage.BindingContext>
         <local:TransportViewModel/>
@@ -48,17 +49,19 @@
 
             <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
             <ListView x:Name="Projects" 
-                        ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
+                        ItemsSource="{Binding PlayingTracks}"
+                        SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
                         CachingStrategy="RecycleElement"  
                         RowHeight="55" Margin="0,0,0,0"
             >
-                <d:ListView.ItemsSource>
-                    <x:Array Type="{x:Type local:QueuedTrack}">
+                <!--<d:ListView.ItemsSource>
+ItemSelected="TrackView_Sel"
+                <x:Array Type="{x:Type local:QueuedTrack}">
                         <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
                         <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
                     </x:Array>
-                </d:ListView.ItemsSource>
+                </d:ListView.ItemsSource>-->
             </ListView>
             <!--</ScrollView>-->
             <!--<Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False" HeightRequest="100">
