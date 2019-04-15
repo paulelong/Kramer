@@ -72,7 +72,7 @@ namespace MyMixes
                 {
                     currentTrackNumber = value;
                 }
-                if(currentTrackNumber >= 0)
+                if(currentTrackNumber >= 0 && PlayingTracks.Count > 0)
                 {
                     SelectedSong = PlayingTracks[currentTrackNumber];
                 }
