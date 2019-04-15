@@ -184,11 +184,15 @@
     <BundleResource Include="Resources\EditBt.png" />
     <BundleResource Include="Resources\NextBt.png" />
     <BundleResource Include="Resources\AddBt.png" />
+    <BundleResource Include="Resources\AddCloudBt.png" />
+    <BundleResource Include="Resources\AddMusicBt.png" />
+    <BundleResource Include="Resources\OpenFolderBt.png" />
     <Content Include="Resources\PauseBt.png" />
     <Content Include="Resources\PlayBt.png" />
     <BundleResource Include="Resources\ResyncBt.png" />
     <BundleResource Include="Resources\PrevBt.png" />
     <BundleResource Include="Resources\RemoveBt.png" />
     <Content Include="Resources\TrashBt.png" />
+    <BundleResource Include="Resources\UpSongBt.png" />
   </ItemGroup>
 </Project>
