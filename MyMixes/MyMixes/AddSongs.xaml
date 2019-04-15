@@ -134,7 +134,7 @@
                 </StackLayout>
             </Grid>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Spacing="20" Margin="10,0,10,5" HeightRequest="45">
-                <Button Image="AddBt.png" Clicked="AddFolder_Clicked" 
+                <Button Image="AddCloudBt.png" Clicked="AddFolder_Clicked" 
                        />
             </StackLayout>
         </StackLayout>
