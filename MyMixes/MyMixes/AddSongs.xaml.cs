@@ -26,12 +26,16 @@ namespace MyMixes
 
         private ProjectPickerData ppd;
 
+        private TransportViewModel tvm;
 
-        public AddSongs(ObservableCollection<MixLocation> list)
+        public AddSongs(ObservableCollection<MixLocation> list, TransportViewModel tvm)
         {
             InitializeComponent();
 
-            SelectedTracks.ItemsSource = SelectedTrackList;
+            this.tvm = tvm;
+
+            SelectedTracks.ItemsSource = tvm.PlayingTracks;
+            //SelectedTracks.ItemsSource = SelectedTrackList;
             Projects.ItemsSource = LoadedTracks;
 
             ppd = (ProjectPickerData)this.BindingContext;
@@ -39,7 +43,7 @@ namespace MyMixes
 
             MixLocationList = list;
 
-            PersistentData.LoadQueuedTracks(SelectedTrackList);
+            //PersistentData.LoadQueuedTracks(SelectedTrackList);
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -334,16 +338,18 @@ namespace MyMixes
         {
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
-            int i = SelectedTrackList.IndexOf(t);
+            tvm.MoveSongUp(t);
+
+            //int i = SelectedTrackList.IndexOf(t);
             
-            if(i+1 < SelectedTrackList.Count)
-            {
-                SelectedTrackList.Move(i, i + 1);
-            }
-            else
-            {
-                SelectedTrackList.Move(i, 0);
-            }
+            //if(i >= 0)
+            //{
+            //    SelectedTrackList.Move(i, i - 1);
+            //}
+            //else
+            //{
+            //    SelectedTrackList.Move(i, SelectedTrackList.Count - 1);
+            //}
         }
 
         private void ResyncProjectClickedAsync(object sender, EventArgs e)

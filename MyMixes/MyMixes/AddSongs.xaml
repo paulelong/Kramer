@@ -73,7 +73,7 @@
                             <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" FontSize="Medium" />
                         </StackLayout>
                         <!--<Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>-->
-                        <Button Grid.Column="1" Image="DownBt.png" Margin="-8.5,-6.5,-8.5,-6.5" Scale=".55" Clicked="SongDownPosition_Clicked" />
+                        <Button Grid.Column="1" Image="UpSongBt.png" Margin="-8.5,-6.5,-8.5,-6.5" Scale=".55" Clicked="SongDownPosition_Clicked" />
                         <Button Grid.Column="2" Image="DelBt.png"  Margin="-4,0,-4,0" Scale=".7" Clicked="DeleteSong_Clicked"/>
                     </Grid>
                 </ViewCell>
