@@ -273,5 +273,23 @@ namespace MyMixes
             Application.Current.Properties[KEY_QUEUED_TRACK_COUNT] = qtlist.Count;
             await Application.Current.SavePropertiesAsync();
         }
+
+        static public void SaveNotes(QueuedTrack qt, string notes)
+        {
+            Application.Current.Properties[qt.FullPath] = notes;
+        }
+
+        static public string LoadNotes(QueuedTrack qt)
+        {
+            if(Application.Current.Properties.ContainsKey(qt.FullPath))
+            {
+                return (string)Application.Current.Properties[qt.FullPath];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 }

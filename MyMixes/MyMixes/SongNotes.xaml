@@ -1,9 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MyMixes.SongNotes">
-  <!--Pages can be added as references or inline-->
-  <ContentPage Title="Tab 1" />
-  <ContentPage Title="Tab 2" />
-  <ContentPage Title="Tab 3" />
-</TabbedPage>
+             xmlns:local="clr-namespace:MyMixes"
+             x:Class="MyMixes.SongNotes"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+             Disappearing="OnDisapearing"
+             >
+    <ContentPage.BindingContext>
+        <local:SongNotesData/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="{Binding SongName}" FontSize="Large"/>
+            <Editor Text="{Binding Notes, Mode=TwoWay}" VerticalOptions="FillAndExpand"
+                    Placeholder="Type in notes about your mix here..." />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
