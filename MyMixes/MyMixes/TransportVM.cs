@@ -14,9 +14,9 @@ using Xamarin.Forms;
 
 namespace MyMixes
 {
-    partial class TransportViewModel : INotifyPropertyChanged
+    public partial class TransportViewModel : INotifyPropertyChanged
     {
-        private bool isSongPlaying;
+        public bool isSongPlaying;
 
         private readonly ObservableCollection<QueuedTrack> playingTracks = new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> PlayingTracks
@@ -40,16 +40,19 @@ namespace MyMixes
             }
             set
             {
-                if (value != selectedSong)
+                if(value != selectedSong)
                 {
-                    selectedSong = value;
-                    currentTrackNumber = PlayingTracks.IndexOf(value);
-                    OnPropertyChanged("SelectedSong");
-                    PersistentData.LastPlayedSongIndex = currentTrackNumber;
-                    if(isSongPlaying)
+                    if (value?.FullPath != selectedSong?.FullPath)
                     {
-                        PlayCurrentSongAsync();
+                        currentTrackNumber = PlayingTracks.IndexOf(value);
+                        PersistentData.LastPlayedSongIndex = currentTrackNumber;
+                        if (isSongPlaying)
+                        {
+                            PlayCurrentSongAsync();
+                        }
                     }
+                    selectedSong = value;
+                    OnPropertyChanged("SelectedSong");
                 }
             }
         }
@@ -166,36 +169,39 @@ namespace MyMixes
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                CurrentTrackNumber++;
-                if (CurrentTrackNumber >= SongsQueued)
+                if(isAligned)
                 {
-                    CurrentTrackNumber = 0;
-                    if (isLooping)
-                    {
-                        await PlayCurrentSongAsync();
-                    }
-                    else
-                    {
-                        isSongPlaying = false;
-                        player.Stop();
-                        PlayButtonStateImage = "PlayBt.png";
-                    }
+                    player.Play();
                 }
                 else
                 {
-                    await PlayCurrentSongAsync();
+                    if (CurrentTrackNumber + 1 >= SongsQueued)
+                    {
+                        if (isLooping)
+                        {
+                            await PlayCurrentSongAsync();
+                        }
+                        else
+                        {
+                            StopPlayer();
+                        }
+                        CurrentTrackNumber = 0;
+                    }
+                    else
+                    {
+                        CurrentTrackNumber++;
+                        if (isLooping)
+                        {
+                            await PlayCurrentSongAsync();
+                        }
+                        else
+                        {
+                            StopPlayer();
+                        }
+                    }
                 }
             });
         }
-
-        //public async Task SetCurrentSongAsync(QueuedTrack t)
-        //{
-        //    CurrentTrackNumber = playingTracks.IndexOf(t);
-        //    if(isSongPlaying)
-        //    {
-        //        await PlayCurrentSongAsync();
-        //    }
-        //}
 
         public async void PlaySong()
         {
@@ -205,23 +211,15 @@ namespace MyMixes
                 {
                     if (isSongPlaying)
                     {
-                        isSongPlaying = false;
-                        player.Pause();
-                        PlayButtonStateImage = "PlayBt.png";
+                        PausePlayer();
                     }
                     else
                     {
-                        isSongPlaying = true;
-                        player.Play();
-//                        await PlayCurrentSongAsync();
-                        PlayButtonStateImage = "PauseBt.png";
+                        StartPlayer();
                     }
                 }
                 else
                 {
-                    isSongPlaying = true;
-                    PlayButtonStateImage = "PauseBt.png";
-
                     await PlayCurrentSongAsync();
                 }
             }
@@ -229,9 +227,9 @@ namespace MyMixes
 
         public async void PlaySongTrack(QueuedTrack t)
         {
-            for(CurrentTrackNumber = 0; CurrentTrackNumber < playingTracks.Count; CurrentTrackNumber++)
+            for(CurrentTrackNumber = 0; CurrentTrackNumber < PlayingTracks.Count; CurrentTrackNumber++)
             {
-                if(playingTracks[CurrentTrackNumber] == t)
+                if(PlayingTracks[CurrentTrackNumber] == t)
                 {
                     break;
                 }
@@ -261,43 +259,49 @@ namespace MyMixes
 
         public void PrevSong()
         {
-            if (CurrentTrackNumber <= 0)
+            if(!isAligned && isSongPlaying && player.CurrentPosition > 3)
             {
-                CurrentTrackNumber = SongsQueued - 1;
+                player.Stop();
+                player.Play();
             }
             else
             {
-                CurrentTrackNumber--;
-            }
+                if (CurrentTrackNumber <= 0)
+                {
+                    CurrentTrackNumber = SongsQueued - 1;
+                }
+                else
+                {
+                    CurrentTrackNumber--;
+                }
 
-            if (isSongPlaying)
-            {
-                PlayCurrentSongAsync();
+                if (isSongPlaying)
+                {
+                    PlayCurrentSongAsync();
+                }
             }
         }
 
-        public void MoveSongDown(QueuedTrack t)
+        public void MoveSongUp(QueuedTrack t)
         {
-            int i = playingTracks.IndexOf(t);
+            int i = PlayingTracks.IndexOf(t);
 
-            if (i + 1 < playingTracks.Count)
-            {
-                playingTracks.Move(i, i + 1);
+            if (i > 0)
+            {             
+                PlayingTracks.Move(i, i - 1);
             }
             else
             {
-                playingTracks.Move(i, 0);
+                PlayingTracks.Move(i, PlayingTracks.Count - 1);
             }
         }
 
         private async Task PlayCurrentSongAsync()
         {
-            //Track t = CurrentTrack;
-            //ViewModel.CurrentSel = t.Name;
-            //ViewModel.CurrentProject = t.Project;
+            double playerpos = player.CurrentPosition;
 
-            string path = Path.GetDirectoryName(playingTracks[CurrentTrackNumber].FullPath);
-            string filename = Path.GetFileName(playingTracks[CurrentTrackNumber].FullPath);
+            string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
+            string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
 
             Debug.Print("playing {0} {1}\n", filename, path);
 
@@ -311,15 +315,19 @@ namespace MyMixes
             IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
 
             player.Stop();
+
             using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
             {
                 if (player.Load(s))
                 {
-                    //playingSong = t.FullPath;
-                    //CurrentSong.Text = filename;
-                    //PlaySongButton.Image = "PauseBt.png";
-                    player.Play();
-                    isSongPlaying = true;
+                    if (isSongPlaying && isAligned)
+                    {
+                        player.Seek(playerpos);
+                    }
+
+                    StartPlayer();
+                    //player.Play();
+                    //isSongPlaying = true;
                 }
                 else
                 {
@@ -332,7 +340,7 @@ namespace MyMixes
 
         public void LoadProjects()
         {
-            PersistentData.LoadQueuedTracks(playingTracks);
+            PersistentData.LoadQueuedTracks(PlayingTracks);
         }
 
         public void RemoveSong(QueuedTrack t)
@@ -340,21 +348,49 @@ namespace MyMixes
             if (t == null)
                 return;
 
-            int i = playingTracks.IndexOf(t);
+            int i = PlayingTracks.IndexOf(t);
+            PlayingTracks.Remove(t);
 
-            if (player.CurrentPosition > 0 && CurrentTrackNumber == i)
+            if (isSongPlaying && CurrentTrackNumber == i)
             {
-                player.Stop();
-            }
+                StopPlayer();
 
-            playingTracks.Remove(t);
+                if(i >= PlayingTracks.Count)
+                {
+                    CurrentTrackNumber = 0;
+                }
+                else
+                {
+                    CurrentTrackNumber = CurrentTrackNumber;
+                }
+
+                if (isLooping)
+                {
+                    PlayCurrentSongAsync();
+                }
+            }
         }
 
-        //private void SetSongIndex(int tracknumber)
-        //{
-        //    TrasnportVMInstance.CurrentTrackNumer = tracknumber;
-        //    SetCurrentSong();
-        //}
+        private void StartPlayer()
+        {
+            isSongPlaying = true;
+            player.Play();
+            PlayButtonStateImage = "PauseBt.png";
+        }
+
+        private void PausePlayer()
+        {
+            isSongPlaying = false;
+            player.Pause();
+            PlayButtonStateImage = "PlayBt.png";
+        }
+
+        private void StopPlayer()
+        {
+            isSongPlaying = false;
+            player.Stop();
+            PlayButtonStateImage = "PlayBt.png";
+        }
 
         public int SongsQueued
         {
