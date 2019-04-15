@@ -23,7 +23,7 @@ namespace MyMixes
 
             snd = (SongNotesData)this.BindingContext;
 
-            snd.SongName = qt.Name + " (" + qt.Project + ")";
+            snd.SongName = qt.Name + " - " + qt.Project;
 
             snd.Notes = PersistentData.LoadNotes(qt);
         }

@@ -16,7 +16,7 @@
         <StackLayout>
             <Label Text="{Binding SongName}" FontSize="Large"/>
             <Editor Text="{Binding Notes, Mode=TwoWay}" VerticalOptions="FillAndExpand"
-                    Placeholder="Type in notes about your mix here..." />
+                    Placeholder="Type in notes about your mix, for instance something to remind you to change the volume on an insturment." PlaceholderColor="Gray"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
