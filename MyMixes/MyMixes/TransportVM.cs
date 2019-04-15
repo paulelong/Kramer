@@ -72,7 +72,10 @@ namespace MyMixes
                 {
                     currentTrackNumber = value;
                 }
-                SelectedSong = PlayingTracks[currentTrackNumber];
+                if(currentTrackNumber >= 0)
+                {
+                    SelectedSong = PlayingTracks[currentTrackNumber];
+                }
             }
 
         }
