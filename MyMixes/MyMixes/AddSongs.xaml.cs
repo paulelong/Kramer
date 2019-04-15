@@ -19,7 +19,7 @@ namespace MyMixes
         private Track selectedTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
+        //private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
         private ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
 
         private ObservableCollection<MixLocation> MixLocationList = null;
@@ -72,19 +72,21 @@ namespace MyMixes
         {
             Track t = FindTrack((View)sender);
 
-            int i = 0;
-            for(;i < SelectedTrackList.Count; i++)
-            {
-                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-                    break;
-            }
+            tvm.AddSong(t);
 
-            if (i >= SelectedTrackList.Count)
-            {
-                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
-            }
+            //int i = 0;
+            //for(;i < SelectedTrackList.Count; i++)
+            //{
+            //    if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
+            //        break;
+            //}
 
-            await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
+            //if (i >= SelectedTrackList.Count)
+            //{
+            //    SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
+            //}
+
+            //await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
@@ -322,16 +324,18 @@ namespace MyMixes
         {
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
-            for (int i = 0; i < SelectedTrackList.Count; i++)
-            {
-                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-                {
-                    SelectedTrackList.RemoveAt(i);
-                    break;
-                }
-            }
+            tvm.RemoveSong(t);
 
-            await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
+            //for (int i = 0; i < SelectedTrackList.Count; i++)
+            //{
+            //    if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
+            //    {
+            //        SelectedTrackList.RemoveAt(i);
+            //        break;
+            //    }
+            //}
+
+            //await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private void SongDownPosition_Clicked(object sender, EventArgs e)

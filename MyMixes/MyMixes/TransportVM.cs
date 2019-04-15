@@ -380,6 +380,21 @@ namespace MyMixes
             }
         }
 
+        public void AddSong(Track t)
+        {
+            int i = 0;
+            for (; i < PlayingTracks.Count; i++)
+            {
+                if (PlayingTracks[i].Name == t.Name && PlayingTracks[i].Project == t.Project)
+                    break;
+            }
+
+            if (i >= PlayingTracks.Count)
+            {
+                PlayingTracks.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
+            }
+        }
+
         private void StartPlayer()
         {
             isSongPlaying = true;
