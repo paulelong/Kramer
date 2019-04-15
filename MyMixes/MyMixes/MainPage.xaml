@@ -36,7 +36,7 @@
                             <Label Text="{Binding Name, Mode=TwoWay}" 
                                    TextColor="White" FontAttributes="Bold" FontSize="Medium" />
                         </StackLayout>
-                        <Button Grid.Column="2" Image="DownBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
+                        <Button Grid.Column="2" Image="UpSongBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
                         <Button Grid.Column="3" Image="DelBt.png" Scale=".88" Clicked="DeleteSong_Clicked"/>
                     </Grid>
                 </ViewCell>
@@ -84,7 +84,7 @@ ItemSelected="TrackView_Sel"
             </Grid>
 
             <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
-            <Button Text="Add Music" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160"/>
+            <Button Image="AddMusicBt.png" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160" CornerRadius="-1" Padding="0" Scale="1" ScaleX="1"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
