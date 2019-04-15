@@ -88,9 +88,9 @@
                 </StackLayout>
             </Grid>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
-                <Button Text="Up" Pressed="UpPressed"/>
-                <Button Text="Open" Pressed="OpenFolder"/>
-                <Button Text="Add" Pressed="SelectPressed"/>
+                <Button Image="UpSongBt.png"  Pressed="UpPressed"/>
+                <Button Image="OpenFolderBt.png" Pressed="OpenFolder"/>
+                <Button Image="AddBt.png"  Pressed="SelectPressed"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
