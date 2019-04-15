@@ -16,6 +16,8 @@ namespace MyMixes
 {
     public partial class TransportViewModel : INotifyPropertyChanged
     {
+        private bool playingListLoaded = false;
+
         public bool isSongPlaying;
 
         private readonly ObservableCollection<QueuedTrack> playingTracks = new ObservableCollection<QueuedTrack>();
@@ -340,7 +342,11 @@ namespace MyMixes
 
         public void LoadProjects()
         {
-            PersistentData.LoadQueuedTracks(PlayingTracks);
+            if(!playingListLoaded)
+            {
+                PersistentData.LoadQueuedTracks(PlayingTracks);
+                playingListLoaded = true;
+            }
         }
 
         public void RemoveSong(QueuedTrack t)
