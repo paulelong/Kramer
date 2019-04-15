@@ -60,6 +60,7 @@
                                     WidthRequest="150"
                                     SelectedIndexChanged="OnProviderChanged"
                                     TextColor="White"
+                                    Style="{StaticResource DefaultPicker}"
                         >
 
                             <d:Picker.ItemsSource>

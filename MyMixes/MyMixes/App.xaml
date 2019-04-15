@@ -9,7 +9,16 @@
              >
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
+            <OnPlatform x:TypeArguments="Color" x:Key="PickerBackgroundColor">
+                <On Platform="iOS" Value="#454545"/>
+            </OnPlatform>
 
+            <Style x:Key="DefaultPicker" TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="{StaticResource PickerBackgroundColor}"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontSize" Value="Small"/>
+            </Style>
+            
             <ControlTemplate x:Key="TransportControl">
                 <Grid  VerticalOptions="End" Margin="5,0,5,0" >
                     <Grid.ColumnDefinitions>
