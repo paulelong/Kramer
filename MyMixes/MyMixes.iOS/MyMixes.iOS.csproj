@@ -131,6 +131,11 @@
     <BundleResource Include="Resources\Icon-Small%402x.png" />
     <BundleResource Include="Resources\Icon-Small%403x.png" />
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
+    <BundleResource Include="Resources\TrashBt.png" />
+    <BundleResource Include="Resources\PrevBt.png" />
+    <BundleResource Include="Resources\PlayBt.png" />
+    <BundleResource Include="Resources\PauseBt.png" />
+    <BundleResource Include="Resources\NextBt.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -174,7 +179,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\MyMixes\MyMixes.csproj">
-      <Project>{4D6A5E4B-307F-4D09-9433-78E4F1A599EB}</Project>
+      <Project>{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}</Project>
       <Name>MyMixes</Name>
     </ProjectReference>
   </ItemGroup>
@@ -182,17 +187,12 @@
     <BundleResource Include="Resources\Folder.png" />
     <BundleResource Include="Resources\DelBt.png" />
     <BundleResource Include="Resources\EditBt.png" />
-    <Content Include="Resources\NextBt.png" />
     <BundleResource Include="Resources\AddBt.png" />
     <BundleResource Include="Resources\AddCloudBt.png" />
     <BundleResource Include="Resources\AddMusicBt.png" />
     <BundleResource Include="Resources\OpenFolderBt.png" />
-    <Content Include="Resources\PauseBt.png" />
-    <Content Include="Resources\PlayBt.png" />
     <BundleResource Include="Resources\ResyncBt.png" />
-    <Content Include="Resources\PrevBt.png" />
     <BundleResource Include="Resources\RemoveBt.png" />
-    <Content Include="Resources\TrashBt.png" />
     <BundleResource Include="Resources\UpSongBt.png" />
   </ItemGroup>
 </Project>
