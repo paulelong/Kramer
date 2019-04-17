@@ -195,4 +195,10 @@
     <BundleResource Include="Resources\RemoveBt.png" />
     <BundleResource Include="Resources\UpSongBt.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\ResyncBt3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\AddBt2.png" />
+  </ItemGroup>
 </Project>
