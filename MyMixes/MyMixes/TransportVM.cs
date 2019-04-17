@@ -68,7 +68,7 @@ namespace MyMixes
             }
             set
             {
-                if(currentTrackNumber != value)
+                if(currentTrackNumber != value && value < PlayingTracks.Count)
                 {
                     currentTrackNumber = value;
                 }
