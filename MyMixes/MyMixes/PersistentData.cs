@@ -28,8 +28,27 @@ namespace MyMixes
             Application.Current.SavePropertiesAsync();
         }
 
-        internal static void LoadMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        static internal ObservableCollection<MixLocation> mixLocationList = null;
+        static public ObservableCollection<MixLocation> MixLocationList
         {
+            get
+            {
+                if(mixLocationList == null)
+                {
+                    mixLocationList = new ObservableCollection<MixLocation>();
+                    LoadMixLocations();
+                }
+
+                return mixLocationList;
+            }
+
+        }
+
+        internal static bool mixLocationsChanged = false;
+        internal static void LoadMixLocations()
+        {
+            MixLocationList.Clear();
+
             foreach (CloudProviders cpn in Enum.GetValues(typeof(CloudProviders)))
             {
                 if (Application.Current.Properties.ContainsKey("ProjectMap_" + cpn))
@@ -44,13 +63,15 @@ namespace MyMixes
                     }
                 }
             }
+
+            mixLocationsChanged = false;
         }
 
-        internal static void SaveMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        internal static void SaveMixLocations()
         {
             Dictionary<CloudProviders, List<string>> ProjectsByProviders = new Dictionary<CloudProviders, List<string>>();
 
-            foreach (MixLocation ml in mixLocationList)
+            foreach (MixLocation ml in MixLocationList)
             {
                 if(!ProjectsByProviders.ContainsKey(ml.Provider))
                 {
@@ -64,6 +85,8 @@ namespace MyMixes
             {
                 Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
             }
+
+            mixLocationsChanged = true;
         }
 
         public static List<string> GetProjectFoldersData(string provider, string root)

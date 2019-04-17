@@ -100,7 +100,7 @@
                         CachingStrategy="RecycleElement"                        
                         RowHeight="45"
                               IsPullToRefreshEnabled="True"
-                              Refreshing="ResyncAllClickedAsync"
+                              Refreshing="ResyncAllClickedAsync"                              
                     >
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:Track}">
@@ -115,7 +115,7 @@
                         </d:ListView.ItemsSource>
                     </ListView>
                 </StackLayout >
-                <StackLayout Grid.Row="1">
+                <StackLayout Grid.Row="1" VerticalOptions="FillAndExpand">
                     <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
                     <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
@@ -133,7 +133,8 @@
                     </ListView>
                 </StackLayout>
             </Grid>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Spacing="20" Margin="10,0,10,5" HeightRequest="45">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" 
+                         Spacing="20" Margin="10,0,10,5" HeightRequest="45">
                 <Button Image="AddCloudBt.png" Clicked="AddFolder_Clicked" 
                        />
             </StackLayout>

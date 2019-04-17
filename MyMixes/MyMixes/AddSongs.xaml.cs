@@ -22,13 +22,13 @@ namespace MyMixes
         //private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
         private ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
 
-        private ObservableCollection<MixLocation> MixLocationList = null;
+        //private ObservableCollection<MixLocation> MixLocationList = null;
 
         private ProjectPickerData ppd;
 
         private TransportViewModel tvm;
 
-        public AddSongs(ObservableCollection<MixLocation> list, TransportViewModel tvm)
+        public AddSongs(TransportViewModel tvm)
         {
             InitializeComponent();
 
@@ -41,7 +41,7 @@ namespace MyMixes
             ppd = (ProjectPickerData)this.BindingContext;
             ppd.BusyText = "Somethign to see";
 
-            MixLocationList = list;
+            //PersistentData.LoadMixLocations(MixLocationList);
 
             //PersistentData.LoadQueuedTracks(SelectedTrackList);
 
@@ -64,7 +64,7 @@ namespace MyMixes
 #pragma warning disable AvoidAsyncVoid
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
-            ProjectPicker pp = new ProjectPicker(MixLocationList);
+            ProjectPicker pp = new ProjectPicker();
             await Navigation.PushAsync(pp);
         }
 
@@ -73,20 +73,6 @@ namespace MyMixes
             Track t = FindTrack((View)sender);
 
             tvm.AddSong(t);
-
-            //int i = 0;
-            //for(;i < SelectedTrackList.Count; i++)
-            //{
-            //    if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-            //        break;
-            //}
-
-            //if (i >= SelectedTrackList.Count)
-            //{
-            //    SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
-            //}
-
-            //await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
@@ -113,11 +99,15 @@ namespace MyMixes
             }
         }
 
-        private void OnAppearing(object sender, EventArgs e)
+        private async void OnAppearing(object sender, EventArgs e)
         {
-            BusyOn(true);
+            BusyOn(true, true);
+            if (PersistentData.mixLocationsChanged)
+            {
+                await SyncProjectsAsync();
+            }
             LoadProjects();
-            BusyOn(false);
+            BusyOn(false, true);
         }
 
         private async void ResyncAllClickedAsync(object sender, EventArgs e)
@@ -132,9 +122,13 @@ namespace MyMixes
         }
 #pragma warning restore AvoidAsync
 
-        private void BusyOn(bool TurnOn)
+        private void BusyOn(bool TurnOn, bool IsRunning = false)
         {
-            //ppd.IsRunning = TurnOn;
+            if(IsRunning)
+            {
+                ppd.IsRunning = TurnOn;
+            }
+
             ppd.IsVisible = TurnOn;
 
             MainStack.IsEnabled = !TurnOn;
@@ -151,7 +145,7 @@ namespace MyMixes
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
-            foreach (MixLocation ml in MixLocationList)
+            foreach (MixLocation ml in PersistentData.MixLocationList)
             {
                 ppd.BusyText = ml.Provider.ToString() + " " + ml.Path;
 

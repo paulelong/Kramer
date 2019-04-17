@@ -29,7 +29,7 @@ namespace MyMixes
     public partial class ProjectPicker : ContentPage, INotifyPropertyChanged
     {
         ProviderInfo pi;
-        ObservableCollection<MixLocation> MixLocationList;
+        //ObservableCollection<MixLocation> MixLocationList;
         ObservableCollection<DirectoryEntry> DirectoryList = new ObservableCollection<DirectoryEntry>();
 
         private ProjectPickerData ppd;
@@ -109,7 +109,7 @@ namespace MyMixes
             }
         }
         
-		public ProjectPicker (ObservableCollection<MixLocation> list)
+		public ProjectPicker ()
 		{
 			InitializeComponent ();
 
@@ -123,14 +123,14 @@ namespace MyMixes
             ProviderNameText = PersistentData.LastCloud;
             FolderList.ItemsSource = DirectoryList;
 
-            MixLocationList = list;
+            //MixLocationList = PersistentData.MixLocationList;
 
             ppd = (ProjectPickerData)this.BindingContext;
         }
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            MixLocationView.ItemsSource = MixLocationList;
+            MixLocationView.ItemsSource = PersistentData.MixLocationList;
 
             await UpdateFolderList();
         }
@@ -157,8 +157,8 @@ namespace MyMixes
         {
             string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
             DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
-            MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
-            PersistentData.SaveMixLocations(MixLocationList);
+            PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
+            PersistentData.SaveMixLocations();
         }
 
         private async void OpenFolder(object sender, EventArgs e)
@@ -213,8 +213,8 @@ namespace MyMixes
 
         private void LocationDeleted(object sender, EventArgs e)
         {
-            MixLocationList.Remove(FindMixLocation((View)sender));
-            PersistentData.SaveMixLocations(MixLocationList);
+            PersistentData.MixLocationList.Remove(FindMixLocation((View)sender));
+            PersistentData.SaveMixLocations();
         }
 
         MixLocation FindMixLocation(View v)

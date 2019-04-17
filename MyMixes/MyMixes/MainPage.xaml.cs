@@ -22,7 +22,7 @@ namespace MyMixes
     public partial class MainPage : ContentPage
     {
         private TransportViewModel TransportVMInstance;
-        ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
+        //ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
 
         public MainPage()
         {
@@ -42,8 +42,6 @@ namespace MyMixes
             }
             else
             {
-                PersistentData.LoadMixLocations(MixLocationList);
-
                 NavigationPage.SetHasNavigationBar(this, false);
             }
 
@@ -53,7 +51,7 @@ namespace MyMixes
         private async void Add_Clicked(object sender, EventArgs e)
         {
             PersistentData.Save();
-            await Navigation.PushAsync(new AddSongs(MixLocationList, TransportVMInstance));
+            await Navigation.PushAsync(new AddSongs(TransportVMInstance));
         }
 #pragma warning restore AvoidAsyncVoid
 
