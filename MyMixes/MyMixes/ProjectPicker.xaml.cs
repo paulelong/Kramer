@@ -19,11 +19,18 @@ namespace MyMixes
         public string Path { get; set; }
     }
 
+    public class DirectoryEntry
+    {
+        public string DirectoryName { get; set; }
+    }
+
+
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ProjectPicker : ContentPage, INotifyPropertyChanged
     {
         ProviderInfo pi;
         ObservableCollection<MixLocation> MixLocationList;
+        ObservableCollection<DirectoryEntry> DirectoryList = new ObservableCollection<DirectoryEntry>();
 
         private ProjectPickerData ppd;
 
@@ -108,11 +115,13 @@ namespace MyMixes
 
             CloudProivder.BindingContext = this;
             PathBreadCrumbs.BindingContext = this;
+            FolderList.BindingContext = this;
 
             CloudProivder.ItemsSource = ProviderList;
 
             CurrentFolder = PersistentData.LastFolder;
             ProviderNameText = PersistentData.LastCloud;
+            FolderList.ItemsSource = DirectoryList;
 
             MixLocationList = list;
 
@@ -132,7 +141,14 @@ namespace MyMixes
             {
                 BusyOn(true);
                 List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
-                FolderList.ItemsSource = folders;
+                //FolderList.ItemsSource = folders;
+                DirectoryList.Clear();
+
+                foreach(string d in folders)
+                {
+                    DirectoryList.Add(new DirectoryEntry() { DirectoryName = d });
+                }
+
                 BusyOn(false);
             }
         }
@@ -140,7 +156,8 @@ namespace MyMixes
         private async void SelectPressed(object sender, EventArgs e)
         {
             string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
-            MixLocationList.Add(new MixLocation() { Path = p + (string)FolderList.SelectedItem, Provider = pi.CloudProvider });
+            DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
+            MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
             PersistentData.SaveMixLocations(MixLocationList);
         }
 
@@ -197,6 +214,7 @@ namespace MyMixes
         private void LocationDeleted(object sender, EventArgs e)
         {
             MixLocationList.Remove(FindMixLocation((View)sender));
+            PersistentData.SaveMixLocations(MixLocationList);
         }
 
         MixLocation FindMixLocation(View v)

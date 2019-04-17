@@ -30,6 +30,12 @@
                     </Grid>
                 </ViewCell>
             </DataTemplate>
+
+            <DataTemplate x:Key="DirectoryListTemplate">
+                <ViewCell>
+                    <Label Text="{Binding DirectoryName}" TextColor="White" Margin="10,0,10,0" VerticalTextAlignment="Center"/>
+                </ViewCell>
+            </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -77,18 +83,20 @@
                         <Label x:Name="PathBreadCrumbs" VerticalTextAlignment="Center" Text="{Binding CurrentFolder}"/>
                     </StackLayout>
 
-                    <ListView x:Name="FolderList" RowHeight="40" BackgroundColor="#242424" HeightRequest="300">
-                        <d:ListView.ItemsSource>
+                    <ListView x:Name="FolderList" 
+                              RowHeight="40" BackgroundColor="#242424" HeightRequest="300" 
+                              ItemTemplate="{StaticResource DirectoryListTemplate}">
+                        <!--<d:ListView.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>Folder1</x:String>
                                 <x:String>Mixes</x:String>
                                 <x:String>Other</x:String>
                             </x:Array>
-                        </d:ListView.ItemsSource>
+                        </d:ListView.ItemsSource>-->
                     </ListView>
                 </StackLayout>
             </Grid>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
                 <Button Image="UpSongBt.png"  Pressed="UpPressed"/>
                 <Button Image="OpenFolderBt.png" Pressed="OpenFolder"/>
                 <Button Image="AddBt.png"  Pressed="SelectPressed"/>
