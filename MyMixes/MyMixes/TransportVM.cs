@@ -16,9 +16,16 @@ namespace MyMixes
 {
     public partial class TransportViewModel : INotifyPropertyChanged
     {
+        private enum PlayerStates
+        {
+            Playing,
+            Paused,
+            Stopped
+        }
+
         private bool playingListLoaded = false;
 
-        public bool isSongPlaying;
+        private PlayerStates playerState = PlayerStates.Stopped;
 
         private ObservableCollection<QueuedTrack> playingTracks = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> PlayingTracks
@@ -53,7 +60,7 @@ namespace MyMixes
                     {
                         currentTrackNumber = PlayingTracks.IndexOf(value);
                         PersistentData.LastPlayedSongIndex = currentTrackNumber;
-                        if (isSongPlaying)
+                        if (playerState == PlayerStates.Playing)
                         {
                             PlayCurrentSongAsync();
                         }
@@ -217,21 +224,34 @@ namespace MyMixes
         {
             if (SongsQueued > 0)
             {
-                if (isSongPlaying)
+                switch (playerState)
                 {
-                    if (player.IsPlaying)
-                    {
+                    case PlayerStates.Playing:
                         PausePlayer();
-                    }
-                    else
-                    {
+                        break;
+                    case PlayerStates.Paused:
                         StartPlayer();
-                    }
+                        break;
+                    case PlayerStates.Stopped:
+                        await PlayCurrentSongAsync();
+                        break;
                 }
-                else
-                {
-                    await PlayCurrentSongAsync();
-                }
+
+                //if (playerState)
+                //{
+                //    if (player.IsPlaying)
+                //    {
+                //        PausePlayer();
+                //    }
+                //    else
+                //    {
+                //        StartPlayer();
+                //    }
+                //}
+                //else
+                //{
+                //    await PlayCurrentSongAsync();
+                //}
             }
         }
 
@@ -261,18 +281,23 @@ namespace MyMixes
                 CurrentTrackNumber++;
             }
 
-            if (isSongPlaying)
+            if (playerState == PlayerStates.Playing)
             {
                 PlayCurrentSongAsync();
+            }
+            else
+            {
+                playerState = PlayerStates.Stopped;
             }
         }
 
         public void PrevSong()
         {
-            if(!isAligned && isSongPlaying && player.CurrentPosition > 3)
+            if(!isAligned && playerState != PlayerStates.Stopped && player.CurrentPosition > 3)
             {
-                player.Stop();
-                player.Play();
+                player.Seek(0);
+                //player.Stop();
+                //player.Play();
             }
             else
             {
@@ -285,9 +310,13 @@ namespace MyMixes
                     CurrentTrackNumber--;
                 }
 
-                if (isSongPlaying)
+                if (playerState == PlayerStates.Playing)
                 {
                     PlayCurrentSongAsync();
+                }
+                else
+                {
+                    playerState = PlayerStates.Stopped;
                 }
             }
         }
@@ -309,7 +338,6 @@ namespace MyMixes
         private async Task PlayCurrentSongAsync()
         {
             double playerpos = player.CurrentPosition;
-            bool wasplaying = player.IsPlaying;
 
             string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
             string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
@@ -333,15 +361,12 @@ namespace MyMixes
                 {
                     if (player.Load(s))
                     {
-                        if (isSongPlaying && isAligned)
+                        if (playerState != PlayerStates.Stopped && isAligned)
                         {
                             player.Seek(playerpos);
                         }
 
-                        if(wasplaying)
-                        {
-                            StartPlayer();
-                        }
+                        StartPlayer();
                         //player.Play();
                         //isSongPlaying = true;
                     }
@@ -401,7 +426,7 @@ namespace MyMixes
             PlayingTracks.Remove(t);
             playingListLoaded = false;
 
-            if (isSongPlaying && CurrentTrackNumber == i)
+            if (playerState != PlayerStates.Stopped && CurrentTrackNumber == i)
             {
                 StopPlayer();
 
@@ -410,7 +435,7 @@ namespace MyMixes
                     CurrentTrackNumber = 0;
                 }
 
-                if (isLooping)
+                if (isLooping && playerState != PlayerStates.Stopped)
                 {
                     PlayCurrentSongAsync();
                 }
@@ -435,21 +460,21 @@ namespace MyMixes
 
         private void StartPlayer()
         {
-            isSongPlaying = true;
+            playerState = PlayerStates.Playing;
             player.Play();
             PlayButtonStateImage = "PauseBt.png";
         }
 
         private void PausePlayer()
         {
-            //isSongPlaying = false;
+            playerState = PlayerStates.Paused;
             player.Pause();
             PlayButtonStateImage = "PlayBt.png";
         }
 
         private void StopPlayer()
         {
-            isSongPlaying = false;
+            playerState = PlayerStates.Stopped;
             player.Stop();
             PlayButtonStateImage = "PlayBt.png";
         }
