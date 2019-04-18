@@ -53,6 +53,12 @@ namespace MyMixes
             PersistentData.Save();
             await Navigation.PushAsync(new AddSongs(TransportVMInstance));
         }
+
+        private async void OnDisappearing(object sender, EventArgs e)
+        {
+            await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.PlayingTracks);
+        }
+
 #pragma warning restore AvoidAsyncVoid
 
         private void Notes_Clicked(object sender, EventArgs e)
@@ -61,9 +67,9 @@ namespace MyMixes
             Navigation.PushAsync(new SongNotes(QueuedTrack.FindQueuedTrack((View)sender)));
         }
 
-        private void OnAppearing(object sender, EventArgs e)
+        private async void OnAppearing(object sender, EventArgs e)
         {
-            TransportVMInstance.LoadProjects();
+            await TransportVMInstance.LoadProjects();
 
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
         }
@@ -79,5 +85,6 @@ namespace MyMixes
             
             TransportVMInstance.MoveSongUp(t);
         }
+
     }
 }

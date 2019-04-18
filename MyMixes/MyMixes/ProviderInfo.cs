@@ -12,6 +12,7 @@ namespace MyMixes
 {
     public class ProviderInfo
     {
+        public delegate void UpdateStatus(string status);
         private static Dictionary<CloudProviders, ProviderInfo> providers = new Dictionary<CloudProviders, ProviderInfo>();
 
         public CloudProviders CloudProvider
@@ -151,7 +152,7 @@ namespace MyMixes
             return isAuthenticated;
         }
 
-        public async Task<List<string>> UpdateProjectAsync(string root, string project)
+        public async Task<List<string>> UpdateProjectAsync(string root, string project, UpdateStatus UpdateStatusRoutine)
         {
             List<string> UpdatedSongs = new List<string>();
 
@@ -179,6 +180,7 @@ namespace MyMixes
                                 using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
                                 {
                                     Debug.Print("downloading " + localFileName + "\n");
+                                    UpdateStatusRoutine("downloading " + project + "/" + di.name);
                                     if (!await CloudStore.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
                                     {
                                         PersistentData.SetTrackNumber(projectPath, di.name, di.track);

@@ -20,11 +20,16 @@ namespace MyMixes
 
         public bool isSongPlaying;
 
-        private readonly ObservableCollection<QueuedTrack> playingTracks = new ObservableCollection<QueuedTrack>();
+        private ObservableCollection<QueuedTrack> playingTracks = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> PlayingTracks
         {
             get
             {
+                if(playingTracks == null)
+                {
+                    playingTracks = new ObservableCollection<QueuedTrack>();
+                    PersistentData.LoadQueuedTracks(PlayingTracks);
+                }
                 return playingTracks;
             }
         }
@@ -212,9 +217,9 @@ namespace MyMixes
         {
             if (SongsQueued > 0)
             {
-                if (player.CurrentPosition > 0)
+                if (isSongPlaying)
                 {
-                    if (isSongPlaying)
+                    if (player.IsPlaying)
                     {
                         PausePlayer();
                     }
@@ -304,6 +309,7 @@ namespace MyMixes
         private async Task PlayCurrentSongAsync()
         {
             double playerpos = player.CurrentPosition;
+            bool wasplaying = player.IsPlaying;
 
             string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
             string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
@@ -317,39 +323,73 @@ namespace MyMixes
                 return ;
             }
 
-            IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
-
-            player.Stop();
-
-            using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
+            try
             {
-                if (player.Load(s))
+                IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
+
+                player.Stop();
+
+                using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
                 {
-                    if (isSongPlaying && isAligned)
+                    if (player.Load(s))
                     {
-                        player.Seek(playerpos);
+                        if (isSongPlaying && isAligned)
+                        {
+                            player.Seek(playerpos);
+                        }
+
+                        if(wasplaying)
+                        {
+                            StartPlayer();
+                        }
+                        //player.Play();
+                        //isSongPlaying = true;
                     }
+                    else
+                    {
+                        //await DisplayAlert("Error openning track ", t.FullPath, "OK");
+                    }
+                }
 
-                    StartPlayer();
-                    //player.Play();
-                    //isSongPlaying = true;
-                }
-                else
-                {
-                    //await DisplayAlert("Error openning track ", t.FullPath, "OK");
-                }
             }
-
-            //SetCurrentSong(t);
+            catch(Exception ex)
+            {
+                Debug.Print(ex.ToString());
+            }
         }
 
-        public void LoadProjects()
+        public async Task LoadProjects()
         {
             if(!playingListLoaded)
             {
-                PersistentData.LoadQueuedTracks(PlayingTracks);
+                await ValidatePlayingTracks();
+
                 playingListLoaded = true;
+
+                CurrentTrackNumber = 0;
             }
+        }
+
+        private async Task ValidatePlayingTracks()
+        {
+            List<QueuedTrack> t_remove = new List<QueuedTrack>();
+
+            foreach(QueuedTrack t in PlayingTracks)
+            {
+                if(!File.Exists(t.FullPath))
+                {
+                    t_remove.Add(t);
+                }
+            }
+
+            foreach(QueuedTrack t in t_remove)
+            {
+                PlayingTracks.Remove(t);
+            }
+
+            playingListLoaded = false;
+
+            await PersistentData.SaveQueuedTracksAsync(PlayingTracks);
         }
 
         public void RemoveSong(QueuedTrack t)
@@ -359,6 +399,7 @@ namespace MyMixes
 
             int i = PlayingTracks.IndexOf(t);
             PlayingTracks.Remove(t);
+            playingListLoaded = false;
 
             if (isSongPlaying && CurrentTrackNumber == i)
             {
@@ -367,10 +408,6 @@ namespace MyMixes
                 if(i >= PlayingTracks.Count)
                 {
                     CurrentTrackNumber = 0;
-                }
-                else
-                {
-                    CurrentTrackNumber = CurrentTrackNumber;
                 }
 
                 if (isLooping)
@@ -392,6 +429,7 @@ namespace MyMixes
             if (i >= PlayingTracks.Count)
             {
                 PlayingTracks.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
+                playingListLoaded = false;
             }
         }
 
@@ -404,7 +442,7 @@ namespace MyMixes
 
         private void PausePlayer()
         {
-            isSongPlaying = false;
+            //isSongPlaying = false;
             player.Pause();
             PlayButtonStateImage = "PlayBt.png";
         }

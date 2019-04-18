@@ -39,7 +39,6 @@ namespace MyMixes
             Projects.ItemsSource = LoadedTracks;
 
             ppd = (ProjectPickerData)this.BindingContext;
-            ppd.BusyText = "Somethign to see";
 
             //PersistentData.LoadMixLocations(MixLocationList);
 
@@ -101,13 +100,16 @@ namespace MyMixes
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            BusyOn(true, true);
-            if (PersistentData.mixLocationsChanged)
+            if(!BusyOn(true, true))
             {
-                await SyncProjectsAsync();
+                if (PersistentData.mixLocationsChanged)
+                {
+                    await SyncProjectsAsync();
+                    LoadedTracks.Clear();
+                }
+                LoadProjects();
+                BusyOn(false, true);
             }
-            LoadProjects();
-            BusyOn(false, true);
         }
 
         private async void ResyncAllClickedAsync(object sender, EventArgs e)
@@ -122,9 +124,16 @@ namespace MyMixes
         }
 #pragma warning restore AvoidAsync
 
-        private void BusyOn(bool TurnOn, bool IsRunning = false)
+        private bool BusyOn(bool TurnOn, bool IsRunning = false)
         {
-            if(IsRunning)
+            if (TurnOn && IsBusy)
+            {
+                return true;
+            }
+
+            IsBusy = TurnOn;
+
+            if (IsRunning)
             {
                 ppd.IsRunning = TurnOn;
             }
@@ -132,6 +141,8 @@ namespace MyMixes
             ppd.IsVisible = TurnOn;
 
             MainStack.IsEnabled = !TurnOn;
+
+            return false;
         }
 
         Track FindTrack(View v)
@@ -141,13 +152,18 @@ namespace MyMixes
             return t;
         }
 
+        private void UpdateStatus(string status)
+        {
+            ppd.BusyText = status;
+        }
+
         private async Task SyncProjectsAsync()
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
             foreach (MixLocation ml in PersistentData.MixLocationList)
             {
-                ppd.BusyText = ml.Provider.ToString() + " " + ml.Path;
+                UpdateStatus(ml.Provider.ToString() + " " + ml.Path);
 
                 ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
 
@@ -158,8 +174,8 @@ namespace MyMixes
                     {
                         foreach (string f in l)
                         {
-                            ppd.BusyText = ml.Provider.ToString() + " " + ml.Path  + " " + f;
-                            var retList = await pi.UpdateProjectAsync(ml.Path, f);
+                            UpdateStatus(ml.Provider.ToString() + " " + ml.Path  + " " + f);
+                            var retList = await pi.UpdateProjectAsync(ml.Path, f, UpdateStatus);
                             if (AllSongs.ContainsKey(f))
                             {
                                 AllSongs[f].AddRange(retList);
@@ -179,7 +195,7 @@ namespace MyMixes
                 if (!AllSongs.ContainsKey(Path.GetFileName(p)))
                 {
                     Debug.Print("Remove dir " + p + "\n");
-                    ppd.BusyText = "Removing " + p;
+                    UpdateStatus("Removing " + p);
                     Directory.Delete(p, true);
                 }
                 else
@@ -188,7 +204,7 @@ namespace MyMixes
                     {
                         if (AllSongs[p].Contains(Path.GetFileName(s)))
                         {
-                            ppd.BusyText = "Removing " + s;
+                            UpdateStatus("Removing " + s);
                             Debug.Print("Remove file " + s + "\n");
                             File.Delete(s);
                         }
@@ -200,7 +216,7 @@ namespace MyMixes
             {
                 foreach (string f in AllSongs[p])
                 {
-                    ppd.BusyText = p + " " + f;
+                    UpdateStatus(p + " " + f);
                 }
             }
 
