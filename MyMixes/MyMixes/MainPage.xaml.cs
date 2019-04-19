@@ -1,21 +1,13 @@
-﻿using PCLStorage;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 //using Xamarin.Plugin.FilePicker;
 
-using Plugin.SimpleAudioPlayer;
-using System.IO;
-using Plugin.FilePicker.Abstractions;
-using Plugin.FilePicker;
-using static MyMixes.ProviderInfo;
-using CloudStorage;
-using System.Collections.ObjectModel;
+//using System.IO;
+//using static MyMixes.ProviderInfo;
+//using CloudStorage;
+//using System.Collections.ObjectModel;
 
 namespace MyMixes
 {
