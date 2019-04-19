@@ -19,7 +19,7 @@
     <ContentPage.Resources>
         <ResourceDictionary  MergedWith="dark:DarkThemeResources">
             <DataTemplate x:Key="songListTemplate">
-                <ViewCell>
+                <ViewCell >
                     <Grid Margin="0,0,0,0" BackgroundColor="Transparent" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.17*" />
@@ -53,11 +53,12 @@
                         ItemTemplate="{StaticResource songListTemplate}" 
                         ItemsSource="{Binding PlayingTracks}"
                         SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
-                        CachingStrategy="RecycleElement"  
+                        
                         RowHeight="55" Margin="0,0,0,0"
             >
                 <!--<d:ListView.ItemsSource>
 ItemSelected="TrackView_Sel"
+CachingStrategy="RecycleElement"  
                 <x:Array Type="{x:Type local:QueuedTrack}">
                         <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
                         <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />

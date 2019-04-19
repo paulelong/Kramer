@@ -16,7 +16,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="projectfolderTemplate">
-                <ViewCell>
+                <local:ExtendedViewCell SelectedBackgroundColor="Transparent">
                     <Grid Margin="0,2,5,2" BackgroundColor="#404040">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.12*" />
@@ -33,11 +33,11 @@
                         <!--<Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
                         <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
-                </ViewCell>
+                </local:ExtendedViewCell>
             </DataTemplate>
             
             <DataTemplate x:Key="trackTemplate">
-                <ViewCell>
+                <local:ExtendedViewCell SelectedBackgroundColor="Transparent">
                     <Grid Margin="5,1,0,1" BackgroundColor="#242424">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.12*" />
@@ -56,11 +56,11 @@
                         <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
                         <!--<Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
-                </ViewCell>
+                </local:ExtendedViewCell>
             </DataTemplate>
             
             <DataTemplate x:Key="selectedTracksTemplate">
-                <ViewCell>
+                <local:ExtendedViewCell SelectedBackgroundColor="Transparent">
                     <Grid Margin="5,0,5,0" BackgroundColor="#242424">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.78*" />
@@ -76,7 +76,7 @@
                         <Button Grid.Column="1" Image="UpSongBt.png" Margin="-8.5,-6.5,-8.5,-6.5" Scale=".55" Clicked="SongDownPosition_Clicked" />
                         <Button Grid.Column="2" Image="DelBt.png"  Margin="-4,0,-4,0" Scale=".7" Clicked="DeleteSong_Clicked"/>
                     </Grid>
-                </ViewCell>
+                </local:ExtendedViewCell>
             </DataTemplate>
             
             <local:TrackDataTemplateSelector x:Key="trackDataTemplateSelector" ProjectTemplate="{StaticResource projectfolderTemplate}" TrackTemplate="{StaticResource trackTemplate}" />
@@ -97,7 +97,6 @@
                     <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
-                        CachingStrategy="RecycleElement"                        
                         RowHeight="45"
                               IsPullToRefreshEnabled="True"
                               Refreshing="ResyncAllClickedAsync"                              
@@ -119,7 +118,6 @@
                     <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
                     <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
-                        CachingStrategy="RecycleElement"
                         RowHeight="50"
                 >
                         <d:ListView.ItemsSource>

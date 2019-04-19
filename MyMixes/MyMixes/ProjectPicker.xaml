@@ -16,7 +16,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="mixLocationTemplate">
-                <ViewCell>
+                <local:ExtendedViewCell SelectedBackgroundColor="Transparent">
                     <Grid Margin="5,2,5,2"  BackgroundColor="#242424">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.48*" />
@@ -28,13 +28,13 @@
                         <Button Grid.Column="2" Image="DelBt.png"  Pressed="LocationDeleted"/>
                         <!--<Button Grid.Column="2" Image="DelBt.png" Pressed="LocationDeleted"/>-->
                     </Grid>
-                </ViewCell>
+                </local:ExtendedViewCell>
             </DataTemplate>
 
             <DataTemplate x:Key="DirectoryListTemplate">
-                <ViewCell>
+                <local:ExtendedViewCell SelectedBackgroundColor="#FF135A0A">
                     <Label Text="{Binding DirectoryName}" TextColor="White" Margin="10,0,10,0" VerticalTextAlignment="Center"/>
-                </ViewCell>
+                </local:ExtendedViewCell>
             </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
