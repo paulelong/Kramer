@@ -65,5 +65,7 @@
 	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>1</string>
+	<key>XSAppIconAssets</key>
+	<string>Media.xcassets/AppIcons.appiconset</string>
 </dict>
 </plist>

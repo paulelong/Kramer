@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMixes.Android", "MyMixes\MyMixes.Android\MyMixes.Android.csproj", "{B45F057F-AC5E-44EB-953C-68BEA8F2BD93}"
 EndProject
@@ -258,8 +258,8 @@ Global
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.Ad-Hoc|x64.Build.0 = Debug|Any CPU
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
-		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|ARM.ActiveCfg = Debug|Any CPU
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|ARM.Build.0 = Debug|Any CPU
 		{3F893C3E-AA4D-42C3-81C6-7BC740D5FC92}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
@@ -318,8 +318,8 @@ Global
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.Ad-Hoc|x64.Build.0 = Debug|Any CPU
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
-		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|ARM.ActiveCfg = Debug|Any CPU
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|ARM.Build.0 = Debug|Any CPU
 		{B2C8B85F-C435-4C01-8A90-B7270640F39E}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
