@@ -23,7 +23,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>MyMixes</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.PaulysHotel.MyMixes</string>
+	<string>com.PaulysHotel.Mixes</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleIconFiles</key>
@@ -63,5 +63,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleShortVersionString</key>
+	<string>1</string>
 </dict>
 </plist>
