@@ -222,5 +222,24 @@
     <ImageAsset Include="Media.xcassets\LaunchImages.launchimage\Contents.json">
       <Visible>false</Visible>
     </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon1024.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon1024-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon167.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon152.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon76.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon80.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon40.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon40-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon20.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon80-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon58.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon40-2.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon58-2.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon180.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon120.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon120-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon87.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon60.png" />
+    <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon29.png" />
   </ItemGroup>
 </Project>
