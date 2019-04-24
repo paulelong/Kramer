@@ -5,6 +5,8 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.PaulysHotel.Mixes</string>
+		<string>$(AppIdentifierPrefix)com.PaulysHotel.MyMixes</string>
+		<string>$(AppIdentifierPrefix)com.microsoft.adalcache</string>
 	</array>
 </dict>
 </plist>
