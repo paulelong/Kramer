@@ -20,6 +20,8 @@
     <AndroidKeyStore>true</AndroidKeyStore>
     <AndroidSigningKeyStore>E:\Users\Paul\Documents\src\Kramer\secure\mymixes.keystore</AndroidSigningKeyStore>
     <AndroidSigningStorePass>Xim7pig</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>paulelong@outlook.com</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>Xim7pig</AndroidSigningKeyPass>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
