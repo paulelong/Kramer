@@ -93,6 +93,8 @@ namespace MyMixes
         }
 
         private List<string> providerList = null;
+        private CloudProviders lastProvider;
+
         public List<string> ProviderList
         {
             get
@@ -135,7 +137,7 @@ namespace MyMixes
             await UpdateFolderList();
         }
 
-        private async Task UpdateFolderList()
+        private async Task<bool> UpdateFolderList()
         {
             if(pi != null && await pi.CheckAuthenitcationAsync())
             {
@@ -150,6 +152,12 @@ namespace MyMixes
                 }
 
                 BusyOn(false);
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -194,13 +202,20 @@ namespace MyMixes
 
         private async void OnProviderChanged(object sender, EventArgs e)
         {
+
             CurrentFolder = "";
             if(CurrentProvider != CloudProviders.NULL)
             {
                 pi = await ProviderInfo.GetCloudProviderAsync(CurrentProvider);
 
-                await UpdateFolderList();
+                bool worked = await UpdateFolderList();
+                if(!worked)
+                {
+                    CurrentProvider = lastProvider;
+                }
             }
+
+            lastProvider = CurrentProvider;
         }
 
         private void OnDisappearing(object sender, EventArgs e)
