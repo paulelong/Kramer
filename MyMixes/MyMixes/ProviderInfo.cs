@@ -66,7 +66,8 @@ namespace MyMixes
 
                         Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
                         googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
-                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect";
+                        // 133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com
+                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k:/oauth2redirect";
                         googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
                         googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
                         googledriveparams[CloudParams.GoogleToken.ToString()] = null;

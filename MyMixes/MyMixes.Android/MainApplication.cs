@@ -36,7 +36,7 @@ namespace MyMixes.Droid
 
         {
             CrossCurrentActivity.Current.Activity = activity;
-            App.UiParent = new UIParent(activity);
+            App.UiParent = new UIParent(activity, useEmbeddedWebview: true);
         }
 
         public void OnActivityDestroyed(Activity activity)
