@@ -149,6 +149,7 @@
     <BundleResource Include="Resources\PlayBt.png" />
     <BundleResource Include="Resources\PauseBt.png" />
     <BundleResource Include="Resources\NextBt.png" />
+    <BundleResource Include="Resources\Icon58.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

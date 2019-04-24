@@ -61,6 +61,8 @@
 				<string>com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k</string>
 				<string>xamarin-auth</string>
 			</array>
+			<key>CFBundleURLIconFile</key>
+			<string>Icon58</string>
 		</dict>
 	</array>
 	<key>CFBundleShortVersionString</key>
