@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-
 using Xamarin.Forms;
-//using Xamarin.Plugin.FilePicker;
 
-//using System.IO;
-//using static MyMixes.ProviderInfo;
-//using CloudStorage;
-//using System.Collections.ObjectModel;
 
 namespace MyMixes
 {
     public partial class MainPage : ContentPage
     {
         private TransportViewModel TransportVMInstance;
-        //ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
 
         public MainPage()
         {
@@ -77,6 +70,5 @@ namespace MyMixes
             
             TransportVMInstance.MoveSongUp(t);
         }
-
     }
 }
