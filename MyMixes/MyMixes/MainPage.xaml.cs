@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using System;
 using System.Diagnostics;
 using Xamarin.Forms;
 
@@ -11,12 +13,14 @@ namespace MyMixes
 
         public MainPage()
         {
+            Analytics.TrackEvent("Started");
             try
             {
                 InitializeComponent();
             }
             catch(Exception ex)
             {
+                Crashes.TrackError(ex);
                 Debug.Print(ex.ToString());
             }
 
@@ -29,7 +33,7 @@ namespace MyMixes
             {
                 NavigationPage.SetHasNavigationBar(this, false);
             }
-
+            Analytics.TrackEvent("Started Completed");
         }
 
 #pragma warning disable AvoidAsyncVoid
