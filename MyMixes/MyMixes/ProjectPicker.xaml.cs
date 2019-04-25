@@ -163,10 +163,13 @@ namespace MyMixes
 
         private async void SelectPressed(object sender, EventArgs e)
         {
-            string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
-            DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
-            PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
-            PersistentData.SaveMixLocations();
+            if (FolderList.SelectedItem != null)
+            {
+                string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
+                DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
+                PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
+                PersistentData.SaveMixLocations();
+            }
         }
 
         private async void OpenFolder(object sender, EventArgs e)
