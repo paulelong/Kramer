@@ -1,4 +1,5 @@
-﻿using PCLStorage;
+﻿using Microsoft.AppCenter.Analytics;
+//using PCLStorage;
 using Plugin.SimpleAudioPlayer;
 using System;
 using System.Collections.Generic;
@@ -339,25 +340,13 @@ namespace MyMixes
         {
             double playerpos = player.CurrentPosition;
 
-            string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
-            string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
-
-            Debug.Print("playing {0} {1}\n", filename, path);
-
-            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path);
-            if(folder == null)
-            {
-                Debug.Print("Error folder is null, why woudl that happen? No sync?");
-                return ;
-            }
+            Debug.Print("playing {0}\n", PlayingTracks[CurrentTrackNumber].FullPath);
 
             try
             {
-                IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
-
                 player.Stop();
 
-                using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
+                using (Stream s = new FileStream(PlayingTracks[CurrentTrackNumber].FullPath, FileMode.Open))
                 {
                     if (player.Load(s))
                     {
@@ -367,12 +356,10 @@ namespace MyMixes
                         }
 
                         StartPlayer();
-                        //player.Play();
-                        //isSongPlaying = true;
                     }
                     else
                     {
-                        //await DisplayAlert("Error openning track ", t.FullPath, "OK");
+                        Analytics.TrackEvent("PlayCurrent player laod failed");
                     }
                 }
 

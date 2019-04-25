@@ -1,4 +1,4 @@
-﻿using PCLStorage;
+﻿//using PCLStorage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -116,13 +116,18 @@ namespace MyMixes
             string filepath = Path.GetDirectoryName(path);
             string name = Path.GetFileName(path);
 
-            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
-            ExistenceCheckResult result = await folder.CheckExistsAsync(name);
+            //IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
+            //ExistenceCheckResult result = await folder.CheckExistsAsync(name);
 
-            if(result != ExistenceCheckResult.FileExists)
+            if(!File.Exists(path))
             {
                 return true;
             }
+
+            //if(result != ExistenceCheckResult.FileExists)
+            //{
+            //    return true;
+            //}
 
             if (Application.Current.Properties.ContainsKey(path))
             {
