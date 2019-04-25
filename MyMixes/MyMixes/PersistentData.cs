@@ -111,36 +111,36 @@ namespace MyMixes
             Application.Current.Properties[key] = value;
         }
 
-        public static async Task<bool> isRemoteNewerAsync(string path, DateTime lastModified)
-        {
-            string filepath = Path.GetDirectoryName(path);
-            string name = Path.GetFileName(path);
+        //public static async Task<bool> isRemoteNewerAsync(string path, DateTime lastModified)
+        //{
+        //    string filepath = Path.GetDirectoryName(path);
+        //    string name = Path.GetFileName(path);
 
-            //IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
-            //ExistenceCheckResult result = await folder.CheckExistsAsync(name);
+        //    //IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
+        //    //ExistenceCheckResult result = await folder.CheckExistsAsync(name);
 
-            if(!File.Exists(path))
-            {
-                return true;
-            }
+        //    if(!File.Exists(path))
+        //    {
+        //        return true;
+        //    }
 
-            //if(result != ExistenceCheckResult.FileExists)
-            //{
-            //    return true;
-            //}
+        //    //if(result != ExistenceCheckResult.FileExists)
+        //    //{
+        //    //    return true;
+        //    //}
 
-            if (Application.Current.Properties.ContainsKey(path))
-            {
-                DateTime localLastModified = (DateTime)Application.Current.Properties[path];
-                if (lastModified <= localLastModified)
-                {
-                    return false;
-                }
-            }
+        //    if (Application.Current.Properties.ContainsKey(path))
+        //    {
+        //        DateTime localLastModified = (DateTime)Application.Current.Properties[path];
+        //        if (lastModified <= localLastModified)
+        //        {
+        //            return false;
+        //        }
+        //    }
 
-            Application.Current.Properties[path] = lastModified;
-            return true;
-        }
+        //    Application.Current.Properties[path] = lastModified;
+        //    return true;
+        //}
 
         static int ProviderCount
         {
