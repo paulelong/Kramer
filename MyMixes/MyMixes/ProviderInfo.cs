@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CloudStorage;
+//using Microsoft.AppCenter;
 using OAuthNativeFlow;
+using Xamarin.Forms;
 
 namespace MyMixes
 {
@@ -67,6 +69,7 @@ namespace MyMixes
                         Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
                         googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
                         // 133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com
+                        // 133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com 
                         googledriveparams[CloudParams.RedirectURL.ToString()] = "com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k:/oauth2redirect";
                         googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
                         googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
@@ -100,6 +103,35 @@ namespace MyMixes
 
             return null;
         }
+
+        private string GetGoogleClientID()
+        {
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                return "133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com ";
+            }
+            else
+            {
+                return "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
+            }
+        }
+
+        private string GetGoogleAuthRedirect()
+        {
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                return "com.googleusercontent.apps.133589155347-2he14os3etg7evt97pcu5jil1udh1klk:/oauth2redirect";
+            }
+            else if (Device.RuntimePlatform == Device.Android)
+            {
+                return "com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k:/oauth2redirect";
+            }
+            else // UWP
+            {
+                return "com.paulyshotel.rr:/oauth2redirect";
+            }
+        }
+
 
         public async Task<List<string>> GetFoldersAsync(string folder)
         {
