@@ -108,7 +108,7 @@ namespace MyMixes
         {
             if (Device.RuntimePlatform == Device.iOS)
             {
-                return "133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com ";
+                return "133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com";
             }
             else
             {
