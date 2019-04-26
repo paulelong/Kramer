@@ -67,10 +67,10 @@ namespace MyMixes
                         cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.GoogleDrive);
 
                         Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
-                        googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
+                        googledriveparams[CloudParams.ClientID.ToString()] = GetGoogleClientID();
                         // 133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com
                         // 133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com 
-                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k:/oauth2redirect";
+                        googledriveparams[CloudParams.RedirectURL.ToString()] = GetGoogleAuthRedirect();
                         googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
                         googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
                         googledriveparams[CloudParams.GoogleToken.ToString()] = null;
@@ -104,7 +104,7 @@ namespace MyMixes
             return null;
         }
 
-        private string GetGoogleClientID()
+        private static string GetGoogleClientID()
         {
             if (Device.RuntimePlatform == Device.iOS)
             {
@@ -116,7 +116,7 @@ namespace MyMixes
             }
         }
 
-        private string GetGoogleAuthRedirect()
+        private static string GetGoogleAuthRedirect()
         {
             if (Device.RuntimePlatform == Device.iOS)
             {
