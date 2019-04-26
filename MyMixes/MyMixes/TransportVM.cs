@@ -1,5 +1,4 @@
 ﻿using Microsoft.AppCenter.Analytics;
-//using PCLStorage;
 using Plugin.SimpleAudioPlayer;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using MediaManager;
+using MediaManager.Media;
 
 namespace MyMixes
 {
@@ -344,25 +345,26 @@ namespace MyMixes
 
             try
             {
-                player.Stop();
+                //player.Stop();
 
-                using (Stream s = new FileStream(PlayingTracks[CurrentTrackNumber].FullPath, FileMode.Open))
-                {
-                    if (player.Load(s))
-                    {
-                        if (playerState != PlayerStates.Stopped && isAligned)
-                        {
-                            player.Seek(playerpos);
-                        }
+                //using (Stream s = new FileStream(PlayingTracks[CurrentTrackNumber].FullPath, FileMode.Open))
+                //{
+                //    if (player.Load(s))
+                //    {
+                //        if (playerState != PlayerStates.Stopped && isAligned)
+                //        {
+                //            player.Seek(playerpos);
+                //        }
 
-                        StartPlayer();
-                    }
-                    else
-                    {
-                        Analytics.TrackEvent("PlayCurrent player laod failed");
-                    }
-                }
-
+                //        StartPlayer();
+                //    }
+                //    else
+                //    {
+                //        Analytics.TrackEvent("PlayCurrent player laod failed");
+                //    }
+                //}
+//                FileInfo f = new FileInfo(PlayingTracks[CurrentTrackNumber].FullPath);
+                IMediaItem imi = await MediaManager.CrossMediaManager.Current.Play("https://ia800605.us.archive.org/32/items/Mp3Playlist_555/AaronNeville-CrazyLove.mp3");
             }
             catch(Exception ex)
             {

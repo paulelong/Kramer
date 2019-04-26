@@ -8,6 +8,7 @@ using Android.Widget;
 using Android.OS;
 using Microsoft.Identity.Client;
 using Android.Content;
+using MediaManager;
 
 namespace MyMixes.Droid
 {
@@ -22,6 +23,8 @@ namespace MyMixes.Droid
             //base.SetTheme(Resource.Style.MainTheme);
 
             base.OnCreate(bundle);
+
+            CrossMediaManager.Current.Init(this);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());

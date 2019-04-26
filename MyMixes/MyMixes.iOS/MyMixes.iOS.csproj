@@ -167,6 +167,9 @@
     <PackageReference Include="PCLStorage">
       <Version>1.0.2</Version>
     </PackageReference>
+    <PackageReference Include="Plugin.MediaManager">
+      <Version>0.5.4</Version>
+    </PackageReference>
     <PackageReference Include="UXDivers.GorillaPlayer.SDK.AutoConfig">
       <Version>1.5.0-Beta4</Version>
     </PackageReference>
