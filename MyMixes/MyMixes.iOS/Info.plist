@@ -58,7 +58,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>msal7ba22c7f-29be-4dc7-a274-4209fe0b8b72</string>
-				<string>com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k</string>
+				<string>com.googleusercontent.apps.133589155347-2he14os3etg7evt97pcu5jil1udh1klk</string>
 				<string>xamarin-auth</string>
 			</array>
 			<key>CFBundleURLIconFile</key>
