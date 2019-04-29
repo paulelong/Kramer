@@ -50,7 +50,7 @@
                 <StackLayout>
                     <Label Text="Mix Locations" FontSize="Large"/>
                     <ListView x:Name="MixLocationView"                       
-                      ItemTemplate="{StaticResource mixLocationTemplate}">
+                    ItemTemplate="{StaticResource mixLocationTemplate}">
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:MixLocation}">
                                 <local:MixLocation Path="Mixes" Provider="OneDrive"/>
@@ -63,11 +63,11 @@
                     <Label Text="Cloud Files" FontSize="Large"/>
                     <StackLayout Orientation="Horizontal">
                         <Picker x:Name="CloudProivder" SelectedItem="{Binding ProviderNameText, Mode=TwoWay}"
-                                    WidthRequest="150"
-                                    SelectedIndexChanged="OnProviderChanged"
-                                    TextColor="White"
-                                    Style="{StaticResource DefaultPicker}"
-                        >
+                                WidthRequest="150"
+                                SelectedIndexChanged="OnProviderChanged"
+                                TextColor="White"
+                                Style="{StaticResource DefaultPicker}"
+                    >
 
                             <d:Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
@@ -84,22 +84,22 @@
                     </StackLayout>
 
                     <ListView x:Name="FolderList" 
-                              RowHeight="40" BackgroundColor="#242424" HeightRequest="300" 
-                              ItemTemplate="{StaticResource DirectoryListTemplate}">
+                            RowHeight="40" BackgroundColor="#242424" HeightRequest="300" 
+                            ItemTemplate="{StaticResource DirectoryListTemplate}">
                         <!--<d:ListView.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>Folder1</x:String>
-                                <x:String>Mixes</x:String>
-                                <x:String>Other</x:String>
-                            </x:Array>
-                        </d:ListView.ItemsSource>-->
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Folder1</x:String>
+                            <x:String>Mixes</x:String>
+                            <x:String>Other</x:String>
+                        </x:Array>
+                    </d:ListView.ItemsSource>-->
                     </ListView>
                 </StackLayout>
             </Grid>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
-                <Button Image="UpSongBt.png"  Pressed="UpPressed"/>
-                <Button Image="OpenFolderBt.png" Pressed="OpenFolder"/>
                 <Button Image="AddBt.png"  Pressed="SelectPressed"/>
+                <Button Image="OpenFolderBt.png" Pressed="OpenFolder"/>
+                <Button Image="UpSongBt.png"  Pressed="UpPressed"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
