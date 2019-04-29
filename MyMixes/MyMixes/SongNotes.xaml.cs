@@ -77,13 +77,13 @@ namespace MyMixes
 
         private void TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(e.NewTextValue != null && e.NewTextValue.Last() == '\n' && e.NewTextValue[e.NewTextValue.Length - 2] != '-')
-            {
-                if(tvm.player.IsPlaying && tvm.SelectedSong == qt)
-                {
-                    snd.Notes = snd.Notes.Substring(0, snd.Notes.Length-1) + " " + tvm.player.CurrentPosition.ToString() + "-\n";
-                }
-            }
+            //if(e.NewTextValue != null && e.NewTextValue.Last() == '\n' && e.NewTextValue[e.NewTextValue.Length - 2] != '-')
+            //{
+            //    if(tvm.player.IsPlaying && tvm.SelectedSong == qt)
+            //    {
+            //        snd.Notes = snd.Notes.Substring(0, snd.Notes.Length-1) + " " + tvm.player.CurrentPosition.ToString() + "-\n";
+            //    }
+            //}
         }
     }
 }
