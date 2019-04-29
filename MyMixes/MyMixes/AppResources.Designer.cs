@@ -61,6 +61,24 @@ namespace MyMixes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mix locations are folders in your cloud storage that contain your mixes.  Ideally you can configure your DAW to store mixes in a structure that contains a project folder contianing mixes in .wav or .mp3 format. \n\nChoose a cloud provider, provide credentials, and then choose a folder which contains projects, which in turn contains each individual mix..
+        /// </summary>
+        internal static string NoMixLocations {
+            get {
+                return ResourceManager.GetString("NoMixLocations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Mix Locations.
+        /// </summary>
+        internal static string NoMixLocationsTitle {
+            get {
+                return ResourceManager.GetString("NoMixLocationsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add songs to the playing list by using the button at the bottom.  These songs are the ones you are currently evalutating..
         /// </summary>
         internal static string NoPlaylist {
@@ -75,6 +93,24 @@ namespace MyMixes {
         internal static string NoPlaylistTitle {
             get {
                 return ResourceManager.GetString("NoPlaylistTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Projects are folders in your cloud storage that contain your mixed songs.  This list is empty because you don&apos;t have any cloud storage locations added yet.  To add the first one, use the Add Cloud button at the bottom..
+        /// </summary>
+        internal static string NoProjects {
+            get {
+                return ResourceManager.GetString("NoProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Projects.
+        /// </summary>
+        internal static string NoProjectsTitle {
+            get {
+                return ResourceManager.GetString("NoProjectsTitle", resourceCulture);
             }
         }
         

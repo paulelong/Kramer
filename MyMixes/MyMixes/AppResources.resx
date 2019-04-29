@@ -117,11 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="NoMixLocations" xml:space="preserve">
+    <value>Mix locations are folders in your cloud storage that contain your mixes.  Ideally you can configure your DAW to store mixes in a structure that contains a project folder contianing mixes in .wav or .mp3 format. \n\nChoose a cloud provider, provide credentials, and then choose a folder which contains projects, which in turn contains each individual mix.</value>
+  </data>
+  <data name="NoMixLocationsTitle" xml:space="preserve">
+    <value>Add Mix Locations</value>
+  </data>
   <data name="NoPlaylist" xml:space="preserve">
     <value>Add songs to the playing list by using the button at the bottom.  These songs are the ones you are currently evalutating.</value>
   </data>
   <data name="NoPlaylistTitle" xml:space="preserve">
     <value>Add Songs</value>
+  </data>
+  <data name="NoProjects" xml:space="preserve">
+    <value>Projects are folders in your cloud storage that contain your mixed songs.  This list is empty because you don't have any cloud storage locations added yet.  To add the first one, use the Add Cloud button at the bottom.</value>
+  </data>
+  <data name="NoProjectsTitle" xml:space="preserve">
+    <value>Add Projects</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>

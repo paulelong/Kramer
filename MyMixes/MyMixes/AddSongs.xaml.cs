@@ -110,6 +110,11 @@ namespace MyMixes
                 LoadProjects();
                 BusyOn(false, true);
             }
+
+            if(PersistentData.MixLocationList.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
+            }
         }
 
         private async void ResyncAllClickedAsync(object sender, EventArgs e)

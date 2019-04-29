@@ -135,6 +135,12 @@ namespace MyMixes
             MixLocationView.ItemsSource = PersistentData.MixLocationList;
 
             await UpdateFolderList();
+
+            if (PersistentData.MixLocationList.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoMixLocationsTitle, AppResources.NoMixLocations, AppResources.OK);
+            }
+
         }
 
         private async Task<bool> UpdateFolderList()
