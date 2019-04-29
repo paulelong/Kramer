@@ -195,11 +195,15 @@ namespace MyMixes
                 {
                     if (CurrentTrackNumber + 1 >= SongsQueued)
                     {
-                        if (isLooping)
-                        {
-                            await PlayCurrentSongAsync();
-                        }
-                        else
+                        //if (isLooping)
+                        //{
+                        //    await PlayCurrentSongAsync();
+                        //}
+                        //else
+                        //{
+                        //    StopPlayer();
+                        //}
+                        if(!isLooping)
                         {
                             StopPlayer();
                         }
@@ -208,14 +212,14 @@ namespace MyMixes
                     else
                     {
                         CurrentTrackNumber++;
-                        if (isLooping)
-                        {
-                            await PlayCurrentSongAsync();
-                        }
-                        else
-                        {
-                            StopPlayer();
-                        }
+                        //if (isLooping)
+                        //{
+                        //    await PlayCurrentSongAsync();
+                        //}
+                        //else
+                        //{
+                        //    StopPlayer();
+                        //}
                     }
                 }
             });
