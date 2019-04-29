@@ -50,7 +50,7 @@
                 <StackLayout>
                     <Label Text="Mix Locations" FontSize="Large"/>
                     <ListView x:Name="MixLocationView"                       
-                    ItemTemplate="{StaticResource mixLocationTemplate}">
+                    ItemTemplate="{StaticResource mixLocationTemplate}" SelectionMode="None">
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:MixLocation}">
                                 <local:MixLocation Path="Mixes" Provider="OneDrive"/>
