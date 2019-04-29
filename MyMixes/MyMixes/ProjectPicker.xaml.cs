@@ -176,7 +176,8 @@ namespace MyMixes
         {
             if(FolderList.SelectedItem != null)
             {
-                CurrentFolder += "/" + (string)FolderList.SelectedItem;
+                DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
+                CurrentFolder += "/" + de.DirectoryName;
                 await UpdateFolderList();
             }
         }
