@@ -26,6 +26,24 @@ namespace MyMixes
             }
         }
 
+        private string projectName;
+        public string ProjectName
+        {
+            get
+            {
+                return projectName;
+            }
+            set
+            {
+                if (projectName != value)
+                {
+                    projectName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
         private string notes;
         public string Notes
         {

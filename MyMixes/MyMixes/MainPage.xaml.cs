@@ -53,7 +53,8 @@ namespace MyMixes
         private void Notes_Clicked(object sender, EventArgs e)
         {
             PersistentData.Save();
-            Navigation.PushAsync(new SongNotes(QueuedTrack.FindQueuedTrack((View)sender)));
+//            Navigation.PushAsync(new SongNotes(QueuedTrack.FindQueuedTrack((View)sender)));
+            Navigation.PushAsync(new SongNotes(TransportVMInstance, QueuedTrack.FindQueuedTrack((View)sender)));
         }
 
         private async void OnAppearing(object sender, EventArgs e)

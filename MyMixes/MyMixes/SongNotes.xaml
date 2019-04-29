@@ -14,9 +14,25 @@
     
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="{Binding SongName}" FontSize="Large"/>
             <Editor Text="{Binding Notes, Mode=TwoWay}" VerticalOptions="FillAndExpand"
-                    Placeholder="Type in notes about your mix, for instance something to remind you to change the volume on an insturment." PlaceholderColor="Gray"/>
+                    Placeholder="Type in notes about your mix, for instance something to remind you to change the volume on an insturment." 
+                    PlaceholderColor="#767474"
+                    TextColor="White"
+                    TextChanged="TextChanged"/>
+            <StackLayout Orientation="Horizontal">
+                <Button Image="LeftSong.png" Pressed="LeftSongPressed" HorizontalOptions="Start"/>
+                <StackLayout HorizontalOptions="CenterAndExpand" BackgroundColor="#535353">
+                    <Label Text="{Binding ProjectName, Mode=TwoWay}"
+                                   TextColor="White" FontSize="Micro" 
+                                   VerticalTextAlignment="End" HeightRequest="20"
+                                    HorizontalOptions="CenterAndExpand"/>
+                    <Label Text="{Binding SongName, Mode=TwoWay}" 
+                                   TextColor="White" FontAttributes="Bold" FontSize="Medium" 
+                                    HorizontalTextAlignment="Center"
+                           HorizontalOptions="CenterAndExpand"/>
+                </StackLayout>
+                <Button Image="RightSong.png" Pressed="RightSongPressed" HorizontalOptions="End"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
