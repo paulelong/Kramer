@@ -61,6 +61,11 @@ namespace MyMixes
             await TransportVMInstance.LoadProjects();
 
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
+
+            if(TransportVMInstance.PlayingTracks.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
+            }
         }
 
         private void DeleteSong_Clicked(object sender, EventArgs e)
