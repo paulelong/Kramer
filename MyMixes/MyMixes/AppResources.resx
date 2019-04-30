@@ -118,19 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NoMixLocations" xml:space="preserve">
-    <value>This screen displays the cloud mix locations you've added at the top, which is empty until you add your first.  A mix locations is a folder in your cloud storage that contains your mixing projects. Each project will have songs you've mixed from your DAW.   Ideally you can configure your DAW to store mixes in a structure that contains a project folder full of mixed songs\n\r\n\rConnect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects. </value>
+    <value>This screen displays the cloud mix locations you've added at the top, which is empty until you add your first.  A mix locations is a folder in your cloud storage that contains your mixing projects. Each project will have songs you've mixed from your DAW.   Ideally you can configure your DAW to store mixes in a structure that contains a project folder full of mixed songs.
+
+Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects. </value>
   </data>
   <data name="NoMixLocationsTitle" xml:space="preserve">
     <value>Add Mix Locations</value>
   </data>
   <data name="NoPlaylist" xml:space="preserve">
-    <value>This main screen is you Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated. /n/r/n/r Add songs from your master list of projects by using the button at the bottom.</value>
+    <value>This main screen is you Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated.
+
+Add songs from your master list of projects by using the button at the bottom.</value>
   </data>
   <data name="NoPlaylistTitle" xml:space="preserve">
     <value>Add songs to your playlist</value>
   </data>
   <data name="NoProjects" xml:space="preserve">
-    <value>This screen displays all of you projects that exist based on cloud mix locations you've configured.  A cloud mix location is a folder in your cloud storage which contains project folders.  Each project folder contains songs.\n\r\n\rThe list of projectrs is empty because you haven't add your first cloud locaiton.  To add the first cloud location, use the Add Cloud button at the bottom.</value>
+    <value>This screen displays all of your projects that exist in the cloud mix locations you've configured.  A cloud mix location is a folder in your cloud storage which contains project folders.  Each project folder contains songs.
+
+The list of projects is empty because you haven't add your first cloud locaiton.  To add the first cloud location, use the Add Cloud button at the bottom.</value>
   </data>
   <data name="NoProjectsTitle" xml:space="preserve">
     <value>Add Song to Playlist</value>
