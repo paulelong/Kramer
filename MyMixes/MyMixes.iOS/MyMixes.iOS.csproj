@@ -278,6 +278,7 @@
     <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Icon29.png">
       <Visible>false</Visible>
     </ImageAsset>
+    <ImageAsset Include="Media.xcassets\LaunchImages.launchimage\iOS8281792.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork%402x" />
