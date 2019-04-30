@@ -84,13 +84,82 @@ namespace MyMixes
             get { return currentFolder; }
             set
             {
-                if(currentFolder != value)
+                if (currentFolder != value)
                 {
-                    OnPropertyChanged("CurrentFolder");
-                    currentFolder = value;
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        currentFolder = null;
+                    }
+                    else
+                    {
+                        currentFolder = value;
+                    }
+                    OnPropertyChanged();
+                    OnPropertyChanged("CurrentDisplayFolder");
                 }
             }
         }
+
+        public string CurrentDisplayFolder
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(currentFolder))
+                {
+                    return "/";
+                }
+                else
+                {
+                    return currentFolder;
+                }
+            }
+        }
+
+
+        private bool addEnabled = false;
+        public bool AddEnabled
+        {
+            get
+            {
+                return addEnabled;
+            }
+            set
+            {
+                if (addEnabled != value)
+                {
+                    OnPropertyChanged();
+                    addEnabled = value;
+                }
+            }
+        }
+
+        private string currentMixLocation;
+        public string CurrentMixLocation
+        {
+            get
+            {
+                //if(!string.IsNullOrEmpty(currentMixLocation))
+                //{
+                //    AddEnabled = true;
+                //    return currentMixLocation + "?";
+                //}
+                //else
+                //{
+                //    AddEnabled = false;
+                //    return null;
+                //}
+                return null;
+            }
+            set
+            {
+                if (currentMixLocation != value)
+                {
+                    currentMixLocation = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
 
         private List<string> providerList = null;
         private CloudProviders lastProvider;
@@ -118,6 +187,7 @@ namespace MyMixes
             CloudProivder.BindingContext = this;
             PathBreadCrumbs.BindingContext = this;
             FolderList.BindingContext = this;
+            AddButton.BindingContext = this;
 
             CloudProivder.ItemsSource = ProviderList;
 
@@ -185,6 +255,8 @@ namespace MyMixes
                 DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
                 CurrentFolder += "/" + de.DirectoryName;
                 await UpdateFolderList();
+                OnPropertyChanged("CurrentDisplayFolder");
+                CurrentMixLocation = null;
             }
         }
 
@@ -199,8 +271,18 @@ namespace MyMixes
                 int idx = CurrentFolder.LastIndexOf('/');
                 if(idx >= 0)
                 {
+                    string lastFolder = CurrentFolder.Substring(idx + 1);
+                    CurrentMixLocation = lastFolder;
+
                     CurrentFolder = CurrentFolder.Substring(0, idx);
                     await UpdateFolderList();
+                    for (int i = 0; i < DirectoryList.Count; i++)
+                    {
+                        if (lastFolder == DirectoryList[i].DirectoryName)
+                        {
+                            FolderList.SelectedItem = DirectoryList[i];
+                        }
+                    }
                 }
             }
         }
@@ -254,6 +336,21 @@ namespace MyMixes
             ppd.IsVisible = TurnOn;
 
             MainStack.IsEnabled = !TurnOn;
+        }
+
+        private void FolderList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            if (FolderList.SelectedItem != null)
+            {
+                DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
+                CurrentMixLocation = de.DirectoryName;
+                AddEnabled = true;
+            }
+            else
+            {
+                CurrentMixLocation = null;
+                AddEnabled = false;
+            }
         }
     }
 }   

@@ -32,9 +32,9 @@
             </DataTemplate>
 
             <DataTemplate x:Key="DirectoryListTemplate">
-                <local:ExtendedViewCell SelectedBackgroundColor="#FF135A0A">
+                <ViewCell>
                     <Label Text="{Binding DirectoryName}" TextColor="White" Margin="10,0,10,0" VerticalTextAlignment="Center"/>
-                </local:ExtendedViewCell>
+                </ViewCell>
             </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -48,7 +48,7 @@
                     <RowDefinition Height="7*"/>
                 </Grid.RowDefinitions>
                 <StackLayout>
-                    <Label Text="Mix Locations" FontSize="Large"/>
+                    <Label Text="Cloud Mix Locations" FontSize="Large"/>
                     <ListView x:Name="MixLocationView"                       
                     ItemTemplate="{StaticResource mixLocationTemplate}" SelectionMode="None">
                         <d:ListView.ItemsSource>
@@ -60,15 +60,16 @@
                     </ListView>
                 </StackLayout>
                 <StackLayout Grid.Row="1">
-                    <Label Text="Cloud Files" FontSize="Large"/>
-                    <StackLayout Orientation="Horizontal">
+                    <Label Text="Cloud Folders" FontSize="Large"/>
+                    <StackLayout Orientation="Horizontal" Spacing="1">
                         <Picker x:Name="CloudProivder" SelectedItem="{Binding ProviderNameText, Mode=TwoWay}"
                                 WidthRequest="150"
                                 SelectedIndexChanged="OnProviderChanged"
                                 TextColor="White"
                                 Style="{StaticResource DefaultPicker}"
-                    >
-
+                                HorizontalOptions="Start"
+                                Visual=""
+                                >
                             <d:Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
                                     <x:String>Item One</x:String>
@@ -80,26 +81,26 @@
                                 <x:Int32>1</x:Int32>
                             </d:Picker.SelectedIndex>
                         </Picker>
-                        <Label x:Name="PathBreadCrumbs" VerticalTextAlignment="Center" Text="{Binding CurrentFolder}"/>
+                        <Label x:Name="PathBreadCrumbs" VerticalTextAlignment="Center" Text="{Binding CurrentDisplayFolder}" HorizontalOptions="StartAndExpand"/>
+                        <Button Image="UpFolderButton.png"  Pressed="UpPressed" Scale="1" WidthRequest="50" HorizontalOptions="EndAndExpand"/>
                     </StackLayout>
 
                     <ListView x:Name="FolderList" 
                             RowHeight="40" BackgroundColor="#242424" HeightRequest="300" 
-                            ItemTemplate="{StaticResource DirectoryListTemplate}">
-                        <!--<d:ListView.ItemsSource>
+                            ItemTemplate="{StaticResource DirectoryListTemplate}" ItemSelected="FolderList_ItemSelected">
+                        <d:ListView.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Folder1</x:String>
                             <x:String>Mixes</x:String>
                             <x:String>Other</x:String>
                         </x:Array>
-                    </d:ListView.ItemsSource>-->
+                    </d:ListView.ItemsSource>
                     </ListView>
                 </StackLayout>
             </Grid>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
-                <Button Image="AddBt.png"  Pressed="SelectPressed"/>
-                <Button Image="OpenFolderBt.png" Pressed="OpenFolder"/>
-                <Button Image="UpSongBt.png"  Pressed="UpPressed"/>
+                <Button x:Name="AddButton" Image="AddBt.png" Text="{Binding CurrentMixLocation}" IsEnabled="{Binding AddEnabled}"  Pressed="SelectPressed"/>
+                <Button Image="OpenFolderBt.png" Pressed="OpenFolder" Scale="1"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
