@@ -61,7 +61,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This screen shows the cloud locations you&apos;ve added at the top, and a list of all the files on your cloud storage below.  A mix locations is a folder in your cloud storage that contains your mix project.  Each project contains mixes of your songs.  Ideally you can configure your DAW to store mixes in a structure that contains a project folder contianing mixes in .wav or .mp3 format.  Choose a cloud provider, provide credentials, then choose a folder which contains projects, which is just a folder that contai [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to This screen displays the cloud mix locations you&apos;ve added at the top, which is empty until you add your first.  A mix locations is a folder in your cloud storage that contains your mixing projects. Each project will have songs you&apos;ve mixed from your DAW.   Ideally you can configure your DAW to store mixes in a structure that contains a project folder full of mixed songs\n\r\n\rConnect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cl [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoMixLocations {
             get {
@@ -79,7 +79,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This main screen will show the songs currently in your playlist that you are currently evaluating.  Add songs from your master list to the playing list by using the button at the bottom..
+        ///   Looks up a localized string similar to This main screen is you Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated. /n/r/n/r Add songs from your master list of projects by using the button at the bottom..
         /// </summary>
         internal static string NoPlaylist {
             get {
@@ -97,7 +97,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This screen contains every project stored in all your cloud locations.  But is is empty because you haven&apos;t add your first cloud locaiton.  Once you do, you will see all the projects in that cloud locaiton.  To add the first cloud location, use the Add Cloud button at the bottom..
+        ///   Looks up a localized string similar to This screen displays all of you projects that exist based on cloud mix locations you&apos;ve configured.  A cloud mix location is a folder in your cloud storage which contains project folders.  Each project folder contains songs.\n\r\n\rThe list of projectrs is empty because you haven&apos;t add your first cloud locaiton.  To add the first cloud location, use the Add Cloud button at the bottom..
         /// </summary>
         internal static string NoProjects {
             get {
@@ -106,7 +106,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Projects.
+        ///   Looks up a localized string similar to Add Song to Playlist.
         /// </summary>
         internal static string NoProjectsTitle {
             get {
