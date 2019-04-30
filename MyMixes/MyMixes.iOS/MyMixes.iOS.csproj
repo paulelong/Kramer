@@ -284,4 +284,13 @@
     <ITunesArtwork Include="iTunesArtwork%402x" />
     <ITunesArtwork Include="iTunesArtwork" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\UpFolderButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\RightSong.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\LeftSong.png" />
+  </ItemGroup>
 </Project>

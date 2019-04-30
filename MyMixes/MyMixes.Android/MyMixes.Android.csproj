@@ -214,5 +214,11 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\LeftSong.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\UpFolderButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="UpFolderButton.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
