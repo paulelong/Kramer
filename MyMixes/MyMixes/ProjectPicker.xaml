@@ -8,6 +8,7 @@
                 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
+                xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              >
     <ContentPage.BindingContext>
         <local:ProjectPickerData/>
@@ -68,7 +69,7 @@
                                 TextColor="White"
                                 Style="{StaticResource DefaultPicker}"
                                 HorizontalOptions="Start"
-                                Visual=""
+                                ios:Picker.UpdateMode="WhenFinished"
                                 >
                             <d:Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
