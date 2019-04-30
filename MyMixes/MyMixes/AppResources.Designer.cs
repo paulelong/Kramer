@@ -61,9 +61,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This screen displays the cloud mix locations you&apos;ve added at the top, which is empty until you add your first.  A mix locations is a folder in your cloud storage that contains your mixing projects. Each project will have songs you&apos;ve mixed from your DAW.   Ideally you can configure your DAW to store mixes in a structure that contains a project folder full of mixed songs.
+        ///   Looks up a localized string similar to This screen displays the cloud mix locations you&apos;ve added at the top, which is currently empty.  A mix location is a folder in your cloud storage that contains projects and each project will have songs you&apos;ve mixed out with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
         ///
-        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud [rest of string was truncated]&quot;;.
+        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoMixLocations {
             get {
@@ -81,9 +81,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This main screen is you Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated.
+        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated.
         ///
-        ///Add songs from your master list of projects by using the button at the bottom..
+        ///Add songs from your master list of projects by using the Add Music button at the bottom..
         /// </summary>
         internal static string NoPlaylist {
             get {
