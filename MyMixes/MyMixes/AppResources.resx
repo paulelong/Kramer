@@ -117,18 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MixLocationsNoPlaylist" xml:space="preserve">
+    <value>Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
+
+Once completed, return to the main page and play your mixes and take notes.</value>
+  </data>
+  <data name="MixLocationsNoPlaylistTitle" xml:space="preserve">
+    <value>Choose your playlist</value>
+  </data>
   <data name="NoMixLocations" xml:space="preserve">
     <value>This screen displays the cloud mix locations you've added at the top, which is currently empty.  A mix location is a folder in your cloud storage that contains projects and each project will have songs you've mixed out with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
 
-Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to . </value>
+Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add as a Mix Location which will be copied to your device when you go back to the previous page. </value>
   </data>
   <data name="NoMixLocationsTitle" xml:space="preserve">
     <value>Add Mix Locations</value>
   </data>
   <data name="NoPlaylist" xml:space="preserve">
-    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated.
+    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "Too much bass".
 
-Add songs from your master list of projects by using the Add Music button at the bottom.</value>
+Add songs from your master of projects/mixes by using the Add Music button at the bottom.</value>
   </data>
   <data name="NoPlaylistTitle" xml:space="preserve">
     <value>Add songs to your playlist</value>

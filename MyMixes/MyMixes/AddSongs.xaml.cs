@@ -114,6 +114,9 @@ namespace MyMixes
             if(PersistentData.MixLocationList.Count <= 0)
             {
                 await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
+            } else if(tvm.PlayingTracks.Count <= 0)
+            {
+                await DisplayAlert(AppResources.MixLocationsNoPlaylistTitle, AppResources.MixLocationsNoPlaylist, AppResources.OK);
             }
         }
 

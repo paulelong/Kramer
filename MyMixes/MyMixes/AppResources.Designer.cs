@@ -61,6 +61,26 @@ namespace MyMixes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
+        ///
+        ///Once completed, return to the main page and play your mixes and take notes..
+        /// </summary>
+        internal static string MixLocationsNoPlaylist {
+            get {
+                return ResourceManager.GetString("MixLocationsNoPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose your playlist.
+        /// </summary>
+        internal static string MixLocationsNoPlaylistTitle {
+            get {
+                return ResourceManager.GetString("MixLocationsNoPlaylistTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This screen displays the cloud mix locations you&apos;ve added at the top, which is currently empty.  A mix location is a folder in your cloud storage that contains projects and each project will have songs you&apos;ve mixed out with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
         ///
         ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your  [rest of string was truncated]&quot;;.
@@ -81,9 +101,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains songs you are currently evaluating.  Each song can be notated.
+        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like &quot;verse louder&quot; or &quot;Too much bass&quot;.
         ///
-        ///Add songs from your master list of projects by using the Add Music button at the bottom..
+        ///Add songs from your master of projects/mixes by using the Add Music button at the bottom..
         /// </summary>
         internal static string NoPlaylist {
             get {
