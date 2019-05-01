@@ -24,7 +24,7 @@
                             <ColumnDefinition Width="0.12*" />
                             <ColumnDefinition Width="0.12*" />
                         </Grid.ColumnDefinitions>
-                        <Image Source="Folder.png" Scale="0.8"/>
+                        <Image Source="MusicFolderBt.png" Scale="0.8"/>
                         <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" 
                                TextColor="White" FontAttributes="Bold" FontSize="Medium"
                                VerticalOptions="Center"/>

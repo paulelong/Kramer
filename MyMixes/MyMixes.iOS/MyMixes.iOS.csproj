@@ -295,4 +295,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\LeftSong.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\MusicFolderBt.png" />
+  </ItemGroup>
 </Project>
