@@ -101,7 +101,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like &quot;verse louder&quot; or &quot;Too much bass&quot;.
+        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like &quot;verse louder&quot; or &quot;More cowbell&quot;.
         ///
         ///Add songs from your master of projects/mixes by using the Add Music button at the bottom..
         /// </summary>

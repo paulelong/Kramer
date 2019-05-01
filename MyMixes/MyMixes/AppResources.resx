@@ -134,7 +134,7 @@ Connect to your cloud storage by selecting a provider.  After providing credenti
     <value>Add Mix Locations</value>
   </data>
   <data name="NoPlaylist" xml:space="preserve">
-    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "Too much bass".
+    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "More cowbell".
 
 Add songs from your master of projects/mixes by using the Add Music button at the bottom.</value>
   </data>
