@@ -88,7 +88,7 @@ namespace MyMixes
                 {
                     if (string.IsNullOrEmpty(value))
                     {
-                        currentFolder = null;
+                        currentFolder = "";
                     }
                     else
                     {
@@ -215,7 +215,7 @@ namespace MyMixes
 
         private async Task<bool> UpdateFolderList()
         {
-            if(pi != null && await pi.CheckAuthenitcationAsync())
+            if(pi != null && await pi.CheckAuthenitcationAsync() && CurrentFolder != null)
             {
                 BusyOn(true);
                 List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
