@@ -257,6 +257,7 @@ namespace MyMixes
                 await UpdateFolderList();
                 OnPropertyChanged("CurrentDisplayFolder");
                 CurrentMixLocation = null;
+                FolderList.SelectedItem = null;
             }
         }
 
