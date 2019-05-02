@@ -281,6 +281,8 @@
     <ImageAsset Include="Media.xcassets\LaunchImages.launchimage\iOS8281792.png">
       <Visible>false</Visible>
     </ImageAsset>
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork%402x" />
@@ -303,5 +305,8 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\iOS1242x2208.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Media.xcassets\MainBackground.imageset\" />
   </ItemGroup>
 </Project>
