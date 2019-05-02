@@ -304,4 +304,10 @@
   <ItemGroup>
     <BundleResource Include="Resources\iOS1242x2208.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\MainBackground%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\MainBackground%403x.png" />
+  </ItemGroup>
 </Project>
