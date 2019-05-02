@@ -307,6 +307,13 @@
     <BundleResource Include="Resources\iOS1242x2208.png" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Folder Include="Media.xcassets\MainBackground.imageset\" />
+=======
+    <BundleResource Include="Resources\MainBackground%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\MainBackground%403x.png" />
+>>>>>>> e2d59bc458c98fefb8ac7869bc36dbf75decfa80
   </ItemGroup>
 </Project>
