@@ -100,7 +100,7 @@
                         RowHeight="45"
                               IsPullToRefreshEnabled="True"
                               Refreshing="ResyncAllClickedAsync"     
-                              SelectionMode="None"
+                    >
                     >
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:Track}">
