@@ -99,7 +99,8 @@
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         RowHeight="45"
                               IsPullToRefreshEnabled="True"
-                              Refreshing="ResyncAllClickedAsync"                              
+                              Refreshing="ResyncAllClickedAsync"     
+                              SelectionMode="None"
                     >
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:Track}">
@@ -119,6 +120,7 @@
                     <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
                         RowHeight="50"
+                              SelectionMode="None"
                 >
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:QueuedTrack}">
