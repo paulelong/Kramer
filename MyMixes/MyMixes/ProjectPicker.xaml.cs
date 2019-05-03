@@ -10,6 +10,7 @@ using Xamarin.Forms.Xaml;
 using CloudStorage;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using Microsoft.AppCenter.Analytics;
 
 namespace MyMixes
 {
@@ -206,11 +207,37 @@ namespace MyMixes
 
             await UpdateFolderList();
 
+            Dictionary<String, String> properties = new Dictionary<string, string>();
+
             if (PersistentData.MixLocationList.Count <= 0)
             {
                 await DisplayAlert(AppResources.NoMixLocationsTitle, AppResources.NoMixLocations, AppResources.OK);
             }
+            else
+            {
+                Dictionary<String, int> locations = new Dictionary<string, int>();
 
+                foreach (MixLocation ml in PersistentData.MixLocationList)
+                {
+                    if(locations.ContainsKey(ml.Provider.ToString()))
+                    {
+                        locations[ml.Provider.ToString()]++;
+                    }
+                    else
+                    {
+                        locations[ml.Provider.ToString()] = 1;
+                    }
+                }
+
+                foreach (KeyValuePair<String, int> kvp in locations)
+                {
+                    properties[kvp.Key] = kvp.Value.ToString();
+                }
+            }
+
+            properties["NumLocations"] = PersistentData.MixLocationList.Count.ToString();
+
+            Analytics.TrackEvent("MixLocations", properties);
         }
 
         private async Task<bool> UpdateFolderList()

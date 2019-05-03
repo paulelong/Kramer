@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -257,6 +258,8 @@ namespace MyMixes
                 int projectIndex = LoadedTracks.IndexOf(selectedTrack) + 1;
                 int insTrackNumber = 0;
 
+                int songcount = 0;
+
                 foreach (string songFile in Directory.GetFiles(newProjectPath))
                 {
                     int tracknum = PersistentData.GetTrackNumber(newProjectPath, Path.GetFileNameWithoutExtension(songFile));
@@ -281,7 +284,14 @@ namespace MyMixes
                     }
 
                     insTrackNumber++;
+                    songcount++;
                 }
+
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["songcount"] = songcount.ToString();
+
+                Analytics.TrackEvent("ExpandTracks", properties);
             }
             catch (Exception ex)
             {
@@ -293,6 +303,8 @@ namespace MyMixes
         {
             try
             {
+                int songcount = 0, foldercount = 0 ;
+
                 foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
                 {
                     if (WavDirectory(projFolder))
@@ -306,6 +318,7 @@ namespace MyMixes
                             if(t.Name == LoadedTracks[i].Name)
                             {
                                 i = -1;
+                                foldercount++;
                                 break;
                             }
                             if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
@@ -317,9 +330,17 @@ namespace MyMixes
                         if(i >= 0)
                         {
                             LoadedTracks.Insert(i, t);
+                            foldercount++;
                         }
                     }
                 }
+
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["songcount"] = songcount.ToString();
+                properties["dupfoldercount"] = foldercount.ToString();
+
+                Analytics.TrackEvent("AddSongs", properties);
             }
             catch (Exception ex)
             {
@@ -343,17 +364,6 @@ namespace MyMixes
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
             tvm.RemoveSong(t);
-
-            //for (int i = 0; i < SelectedTrackList.Count; i++)
-            //{
-            //    if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-            //    {
-            //        SelectedTrackList.RemoveAt(i);
-            //        break;
-            //    }
-            //}
-
-            //await PersistentData.SaveQueuedTracksAsync(SelectedTrackList);
         }
 
         private void SongDownPosition_Clicked(object sender, EventArgs e)
@@ -361,17 +371,6 @@ namespace MyMixes
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
             tvm.MoveSongUp(t);
-
-            //int i = SelectedTrackList.IndexOf(t);
-            
-            //if(i >= 0)
-            //{
-            //    SelectedTrackList.Move(i, i - 1);
-            //}
-            //else
-            //{
-            //    SelectedTrackList.Move(i, SelectedTrackList.Count - 1);
-            //}
         }
 
         private void ResyncProjectClickedAsync(object sender, EventArgs e)

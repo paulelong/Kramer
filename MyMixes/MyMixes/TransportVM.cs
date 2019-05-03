@@ -145,6 +145,8 @@ namespace MyMixes
         }
 
         private string currentSel;
+        private DateTime LastTime;
+
         public string CurrentSel
         {
             get
@@ -195,14 +197,6 @@ namespace MyMixes
                 {
                     if (CurrentTrackNumber + 1 >= SongsQueued)
                     {
-                        //if (isLooping)
-                        //{
-                        //    await PlayCurrentSongAsync();
-                        //}
-                        //else
-                        //{
-                        //    StopPlayer();
-                        //}
                         if(!isLooping)
                         {
                             StopPlayer();
@@ -212,14 +206,6 @@ namespace MyMixes
                     else
                     {
                         CurrentTrackNumber++;
-                        //if (isLooping)
-                        //{
-                        //    await PlayCurrentSongAsync();
-                        //}
-                        //else
-                        //{
-                        //    StopPlayer();
-                        //}
                     }
                 }
             });
@@ -241,22 +227,6 @@ namespace MyMixes
                         await PlayCurrentSongAsync();
                         break;
                 }
-
-                //if (playerState)
-                //{
-                //    if (player.IsPlaying)
-                //    {
-                //        PausePlayer();
-                //    }
-                //    else
-                //    {
-                //        StartPlayer();
-                //    }
-                //}
-                //else
-                //{
-                //    await PlayCurrentSongAsync();
-                //}
             }
         }
 
@@ -346,6 +316,19 @@ namespace MyMixes
 
             Debug.Print("playing {0}\n", PlayingTracks[CurrentTrackNumber].FullPath);
 
+            Dictionary<String, String> properties = new Dictionary<string, string>();
+
+            var TimeElapsed = DateTime.UtcNow - LastTime;
+
+            properties["TrackCount"] = PlayingTracks.Count.ToString();
+            properties["LoopMode"] = isLooping.ToString();
+            properties["CompareMode"] = isAligned.ToString();
+            properties["PlayMode"] = playerState.ToString();
+
+            LastTime = DateTime.UtcNow;
+
+            Analytics.TrackEvent("PlayTrack", properties);
+
             try
             {
                 player.Stop();
@@ -363,7 +346,11 @@ namespace MyMixes
                     }
                     else
                     {
-                        Analytics.TrackEvent("PlayCurrent player laod failed");
+                        properties.Clear();
+                        properties["Length"] = s.Length.ToString();
+                        properties["Type"] = Path.GetExtension(PlayingTracks[CurrentTrackNumber].FullPath);
+
+                        Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
                     }
                 }
 
