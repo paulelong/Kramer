@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 
 namespace MyMixes
@@ -19,6 +20,7 @@ namespace MyMixes
             try
             {
                 InitializeComponent();
+
                 Analytics.TrackEvent("Started");
             }
             catch (Exception ex)
@@ -28,6 +30,7 @@ namespace MyMixes
             }
 
             TransportVMInstance = (TransportViewModel)this.BindingContext;
+            TransportVMInstance.ErrorCallbackRoutine = ErrorCallbackMsg;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -93,7 +96,11 @@ namespace MyMixes
                 Dictionary<String, String> properties = new Dictionary<string, string>();
 
                 properties["LoadTime"] = CohortTime(DateTime.UtcNow - start);
-                properties["OS"] = Device.RuntimePlatform.ToString();
+                properties["Model"] = DeviceInfo.Model;
+                properties["Manufacturer"] = DeviceInfo.Manufacturer;
+                properties["Version"] = DeviceInfo.VersionString;
+                properties["Idiom"] = DeviceInfo.Idiom.ToString();
+                properties["Type"] = DeviceInfo.DeviceType.ToString();
 
                 Analytics.TrackEvent("Started Completed", properties);
 
@@ -116,6 +123,11 @@ namespace MyMixes
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
             
             TransportVMInstance.MoveSongUp(t);
+        }
+
+        private void ErrorCallbackMsg(string title, string text, string button)
+        {
+            DisplayAlert(title, text, button);
         }
     }
 }

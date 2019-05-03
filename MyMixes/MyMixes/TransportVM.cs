@@ -24,9 +24,28 @@ namespace MyMixes
             Stopped
         }
 
+        public delegate void ErrorCallback(string title, string text, string button);
+
         private bool playingListLoaded = false;
 
         private PlayerStates playerState = PlayerStates.Stopped;
+
+        private ErrorCallback errorCallbackRoutine = null;
+        public ErrorCallback ErrorCallbackRoutine
+        {
+            get
+            {
+                return errorCallbackRoutine;
+            }
+            set
+            {
+                if(errorCallbackRoutine != value)
+                {
+                    errorCallbackRoutine = value;
+                }
+            }
+        }
+
 
         private ObservableCollection<QueuedTrack> playingTracks = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> PlayingTracks
@@ -64,6 +83,10 @@ namespace MyMixes
                         if (playerState == PlayerStates.Playing)
                         {
                             PlayCurrentSongAsync();
+                        }
+                        else
+                        {
+                            nowPlayingDifferentSong = true;
                         }
                     }
                     selectedSong = value;
@@ -146,6 +169,7 @@ namespace MyMixes
 
         private string currentSel;
         private DateTime LastTime;
+        private bool nowPlayingDifferentSong = false;
 
         public string CurrentSel
         {
@@ -187,7 +211,7 @@ namespace MyMixes
 #pragma warning disable AvoidAsyncVoid
         private async void Player_PlaybackEnded(object sender, EventArgs e)
         {
-            Device.BeginInvokeOnMainThread(async () =>
+            Device.BeginInvokeOnMainThread(async () => 
             {
                 if(isAligned)
                 {
@@ -221,7 +245,15 @@ namespace MyMixes
                         PausePlayer();
                         break;
                     case PlayerStates.Paused:
-                        StartPlayer();
+                        if (nowPlayingDifferentSong)
+                        {
+                            nowPlayingDifferentSong = false;
+                            await PlayCurrentSongAsync();
+                        }
+                        else
+                        {
+                            StartPlayer();
+                        }
                         break;
                     case PlayerStates.Stopped:
                         await PlayCurrentSongAsync();
@@ -351,6 +383,9 @@ namespace MyMixes
                         properties["Type"] = Path.GetExtension(PlayingTracks[CurrentTrackNumber].FullPath);
 
                         Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
+
+                        ErrorMsg("Play song failed", "Song failed to play for some reason", "OK");
+                        StopPlayer();
                     }
                 }
 
@@ -439,7 +474,9 @@ namespace MyMixes
         private void StartPlayer()
         {
             playerState = PlayerStates.Playing;
+
             player.Play();
+
             PlayButtonStateImage = "PauseBt.png";
         }
 
@@ -462,6 +499,14 @@ namespace MyMixes
             get
             {
                 return playingTracks.Count;
+            }
+        }
+
+        public void ErrorMsg(string title, string text, string button)
+        {
+            if(ErrorCallbackRoutine != null)
+            {
+                ErrorCallbackRoutine(title, text, button);
             }
         }
 
