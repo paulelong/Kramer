@@ -1,6 +1,7 @@
 ﻿using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Xamarin.Forms;
 
@@ -10,15 +11,17 @@ namespace MyMixes
     public partial class MainPage : ContentPage
     {
         private TransportViewModel TransportVMInstance;
+        private DateTime start = DateTime.UtcNow;
+        private bool startRecorded = false;
 
         public MainPage()
         {
-            Analytics.TrackEvent("Started");
             try
             {
                 InitializeComponent();
+                Analytics.TrackEvent("Started");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Crashes.TrackError(ex);
                 Debug.Print(ex.ToString());
@@ -33,7 +36,30 @@ namespace MyMixes
             {
                 NavigationPage.SetHasNavigationBar(this, false);
             }
-            Analytics.TrackEvent("Started Completed");
+        }
+
+        private string CohortTime(TimeSpan timeSpan)
+        {
+            if(timeSpan.Seconds < 1)
+            {
+                return "OneSecond";
+            } if(timeSpan.Seconds < 2)
+            {
+                return "OneSeconds";
+            }
+            if (timeSpan.Seconds < 5)
+            {
+                return "FiveSeconds";
+            }
+            if (timeSpan.Seconds < 20)
+            {
+                return "TwentySeconds";
+            }
+            else
+            {
+                return "TooLong";
+            }
+
         }
 
 #pragma warning disable AvoidAsyncVoid
@@ -62,7 +88,19 @@ namespace MyMixes
 
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
 
-            if(TransportVMInstance.PlayingTracks.Count <= 0)
+            if(!startRecorded)
+            {
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["LoadTime"] = CohortTime(DateTime.UtcNow - start);
+                properties["OS"] = Device.RuntimePlatform.ToString();
+
+                Analytics.TrackEvent("Started Completed", properties);
+
+                startRecorded = true;
+            }
+
+            if (TransportVMInstance.PlayingTracks.Count <= 0)
             {
                 await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
             }

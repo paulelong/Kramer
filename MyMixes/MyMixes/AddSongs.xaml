@@ -98,10 +98,9 @@
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         RowHeight="45"
-                              IsPullToRefreshEnabled="True"
-                              Refreshing="ResyncAllClickedAsync"     
-                    >
-                    >
+                        IsPullToRefreshEnabled="True"
+                        Refreshing="ResyncAllClickedAsync"     
+                    >                    
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:Track}">
                                 <local:Track Name="Figure of Speach" isProject="True"  />
