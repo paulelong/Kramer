@@ -152,4 +152,10 @@ The list of projects is empty because you haven't add your first cloud locaiton.
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="SongPlayFailed" xml:space="preserve">
+    <value>The song failed to play for an unknown reason.  Check that you can play the original, and varify there are no invalid characters in the name.</value>
+  </data>
+  <data name="SongPlayFailedTitle" xml:space="preserve">
+    <value>The song failed to play</value>
+  </data>
 </root>

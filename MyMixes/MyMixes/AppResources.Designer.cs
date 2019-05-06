@@ -148,5 +148,23 @@ namespace MyMixes {
                 return ResourceManager.GetString("OK", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The song failed to play for an unknown reason.  Check that you can play the original, and varify there are no invalid characters in the name..
+        /// </summary>
+        internal static string SongPlayFailed {
+            get {
+                return ResourceManager.GetString("SongPlayFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The song failed to play.
+        /// </summary>
+        internal static string SongPlayFailedTitle {
+            get {
+                return ResourceManager.GetString("SongPlayFailedTitle", resourceCulture);
+            }
+        }
     }
 }

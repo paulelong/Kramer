@@ -7,6 +7,7 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d"
              Appearing="OnAppearing"
+             Disappearing="OnDisappearing"
              >
 
     <ContentPage.BindingContext>
@@ -52,7 +53,7 @@
                         <!--<Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
                         <Button Grid.Column="3" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>-->
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"  Clicked="SongOrderClicked"/>
-                        <Button Grid.Column="3" Image="PlayBt.png" Scale="0.9" Clicked="LocalPlay_Clicked"/>
+                        <Button Grid.Column="3" Image="{Binding PlayListImage}" Scale="0.9" Clicked="LocalPlay_Clicked"/>
                         <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
                         <!--<Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>

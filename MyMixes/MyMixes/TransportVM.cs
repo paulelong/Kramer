@@ -191,7 +191,7 @@ namespace MyMixes
         {
             if (!DesignMode.IsDesignModeEnabled)
             {
-                PlayCommand = new Command(PlaySong);
+                PlayCommand = new Command(TransportPlayPressed);
                 PrevCommand = new Command(PrevSong);
                 NextCommand = new Command(NextSong);
 
@@ -235,7 +235,7 @@ namespace MyMixes
             });
         }
 
-        public async void PlaySong()
+        public void TransportPlayPressed()
         {
             if (SongsQueued > 0)
             {
@@ -248,7 +248,7 @@ namespace MyMixes
                         if (nowPlayingDifferentSong)
                         {
                             nowPlayingDifferentSong = false;
-                            await PlayCurrentSongAsync();
+                            PlayCurrentSongAsync();
                         }
                         else
                         {
@@ -256,7 +256,7 @@ namespace MyMixes
                         }
                         break;
                     case PlayerStates.Stopped:
-                        await PlayCurrentSongAsync();
+                        PlayCurrentSongAsync();
                         break;
                 }
             }
@@ -273,7 +273,7 @@ namespace MyMixes
 
             }
 
-            await PlayCurrentSongAsync();
+            PlayCurrentSongAsync();
         }
 #pragma warning restore AvoidAsyncVoid
 
@@ -342,11 +342,16 @@ namespace MyMixes
             }
         }
 
-        private async Task PlayCurrentSongAsync()
+        private void PlayCurrentSongAsync()
+        {
+            PlaySongAsync(PlayingTracks[CurrentTrackNumber].FullPath);
+        }
+
+        public bool PlaySongAsync(string song)
         {
             double playerpos = player.CurrentPosition;
 
-            Debug.Print("playing {0}\n", PlayingTracks[CurrentTrackNumber].FullPath);
+            Debug.Print("playing {0}\n", song);
 
             Dictionary<String, String> properties = new Dictionary<string, string>();
 
@@ -365,7 +370,7 @@ namespace MyMixes
             {
                 player.Stop();
 
-                using (Stream s = new FileStream(PlayingTracks[CurrentTrackNumber].FullPath, FileMode.Open))
+                using (Stream s = new FileStream(song, FileMode.Open))
                 {
                     if (player.Load(s))
                     {
@@ -380,20 +385,24 @@ namespace MyMixes
                     {
                         properties.Clear();
                         properties["Length"] = s.Length.ToString();
-                        properties["Type"] = Path.GetExtension(PlayingTracks[CurrentTrackNumber].FullPath);
+                        properties["Type"] = Path.GetExtension(song);
 
                         Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
 
-                        ErrorMsg("Play song failed", "Song failed to play for some reason", "OK");
+                        ErrorMsg(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
                         StopPlayer();
+
+                        return false;
                     }
                 }
-
             }
             catch(Exception ex)
             {
                 Debug.Print(ex.ToString());
+                return false;
             }
+
+            return true;
         }
 
         public async Task LoadProjects()
@@ -487,7 +496,7 @@ namespace MyMixes
             PlayButtonStateImage = "PlayBt.png";
         }
 
-        private void StopPlayer()
+        public void StopPlayer()
         {
             playerState = PlayerStates.Stopped;
             player.Stop();

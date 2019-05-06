@@ -19,6 +19,7 @@ namespace MyMixes
 	{
         //private string selectedFolder = "";
         private Track selectedTrack = null;
+        private Track lastPlayingTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
         //private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
@@ -29,6 +30,7 @@ namespace MyMixes
         private ProjectPickerData ppd;
 
         private TransportViewModel tvm;
+        private bool SongPickerPlaying;
 
         public AddSongs(TransportViewModel tvm)
         {
@@ -59,7 +61,47 @@ namespace MyMixes
 
         private void LocalPlay_Clicked(object sender, EventArgs e)
         {
+            Track t = FindTrack((View)sender);
 
+            if(!SongPickerPlaying)
+            {
+                if (!tvm.PlaySongAsync(t.FullPath))
+                {
+                    DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+                }
+                else
+                {
+                    SongPickerPlaying = true;
+                    t.TrackPlaying = true;
+                    lastPlayingTrack = t;
+                }
+            }
+            else
+            {
+                if(lastPlayingTrack == t)
+                {
+                    tvm.StopPlayer();
+                    SongPickerPlaying = false;
+                    lastPlayingTrack.TrackPlaying = false;
+                }
+                else
+                {
+                    lastPlayingTrack.TrackPlaying = false;
+                    tvm.StopPlayer();
+
+                    if (!tvm.PlaySongAsync(t.FullPath))
+                    {
+                        DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+                        SongPickerPlaying = false;
+                    }
+                    else
+                    {
+                        SongPickerPlaying = true;
+                        t.TrackPlaying = true;
+                        lastPlayingTrack = t;
+                    }
+                }
+            }
         }
 
 #pragma warning disable AvoidAsyncVoid
@@ -352,8 +394,8 @@ namespace MyMixes
                 Analytics.TrackEvent("AddSongs", properties);
 
                 // Add special DOWNLOADs foloder
-                Track t2 = new Track { Name = Path.GetFileName("DOWNLOADS"), FullPath = null, isProject = true };
-                LoadedTracks.Add(t2);
+                //Track t2 = new Track { Name = Path.GetFileName("DOWNLOADS"), FullPath = null, isProject = true };
+                //LoadedTracks.Add(t2);
 
             }
             catch (Exception ex)
@@ -446,6 +488,15 @@ namespace MyMixes
         private void ResyncProjectClickedAsync(object sender, EventArgs e)
         {
 
+        }
+
+        private void OnDisappearing(object sender, EventArgs e)
+        {
+            if(SongPickerPlaying)
+            {
+                tvm.StopPlayer();
+                lastPlayingTrack.TrackPlaying = false;
+            }
         }
     }
 }

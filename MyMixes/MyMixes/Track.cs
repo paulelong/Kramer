@@ -53,6 +53,41 @@ namespace MyMixes
             }
         }
 
+        private bool trackPlaying = false;
+        public bool TrackPlaying
+        {
+            get
+            {
+                return trackPlaying;
+            }
+            set
+            {
+                if(value != trackPlaying)
+                {
+                    trackPlaying = value;
+                    OnPropertyChanged("PlayListImage");
+
+                    if (trackPlaying)
+                    {
+                        playListImage = "PauseBt.png";
+                    }
+                    else
+                    {
+                        playListImage = "PlayBt.png";
+                    }
+                }
+            }
+        }
+
+        private string playListImage = "PlayBt.png";
+        public string PlayListImage
+        {
+            get
+            {
+                return playListImage;
+            }
+        }
+
         public bool ReadyToAdd
         {
             set
