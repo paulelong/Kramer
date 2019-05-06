@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 namespace MyMixes
@@ -246,7 +247,14 @@ namespace MyMixes
 
             if (selectedTrack != null)
             {
-                LoadProjectTracks();
+                if(selectedTrack.FullPath != null)
+                {
+                    LoadProjectTracks();
+                }
+                else
+                {
+                    LoadSpeicalFolder();
+                }
             }
         }
 
@@ -303,7 +311,7 @@ namespace MyMixes
         {
             try
             {
-                int songcount = 0, foldercount = 0 ;
+                int songcount = 0, foldercount = 0, dupfoldercount = 0 ;
 
                 foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
                 {
@@ -318,7 +326,7 @@ namespace MyMixes
                             if(t.Name == LoadedTracks[i].Name)
                             {
                                 i = -1;
-                                foldercount++;
+                                dupfoldercount++;
                                 break;
                             }
                             if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
@@ -338,13 +346,75 @@ namespace MyMixes
                 Dictionary<String, String> properties = new Dictionary<string, string>();
 
                 properties["songcount"] = songcount.ToString();
-                properties["dupfoldercount"] = foldercount.ToString();
+                properties["foldercount"] = foldercount.ToString();
+                properties["dupfoldercount"] = dupfoldercount.ToString();
 
                 Analytics.TrackEvent("AddSongs", properties);
+
+                // Add special DOWNLOADs foloder
+                Track t2 = new Track { Name = Path.GetFileName("DOWNLOADS"), FullPath = null, isProject = true };
+                LoadedTracks.Add(t2);
+
             }
             catch (Exception ex)
             {
                 Debug.Print(ex.Message);
+            }
+        }
+
+        private void LoadSpeicalFolder()
+        {
+            string DownloadDirectory = DependencyService.Get<IPlatformDirectories>().GetDownloadDirectory();
+            //string DownloadDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DependencyService.Get<IPlatformDirectories>().GetDownloadDirectory());
+
+            if (DownloadDirectory != null)
+            {
+                try
+                {
+                    int songcount = 0, foldercount = 0, dupfoldercount = 0;
+
+                    foreach (string projFolder in Directory.GetDirectories(DownloadDirectory))
+                    {
+                        if (WavDirectory(projFolder))
+                        {
+                            Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
+
+                            int i;
+                            for (i = 0; i < LoadedTracks.Count; i++)
+                            {
+                                // if it's already inserted don't insert again.  This is typical if we've added them already.
+                                if (t.Name == LoadedTracks[i].Name)
+                                {
+                                    i = -1;
+                                    dupfoldercount++;
+                                    break;
+                                }
+                                if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (i >= 0)
+                            {
+                                LoadedTracks.Insert(i, t);
+                                foldercount++;
+                            }
+                        }
+                    }
+
+                    Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                    properties["songcount"] = songcount.ToString();
+                    properties["foldercount"] = foldercount.ToString();
+                    properties["dupfoldercount"] = dupfoldercount.ToString();
+
+                    Analytics.TrackEvent("AddSongs DOWNLOAD", properties);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print(ex.Message);
+                }
             }
         }
 

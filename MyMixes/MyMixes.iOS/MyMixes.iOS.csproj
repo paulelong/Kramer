@@ -121,6 +121,7 @@
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
+    <Compile Include="PlatformDirectories_iOS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -281,10 +282,18 @@
     <ImageAsset Include="Media.xcassets\LaunchImages.launchimage\iOS8281792.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Media.xcassets\MainBackground.imageset\Contents.json" />
-    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a.png" />
-    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a%402x.png" />
-    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a%403x.png" />
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a%402x.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\MainBackground.imageset\MainBackground-a%403x.png">
+      <Visible>false</Visible>
+    </ImageAsset>
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork%402x" />
@@ -305,7 +314,5 @@
   <ItemGroup>
     <BundleResource Include="Resources\iOS1242x2208.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Media.xcassets\MainBackground.imageset\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
