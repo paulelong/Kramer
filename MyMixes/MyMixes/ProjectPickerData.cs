@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MyMixes
 {
-    class ProjectPickerData : INotifyPropertyChanged
+    class BusyBarViewModel : INotifyPropertyChanged
     {
         private bool isVisible = false;
         public bool IsVisible

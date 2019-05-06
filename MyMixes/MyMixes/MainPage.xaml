@@ -12,9 +12,9 @@
              Disappearing="OnDisappearing"
              BackgroundImage="MainBackground.png"
              >
-    <ContentPage.BindingContext>
+    <!--<ContentPage.BindingContext>
         <local:TransportViewModel/>
-    </ContentPage.BindingContext>
+    </ContentPage.BindingContext>-->
     
     <ContentPage.Resources>
         <ResourceDictionary  MergedWith="dark:DarkThemeResources">

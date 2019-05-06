@@ -10,9 +10,9 @@
                 mc:Ignorable="d"
                 xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              >
-    <ContentPage.BindingContext>
+    <!--<ContentPage.BindingContext>
         <local:ProjectPickerData/>
-    </ContentPage.BindingContext>
+    </ContentPage.BindingContext>-->
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -42,7 +42,8 @@
 
     <ContentPage.Content>
         <StackLayout x:Name="MainStack" HorizontalOptions="FillAndExpand" Margin="5,5,5,5">
-            <ContentView x:Name="busyControl" HeightRequest="120" ControlTemplate="{StaticResource BusyControl}" HorizontalOptions="FillAndExpand" d:IsVisible="True" IsVisible="{Binding IsVisible}"/>
+            <ContentView x:Name="busyControl"
+                         HeightRequest="120" ControlTemplate="{StaticResource BusyControl}" HorizontalOptions="FillAndExpand" d:IsVisible="True" IsVisible="{Binding IsVisible}"/>
             <Grid>
                 <Grid.RowDefinitions >
                     <RowDefinition Height="3*"/>

@@ -29,8 +29,9 @@ namespace MyMixes
                 Debug.Print(ex.ToString());
             }
 
-            TransportVMInstance = (TransportViewModel)this.BindingContext;
+            TransportVMInstance = new TransportViewModel();
             TransportVMInstance.ErrorCallbackRoutine = ErrorCallbackMsg;
+            this.BindingContext = TransportVMInstance;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -87,6 +88,8 @@ namespace MyMixes
 
         private async void OnAppearing(object sender, EventArgs e)
         {
+            TransportVMInstance.MainPlayMode = true;
+
             await TransportVMInstance.LoadProjects();
 
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });

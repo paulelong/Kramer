@@ -27,7 +27,7 @@ namespace MyMixes
 
         //private ObservableCollection<MixLocation> MixLocationList = null;
 
-        private ProjectPickerData ppd;
+        private BusyBarViewModel ppd;
 
         private TransportViewModel tvm;
         private bool SongPickerPlaying;
@@ -37,12 +37,17 @@ namespace MyMixes
             InitializeComponent();
 
             this.tvm = tvm;
+            this.BindingContext = tvm;
 
+            //SelectedTracks.BindingContext = this;
             SelectedTracks.ItemsSource = tvm.PlayingTracks;
             //SelectedTracks.ItemsSource = SelectedTrackList;
-            Projects.ItemsSource = LoadedTracks;
 
-            ppd = (ProjectPickerData)this.BindingContext;
+            ppd = new BusyBarViewModel();
+            BusyBar.BindingContext = ppd;
+
+            //Projects.BindingContext = this;
+            Projects.ItemsSource = LoadedTracks;
 
             //PersistentData.LoadMixLocations(MixLocationList);
 
@@ -52,6 +57,8 @@ namespace MyMixes
             {
                 ppd.BusyText = "Something here";
             }
+
+            //Transport.BindingContext = tvm;
         }
 
         private void DeleteFolder_Clicked(object sender, EventArgs e)
@@ -144,7 +151,9 @@ namespace MyMixes
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            if(!BusyOn(true, true))
+            tvm.MainPlayMode = false;
+
+            if (!BusyOn(true, true))
             {
                 if (PersistentData.mixLocationsChanged)
                 {

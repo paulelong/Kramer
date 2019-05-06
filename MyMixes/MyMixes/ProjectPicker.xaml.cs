@@ -33,7 +33,7 @@ namespace MyMixes
         //ObservableCollection<MixLocation> MixLocationList;
         ObservableCollection<DirectoryEntry> DirectoryList = new ObservableCollection<DirectoryEntry>();
 
-        private ProjectPickerData ppd;
+        private BusyBarViewModel ppd;
 
         public string providerName = "nothing";
         public string ProviderNameText
@@ -198,7 +198,8 @@ namespace MyMixes
 
             //MixLocationList = PersistentData.MixLocationList;
 
-            ppd = (ProjectPickerData)this.BindingContext;
+            ppd = new BusyBarViewModel();
+            busyControl.BindingContext = ppd;
         }
 
         private async void OnAppearing(object sender, EventArgs e)

@@ -24,6 +24,66 @@ namespace MyMixes
             Stopped
         }
 
+        private bool prevCommandVisible = true;
+        public bool PrevCommandVisible
+        {
+            get
+            {
+                return prevCommandVisible;
+            }
+            set
+            {
+                if(prevCommandVisible != value)
+                {
+                    prevCommandVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool nextCommandVisible = true;
+        public bool NextCommandVisible
+        {
+            get
+            {
+                return nextCommandVisible;
+            }
+            set
+            {
+                if (nextCommandVisible != value)
+                {
+                    nextCommandVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool mainPlayMode = true;
+        public bool MainPlayMode
+        {
+            get
+            {
+                return mainPlayMode;
+            }
+            set
+            {
+                if(mainPlayMode != value)
+                {
+                    mainPlayMode = value;
+                    if (mainPlayMode)
+                    {
+                        PrevCommandVisible = true;
+                        NextCommandVisible = true;
+                    }
+                    else
+                    {
+                        PrevCommandVisible = false;
+                        NextCommandVisible = false;
+                    }
+                }
+            }
+        }
+
         public delegate void ErrorCallback(string title, string text, string button);
 
         private bool playingListLoaded = false;
@@ -237,7 +297,33 @@ namespace MyMixes
 
         public void TransportPlayPressed()
         {
-            if (SongsQueued > 0)
+            if(MainPlayMode)
+            {
+                if (SongsQueued > 0)
+                {
+                    switch (playerState)
+                    {
+                        case PlayerStates.Playing:
+                            PausePlayer();
+                            break;
+                        case PlayerStates.Paused:
+                            if (nowPlayingDifferentSong)
+                            {
+                                nowPlayingDifferentSong = false;
+                                PlayCurrentSongAsync();
+                            }
+                            else
+                            {
+                                StartPlayer();
+                            }
+                            break;
+                        case PlayerStates.Stopped:
+                            PlayCurrentSongAsync();
+                            break;
+                    }
+                }
+            }
+            else
             {
                 switch (playerState)
                 {
@@ -245,18 +331,10 @@ namespace MyMixes
                         PausePlayer();
                         break;
                     case PlayerStates.Paused:
-                        if (nowPlayingDifferentSong)
-                        {
-                            nowPlayingDifferentSong = false;
-                            PlayCurrentSongAsync();
-                        }
-                        else
-                        {
-                            StartPlayer();
-                        }
+                        StartPlayer();
                         break;
                     case PlayerStates.Stopped:
-                        PlayCurrentSongAsync();
+//                        PlayCurrentSongAsync();
                         break;
                 }
             }
