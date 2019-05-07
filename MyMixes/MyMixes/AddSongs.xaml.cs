@@ -37,7 +37,7 @@ namespace MyMixes
             InitializeComponent();
 
             this.tvm = tvm;
-            this.BindingContext = tvm;
+            this.BindingContext = this.tvm;
 
             //SelectedTracks.BindingContext = this;
             SelectedTracks.ItemsSource = tvm.PlayingTracks;

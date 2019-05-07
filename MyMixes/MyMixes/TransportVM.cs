@@ -48,7 +48,7 @@ namespace MyMixes
 
             PlayButtonStateImage = "PlayBt.png";
 
-            //Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+            Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
             //UpdateSliderAsync(cancelTok.Token);
         }
 
@@ -294,25 +294,37 @@ namespace MyMixes
             }
         }
 
+        private double songPosition;
         public double SongPosition
         {
             get
             {
-                if(player.IsPlaying)
-                {
-                    double newPos =  player.CurrentPosition / player.Duration;
-                    return newPos;
-                }
-                else
-                {
-                    return 0;
-                }
+                return songPosition;
+                //if(player.IsPlaying)
+                //{
+                //    double newPos =  player.CurrentPosition / player.Duration;
+                //    return newPos;
+                //}
+                //else
+                //{
+                //    return 0;
+                //}
             }
             set
             {
-                if(player.IsPlaying)
+                //if (player.IsPlaying)
+                //{
+                //    player.Seek(value * player.Duration);
+                //}
+                if(songPosition != value)
                 {
-                    //player.Seek(value * player.Duration);
+                    songPosition = value;
+
+                    if (player.IsPlaying)
+                    {
+                        player.Seek(songPosition * player.Duration);
+                    }
+
                     OnPropertyChanged();
                 }
             }
@@ -324,7 +336,12 @@ namespace MyMixes
             {
                 if (player.IsPlaying)
                 {
-                    SongPosition = player.CurrentPosition / player.Duration;
+                    if(player.CurrentPosition > 0.001)
+                    {
+                        // We don't want it to seek, so manually set property
+                        songPosition = player.CurrentPosition / player.Duration ;
+                        OnPropertyChanged("SongPosition");
+                    }
                 }
 
                 await Task.Delay(200, token);

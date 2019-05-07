@@ -22,7 +22,7 @@
             <ControlTemplate x:Key="TransportControl">
                 <StackLayout>
                     <Label Text="{TemplateBinding Parent.BindingContext.NowPlaying}" TextColor="White"/>
-                    <Slider Value="{TemplateBinding Parent.BindingContext.SongPosition, Mode=TwoWay}"/>
+                    <Slider Value="{TemplateBinding Parent.BindingContext.SongPosition}"/>
                     <Grid  VerticalOptions="End" Margin="5,0,5,0" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.33*" />
