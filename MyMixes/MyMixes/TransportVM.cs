@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -23,6 +24,34 @@ namespace MyMixes
             Paused,
             Stopped
         }
+
+        public delegate void ErrorCallback(string title, string text, string button);
+
+        private bool playingListLoaded = false;
+
+        private PlayerStates playerState = PlayerStates.Stopped;
+
+        private CancellationTokenSource cancelTok = new CancellationTokenSource();
+
+        public TransportViewModel()
+        {
+            if (!DesignMode.IsDesignModeEnabled)
+            {
+                PlayCommand = new Command(TransportPlayPressed);
+                PrevCommand = new Command(PrevSong);
+                NextCommand = new Command(NextSong);
+
+                player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+                player.Loop = false;
+                player.PlaybackEnded += Player_PlaybackEnded;
+            }
+
+            PlayButtonStateImage = "PlayBt.png";
+
+            //Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+            //UpdateSliderAsync(cancelTok.Token);
+        }
+
 
         private bool prevCommandVisible = true;
         public bool PrevCommandVisible
@@ -83,12 +112,6 @@ namespace MyMixes
                 }
             }
         }
-
-        public delegate void ErrorCallback(string title, string text, string button);
-
-        private bool playingListLoaded = false;
-
-        private PlayerStates playerState = PlayerStates.Stopped;
 
         private ErrorCallback errorCallbackRoutine = null;
         public ErrorCallback ErrorCallbackRoutine
@@ -247,20 +270,65 @@ namespace MyMixes
             }
         }
 
-        public TransportViewModel()
+        public string nowPlaying;
+        public string NowPlaying
         {
-            if (!DesignMode.IsDesignModeEnabled)
+            get
             {
-                PlayCommand = new Command(TransportPlayPressed);
-                PrevCommand = new Command(PrevSong);
-                NextCommand = new Command(NextSong);
-
-                player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-                player.Loop = false;
-                player.PlaybackEnded += Player_PlaybackEnded;
+                if(PlayingTracks.Count > 0 && nowPlaying != null)
+                {
+                    return "Now Playing: " + nowPlaying;
+                }
+                else
+                {
+                    return "No track playing";
+                }
             }
+            set
+            {
+                if(nowPlaying != value)
+                {
+                    nowPlaying = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-            PlayButtonStateImage = "PlayBt.png";
+        public double SongPosition
+        {
+            get
+            {
+                if(player.IsPlaying)
+                {
+                    double newPos =  player.CurrentPosition / player.Duration;
+                    return newPos;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set
+            {
+                if(player.IsPlaying)
+                {
+                    //player.Seek(value * player.Duration);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private async Task UpdateSliderAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (player.IsPlaying)
+                {
+                    SongPosition = player.CurrentPosition / player.Duration;
+                }
+
+                await Task.Delay(200, token);
+            }
         }
 
         // Transport Player control
@@ -456,6 +524,8 @@ namespace MyMixes
                         {
                             player.Seek(playerpos);
                         }
+
+                        NowPlaying = Path.GetFileNameWithoutExtension(song);
 
                         StartPlayer();
                     }
