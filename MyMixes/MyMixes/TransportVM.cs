@@ -476,7 +476,9 @@ namespace MyMixes
             }
             catch(Exception ex)
             {
+                ErrorMsg(AppResources.SongPlayFailedTitle, ex.Message, AppResources.OK);
                 Debug.Print(ex.ToString());
+
                 return false;
             }
 
