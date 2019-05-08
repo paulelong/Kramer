@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Essentials;
-
+using System.ComponentModel;
 
 namespace MyMixes
 {
+    [DesignTimeVisible(true)]
     public partial class MainPage : ContentPage
     {
         private TransportViewModel TransportVMInstance;
