@@ -33,6 +33,13 @@ namespace MyMixes
 
         private CancellationTokenSource cancelTok = new CancellationTokenSource();
 
+        private string currentSel;
+
+        private DateTime LastTime;
+
+        private bool nowPlayingDifferentSong = false;
+
+
         public TransportViewModel()
         {
             if (!DesignMode.IsDesignModeEnabled)
@@ -49,9 +56,16 @@ namespace MyMixes
             PlayButtonStateImage = "PlayBt.png";
 
             Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
-            //UpdateSliderAsync(cancelTok.Token);
         }
 
+        #region Properties
+        public int SongsQueued
+        {
+            get
+            {
+                return playingTracks.Count;
+            }
+        }
 
         private bool prevCommandVisible = true;
         public bool PrevCommandVisible
@@ -250,10 +264,6 @@ namespace MyMixes
             }
         }
 
-        private string currentSel;
-        private DateTime LastTime;
-        private bool nowPlayingDifferentSong = false;
-
         public string CurrentSel
         {
             get
@@ -300,22 +310,10 @@ namespace MyMixes
             get
             {
                 return songPosition;
-                //if(player.IsPlaying)
-                //{
-                //    double newPos =  player.CurrentPosition / player.Duration;
-                //    return newPos;
-                //}
-                //else
-                //{
-                //    return 0;
-                //}
+
             }
             set
             {
-                //if (player.IsPlaying)
-                //{
-                //    player.Seek(value * player.Duration);
-                //}
                 if(songPosition != value)
                 {
                     songPosition = value;
@@ -329,6 +327,13 @@ namespace MyMixes
                 }
             }
         }
+
+        // Transport Player control
+        public Command PlayCommand { get; set; }
+        public Command PrevCommand { get; set; }
+        public Command NextCommand { get; set; }
+
+        #endregion Properties
 
         private async Task UpdateSliderAsync(CancellationToken token)
         {
@@ -348,10 +353,6 @@ namespace MyMixes
             }
         }
 
-        // Transport Player control
-        public Command PlayCommand { get; set; }
-        public Command PrevCommand { get; set; }
-        public Command NextCommand { get; set; }
 
 #pragma warning disable AvoidAsyncVoid
         private async void Player_PlaybackEnded(object sender, EventArgs e)
@@ -425,19 +426,6 @@ namespace MyMixes
             }
         }
 
-        public async void PlaySongTrack(QueuedTrack t)
-        {
-            for(CurrentTrackNumber = 0; CurrentTrackNumber < PlayingTracks.Count; CurrentTrackNumber++)
-            {
-                if(PlayingTracks[CurrentTrackNumber] == t)
-                {
-                    break;
-                }
-
-            }
-
-            PlayCurrentSongAsync();
-        }
 #pragma warning restore AvoidAsyncVoid
 
         public void NextSong()
@@ -466,8 +454,6 @@ namespace MyMixes
             if(!isAligned && playerState != PlayerStates.Stopped && player.CurrentPosition > 3)
             {
                 player.Seek(0);
-                //player.Stop();
-                //player.Play();
             }
             else
             {
@@ -668,14 +654,6 @@ namespace MyMixes
             playerState = PlayerStates.Stopped;
             player.Stop();
             PlayButtonStateImage = "PlayBt.png";
-        }
-
-        public int SongsQueued
-        {
-            get
-            {
-                return playingTracks.Count;
-            }
         }
 
         public void ErrorMsg(string title, string text, string button)
