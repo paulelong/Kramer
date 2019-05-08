@@ -37,7 +37,7 @@ namespace MyMixes
             InitializeComponent();
 
             this.tvm = tvm;
-            this.BindingContext = tvm;
+            this.BindingContext = this.tvm;
 
             //SelectedTracks.BindingContext = this;
             SelectedTracks.ItemsSource = tvm.PlayingTracks;
@@ -70,45 +70,45 @@ namespace MyMixes
         {
             Track t = FindTrack((View)sender);
 
-            if(!SongPickerPlaying)
+            //if(!SongPickerPlaying)
+            //{
+            if (!tvm.PlaySongAsync(t.FullPath))
             {
-                if (!tvm.PlaySongAsync(t.FullPath))
-                {
-                    DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
-                }
-                else
-                {
-                    SongPickerPlaying = true;
-                    t.TrackPlaying = true;
-                    lastPlayingTrack = t;
-                }
+                DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
             }
             else
             {
-                if(lastPlayingTrack == t)
-                {
-                    tvm.StopPlayer();
-                    SongPickerPlaying = false;
-                    lastPlayingTrack.TrackPlaying = false;
-                }
-                else
-                {
-                    lastPlayingTrack.TrackPlaying = false;
-                    tvm.StopPlayer();
-
-                    if (!tvm.PlaySongAsync(t.FullPath))
-                    {
-                        DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
-                        SongPickerPlaying = false;
-                    }
-                    else
-                    {
-                        SongPickerPlaying = true;
-                        t.TrackPlaying = true;
-                        lastPlayingTrack = t;
-                    }
-                }
+                SongPickerPlaying = true;
+                //t.TrackPlaying = true;
+                lastPlayingTrack = t;
             }
+            //}
+            //else
+            //{
+            //    if(lastPlayingTrack == t)
+            //    {
+            //        tvm.StopPlayer();
+            //        SongPickerPlaying = false;
+            //        lastPlayingTrack.TrackPlaying = false;
+            //    }
+            //    else
+            //    {
+            //        lastPlayingTrack.TrackPlaying = false;
+            //        tvm.StopPlayer();
+
+            //        if (!tvm.PlaySongAsync(t.FullPath))
+            //        {
+            //            DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+            //            SongPickerPlaying = false;
+            //        }
+            //        else
+            //        {
+            //            SongPickerPlaying = true;
+            //            t.TrackPlaying = true;
+            //            lastPlayingTrack = t;
+            //        }
+            //    }
+            //}
         }
 
 #pragma warning disable AvoidAsyncVoid
@@ -504,6 +504,7 @@ namespace MyMixes
             if(SongPickerPlaying)
             {
                 tvm.StopPlayer();
+                tvm.NowPlaying = null;
                 lastPlayingTrack.TrackPlaying = false;
             }
         }
