@@ -2,6 +2,7 @@
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
+             xmlns:local="clr-namespace:MyMixes"
              x:Class="MyMixes.App"
                 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +23,7 @@
             <ControlTemplate x:Key="TransportControl">
                 <StackLayout>
                     <Label Text="{TemplateBinding Parent.BindingContext.NowPlaying}" TextColor="White"/>
-                    <Slider Value="{TemplateBinding Parent.BindingContext.SongPosition}"/>
+                    <local:SliderX AccurateValue="{TemplateBinding Parent.BindingContext.SongPosition}" Minimum="0" Maximum="1"/>
                     <Grid  VerticalOptions="End" Margin="5,0,5,0" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.33*" />

@@ -184,6 +184,7 @@ namespace MyMixes
                         else
                         {
                             nowPlayingDifferentSong = true;
+                            NowPlaying = value.Name;
                         }
                     }
                     selectedSong = value;
