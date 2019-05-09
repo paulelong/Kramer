@@ -47,6 +47,22 @@
                 </Grid>
             </ControlTemplate>
 
+            <ControlTemplate x:Key="PlaylistEntry">
+                <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{TemplateBinding Parent.BindingContext.Project}" TextColor="Gray" FontSize="Micro"
+                                   VerticalTextAlignment="End" HeightRequest="20"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" TextColor="Gray" FontSize="Micro"
+                                   VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{TemplateBinding Parent.BindingContext.Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="StartAndExpand" FontSize="Medium" Margin="0,-4,0,0"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" TextColor="Gray" FontSize="Micro"
+                                   VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>
+                    </StackLayout>
+                </StackLayout>
+            </ControlTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

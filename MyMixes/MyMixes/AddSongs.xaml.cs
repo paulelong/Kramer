@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,8 @@ using Xamarin.Forms.Xaml;
 
 namespace MyMixes
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    [DesignTimeVisible(true)]
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AddSongs : ContentPage
 	{
         //private string selectedFolder = "";
@@ -331,6 +333,7 @@ namespace MyMixes
                         ProjectPath = newProjectPath,
                         OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
                         TrackNum = tracknum,
+                        LastModifiedDate = File.GetLastWriteTime(songFile),
                     };
 
                     if (tracknum != 0)

@@ -29,14 +29,7 @@
                         </Grid.ColumnDefinitions>
                         <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
                         <Button x:Name="EditSong" Grid.Column="0" Image="EditBt.png" Scale=".9" Clicked="Notes_Clicked"/>
-
-                        <StackLayout Grid.Column="1"  Orientation="Vertical" Margin="5,0,0,0">
-                            <Label Text="{Binding Project, Mode=TwoWay}"
-                                   TextColor="White" FontSize="Micro" 
-                                   VerticalTextAlignment="End" HeightRequest="20"/>
-                            <Label Text="{Binding Name, Mode=TwoWay}" 
-                                   TextColor="White" FontAttributes="Bold" FontSize="Medium" />
-                        </StackLayout>
+                        <ContentView Grid.Column="1" ControlTemplate="{StaticResource PlaylistEntry}" />
                         <Button Grid.Column="2" Image="UpSongBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
                         <Button Grid.Column="3" Image="DelBt.png" Scale=".88" Clicked="DeleteSong_Clicked"/>
                     </Grid>

@@ -49,9 +49,13 @@
                         <Label Grid.Column="0" Text="{Binding Order}" TextColor="Gray" 
                                VerticalTextAlignment="Center" HorizontalTextAlignment="Center" 
                                FontSize="Large" />
-                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
-                        <!--<Button Grid.Column="2" Image="{Binding UpdateListImage}" Clicked="SongOrderClicked"/>
-                        <Button Grid.Column="3" Clicked="LocalPlay_Clicked" Image="PlayBt.png" Scale=".9"/>-->
+                        <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="FillAndExpand">
+                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
+                            <StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" VerticalOptions="Fill">
+                                <Label Text="{Binding LastModifiedTimeString}" TextColor="Gray" FontSize="Micro" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
+                                <Label Text="{Binding LastModifiedDateString}" TextColor="Gray" FontSize="Micro" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
+                            </StackLayout>
+                        </StackLayout>
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"  Clicked="SongOrderClicked"/>
                         <Button Grid.Column="3" Image="{Binding PlayListImage}" Scale="0.9" Clicked="LocalPlay_Clicked"/>
                         <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
@@ -68,11 +72,8 @@
                             <ColumnDefinition Width="0.11*" />
                             <ColumnDefinition Width="0.11*" />
                         </Grid.ColumnDefinitions>
-                        <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
-                            <Label Text="{Binding Project}" TextColor="Gray" FontSize="Micro"
-                                   VerticalTextAlignment="End" HeightRequest="20"/>
-                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" FontSize="Medium" />
-                        </StackLayout>
+                        <ContentView ControlTemplate="{StaticResource PlaylistEntry}" />
+
                         <!--<Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>-->
                         <Button Grid.Column="1" Image="UpSongBt.png" Margin="-8.5,-6.5,-8.5,-6.5" Scale=".55" Clicked="SongDownPosition_Clicked" />
                         <Button Grid.Column="2" Image="DelBt.png"  Margin="-4,0,-4,0" Scale=".7" Clicked="DeleteSong_Clicked"/>
