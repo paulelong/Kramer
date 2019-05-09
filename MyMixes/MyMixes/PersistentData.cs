@@ -274,10 +274,18 @@ namespace MyMixes
                             string[] trackParams = value.Split(',');
                             if(trackParams.Length >= 3)
                             {
-                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2] });
+                                DateTime d = DateTime.UtcNow;
+
+                                if(trackParams.Length >= 4)
+                                {
+                                    if(!DateTime.TryParse(trackParams[3], out d))
+                                    {
+                                        Debug.Print("Error parsing date for {0}", trackParams[3]);
+                                    }
+                                }
+                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2], LastModifiedDate = d });
                             }
                         }
-
                     }
                 }
             }
@@ -294,7 +302,7 @@ namespace MyMixes
             foreach(QueuedTrack qt in qtlist)
             {
                 string key = KEY_QUEUED_TRACK_ID + i.ToString();
-                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath;
+                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToLongTimeString();
                 i++;
             }
 

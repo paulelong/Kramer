@@ -629,7 +629,7 @@ namespace MyMixes
 
             if (i >= PlayingTracks.Count)
             {
-                PlayingTracks.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
+                PlayingTracks.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath, LastModifiedDate = t.LastModifiedDate });
                 playingListLoaded = false;
             }
         }
