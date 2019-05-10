@@ -19,7 +19,17 @@
                 <Setter Property="TextColor" Value="White"/>
                 <Setter Property="FontSize" Value="Small"/>
             </Style>
-            
+
+            <Style x:Key="SongText" TargetType="Label">
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontSize" Value="Medium"/>
+            </Style>
+
+            <Style x:Key="SongSubText" TargetType="Label">
+                <Setter Property="TextColor" Value="#A0A0A0"/>
+                <Setter Property="FontSize" Value="Micro"/>
+            </Style>
+
             <ControlTemplate x:Key="TransportControl">
                 <StackLayout>
                     <Label Text="{TemplateBinding Parent.BindingContext.NowPlaying}" TextColor="White"/>
@@ -50,14 +60,14 @@
             <ControlTemplate x:Key="PlaylistEntry">
                 <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
                     <StackLayout Orientation="Horizontal">
-                        <Label Text="{TemplateBinding Parent.BindingContext.Project}" TextColor="Gray" FontSize="Micro"
+                        <Label Text="{TemplateBinding Parent.BindingContext.Project}" Style="{StaticResource SongSubText}"
                                    VerticalTextAlignment="End" HeightRequest="20"/>
-                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" TextColor="Gray" FontSize="Micro"
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" Style="{StaticResource SongSubText}"
                                    VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
                     </StackLayout>
                     <StackLayout Orientation="Horizontal">
-                        <Label Text="{TemplateBinding Parent.BindingContext.Name}" TextColor="White" FontAttributes="Bold" VerticalOptions="StartAndExpand" FontSize="Medium" Margin="0,-4,0,0"/>
-                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" TextColor="Gray" FontSize="Micro"
+                        <Label Text="{TemplateBinding Parent.BindingContext.Name}" Style="{StaticResource SongText}" VerticalOptions="StartAndExpand" Margin="0,-4,0,0"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" Style="{StaticResource SongSubText}"
                                    VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>
                     </StackLayout>
                 </StackLayout>

@@ -222,7 +222,7 @@ namespace MyMixes
 
                                     s.Close();
 
-                                    File.SetCreationTime(localFileName, di.modifiedDate);
+                                    File.SetLastWriteTime(localFileName, di.modifiedDate);
                                 }
                             }
                         }

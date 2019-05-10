@@ -50,10 +50,10 @@
                                VerticalTextAlignment="Center" HorizontalTextAlignment="Center" 
                                FontSize="Large" />
                         <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="FillAndExpand">
-                            <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
+                            <Label Text="{Binding Name}" TextColor="White" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
                             <StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" VerticalOptions="Fill">
-                                <Label Text="{Binding LastModifiedTimeString}" TextColor="Gray" FontSize="Micro" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
-                                <Label Text="{Binding LastModifiedDateString}" TextColor="Gray" FontSize="Micro" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
+                                <Label Text="{Binding LastModifiedTimeString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
+                                <Label Text="{Binding LastModifiedDateString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
                             </StackLayout>
                         </StackLayout>
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"  Clicked="SongOrderClicked"/>
