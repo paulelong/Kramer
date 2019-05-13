@@ -87,9 +87,7 @@
     
     <ContentPage.Content>
         <StackLayout x:Name="MainStack" Margin="5,5,5,5">
-            <ContentView x:Name="BusyBar" ControlTemplate="{StaticResource BusyControl}"
-                         HorizontalOptions="FillAndExpand" d:ContentView.IsVisible="True" IsVisible="{Binding IsVisible}"/>
-
+            <ContentView x:Name="BusyBar" ControlTemplate="{StaticResource BusyControl}" IsVisible="{Binding IsVisible}"/>
             <Grid VerticalOptions="FillAndExpand">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="4*"/>
@@ -99,7 +97,7 @@
                     <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,5,0,0"/>
                     <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
-                        ItemTemplate="{StaticResource trackDataTemplateSelector}" 
+                        ItemTemplate="{StaticResource selectedTracksTemplate}" 
                         RowHeight="45"
                         IsPullToRefreshEnabled="True"
                         Refreshing="ResyncAllClickedAsync"

@@ -48,12 +48,9 @@
             </ControlTemplate>
 
             <ControlTemplate x:Key="BusyControl">
-                <Grid HorizontalOptions="Fill" 
-                      IsVisible="{TemplateBinding Parent.BindingContext.IsVisible}" 
-                      HeightRequest="50">
-                    <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"
-                                       IsRunning="{TemplateBinding Parent.BindingContext.IsRunning}" BackgroundColor="#050505"/>
-                    <Label Text="{TemplateBinding Parent.BindingContext.BusyText}" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+                <Grid IsVisible="{TemplateBinding BindingContext.IsVisible}">
+                    <ActivityIndicator x:Name="BusySignal" IsRunning="{TemplateBinding BindingContext.IsRunning}" BackgroundColor="#050505"/>
+                    <Label Text="{TemplateBinding BindingContext.BusyText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="White"/>
                 </Grid>
             </ControlTemplate>
 

@@ -246,6 +246,7 @@ namespace MyMixes
             if(pi != null && await pi.CheckAuthenitcationAsync() && CurrentFolder != null)
             {
                 BusyOn(true);
+                ppd.BusyText = "Refreshing folder view from " + CurrentProvider.ToString() + " " + CurrentDisplayFolder;
                 List<string> folders = await pi.GetFoldersAsync(CurrentFolder);
                 //FolderList.ItemsSource = folders;
                 DirectoryList.Clear();

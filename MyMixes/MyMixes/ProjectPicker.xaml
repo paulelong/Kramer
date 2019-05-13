@@ -42,8 +42,7 @@
 
     <ContentPage.Content>
         <StackLayout x:Name="MainStack" HorizontalOptions="FillAndExpand" Margin="5,5,5,5">
-            <ContentView x:Name="busyControl"
-                         HeightRequest="120" ControlTemplate="{StaticResource BusyControl}" HorizontalOptions="FillAndExpand" d:IsVisible="True" IsVisible="{Binding IsVisible}"/>
+            <ContentView x:Name="busyControl" ControlTemplate="{StaticResource BusyControl}" IsVisible="{Binding IsVisible}" HeightRequest="100"/>
             <Grid>
                 <Grid.RowDefinitions >
                     <RowDefinition Height="3*"/>
