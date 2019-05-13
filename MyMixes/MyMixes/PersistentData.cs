@@ -302,7 +302,7 @@ namespace MyMixes
             foreach(QueuedTrack qt in qtlist)
             {
                 string key = KEY_QUEUED_TRACK_ID + i.ToString();
-                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToLongTimeString();
+                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToString();
                 i++;
             }
 

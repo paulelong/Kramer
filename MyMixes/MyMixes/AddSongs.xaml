@@ -97,7 +97,7 @@
                     <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,5,0,0"/>
                     <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
-                        ItemTemplate="{StaticResource selectedTracksTemplate}" 
+                        ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         RowHeight="45"
                         IsPullToRefreshEnabled="True"
                         Refreshing="ResyncAllClickedAsync"
