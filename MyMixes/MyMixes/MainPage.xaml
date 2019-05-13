@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
@@ -10,12 +10,8 @@
                 mc:Ignorable="d"
              Appearing="OnAppearing"
              Disappearing="OnDisappearing"
-             BackgroundImage="MainBackground.png"
              >
-    <!--<ContentPage.BindingContext>
-        <local:TransportViewModel/>
-    </ContentPage.BindingContext>-->
-    
+
     <ContentPage.Resources>
         <ResourceDictionary  MergedWith="dark:DarkThemeResources">
             <DataTemplate x:Key="songListTemplate">
@@ -27,7 +23,6 @@
                             <ColumnDefinition Width="0.17*" />
                             <ColumnDefinition Width="0.17*" />
                         </Grid.ColumnDefinitions>
-                        <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
                         <Button x:Name="EditSong" Grid.Column="0" Image="EditBt.png" Scale=".9" Clicked="Notes_Clicked"/>
                         <ContentView Grid.Column="1" ControlTemplate="{StaticResource PlaylistEntry}" />
                         <Button Grid.Column="2" Image="UpSongBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
@@ -38,48 +33,50 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ContentPage.Content>        
-        <StackLayout  x:Name="MainStack" Margin="5,5,5,5" >
-
-            <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
-            <ListView x:Name="Projects" 
+    <ContentPage.Content>
+        <RelativeLayout>
+            <!-- Background -->
+            <Image
+                Aspect="AspectFill"
+                Source="MainBackground.png"
+                RelativeLayout.WidthConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+                RelativeLayout.HeightConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Height}">
+            </Image>
+            <StackLayout  x:Name="MainStack" Margin="5,5,5,5" >
+                <ListView x:Name="Projects" 
                         ItemTemplate="{StaticResource songListTemplate}" 
                         ItemsSource="{Binding PlayingTracks}"
                         SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
                         BackgroundColor="Transparent"
                         RowHeight="55" Margin="0,0,0,0"
             >
-                <!--<d:ListView.ItemsSource>
-ItemSelected="TrackView_Sel"
-CachingStrategy="RecycleElement"  
-                <x:Array Type="{x:Type local:QueuedTrack}">
-                        <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
-                        <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
-                    </x:Array>
-                </d:ListView.ItemsSource>-->
-            </ListView>
-            <!--</ScrollView>-->
-            <!--<Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False" HeightRequest="100">
-                <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
-                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
-            </Grid>-->
-            <Grid HorizontalOptions="FillAndExpand" HeightRequest="80">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*" />
-                    <ColumnDefinition Width="0.5*" />
-                </Grid.ColumnDefinitions>
-                <StackLayout Grid.Column="0" Orientation="Vertical" HorizontalOptions="Center">
-                    <Label Text="Loop" VerticalTextAlignment="Center" HeightRequest="50"/>
-                    <Switch IsToggled="{Binding isLooping}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
-                </StackLayout>
-                <StackLayout Grid.Column="1" Orientation="Vertical"  HorizontalOptions="Center">
-                    <Label Text="Compare" VerticalTextAlignment="Center" HeightRequest="50"/>
-                    <Switch IsToggled="{Binding isAligned}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
-                </StackLayout>
-            </Grid>
+                    <d:ListView.ItemsSource>
+                        ItemSelected="TrackView_Sel"
+                        CachingStrategy="RecycleElement"
+                        <x:Array Type="{x:Type local:QueuedTrack}">
+                            <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
+                            <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                        </x:Array>
+                    </d:ListView.ItemsSource>
+                </ListView>
+                <Grid HorizontalOptions="FillAndExpand" HeightRequest="80">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.5*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" Orientation="Vertical" HorizontalOptions="Center">
+                        <Label Text="Loop" VerticalTextAlignment="Center" HeightRequest="50"/>
+                        <Switch IsToggled="{Binding isLooping}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Orientation="Vertical"  HorizontalOptions="Center">
+                        <Label Text="Compare" VerticalTextAlignment="Center" HeightRequest="50"/>
+                        <Switch IsToggled="{Binding isAligned}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
+                    </StackLayout>
+                </Grid>
 
-            <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
-            <Button Image="AddMusicBt.png" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160" CornerRadius="-1" Padding="0" Scale="1" ScaleX="1"/>
-        </StackLayout>
+                <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
+                <Button Image="AddMusicBt.png" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160" CornerRadius="-1" Padding="0" Scale="1" ScaleX="1"/>
+            </StackLayout>
+        </RelativeLayout>
     </ContentPage.Content>
 </ContentPage>
