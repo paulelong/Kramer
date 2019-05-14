@@ -237,20 +237,6 @@ namespace MyMixes
         public bool isLooping { get; set; }
         public bool isAligned { get; set; }
 
-        List<Track> trackList = new List<Track>();
-        public List<Track> Tracklist
-        {
-            get { return trackList; }
-            set
-            {
-                if (trackList != value)
-                {
-                    trackList = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         string currentProject;
         public string CurrentProject
         {
