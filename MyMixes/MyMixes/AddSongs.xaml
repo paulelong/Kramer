@@ -31,8 +31,6 @@
                                VerticalOptions="Center"/>
                         <Button Grid.Column="2" Image="TrashBt.png" Scale="0.9"   Clicked="DeleteFolder_Clicked"/>
                         <Button Grid.Column="3" Image="ResyncBt3.png" Scale="0.9" Clicked="ResyncProjectClickedAsync" />
-                        <!--<Button Grid.Column="2" Clicked="DeleteFolder_Clicked" Image="TrashBt.png" />
-                        <Button Grid.Column="3" Clicked="ResyncProjectClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -58,8 +56,6 @@
                         </StackLayout>
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"  Clicked="SongOrderClicked"/>
                         <Button Grid.Column="3" Image="{Binding PlayListImage}" Scale="0.9" Clicked="LocalPlay_Clicked"/>
-                        <!--<Button Grid.Column="3" Clicked="DeleteSong_Clicked" Image="TrashBt.png" Scale=".9"/>-->
-                        <!--<Button Grid.Column="5" Clicked="ResyncSongClickedAsync" Image="ResyncBt3.png" Scale=".9"/>-->
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -73,8 +69,6 @@
                             <ColumnDefinition Width="0.11*" />
                         </Grid.ColumnDefinitions>
                         <ContentView ControlTemplate="{StaticResource PlaylistEntry}" />
-
-                        <!--<Button Grid.Column="1" Clicked="DeleteSong_Clicked" Image="DelBt.png" Scale=".9"/>-->
                         <Button Grid.Column="1" Image="UpSongBt.png" Margin="-8.5,-6.5,-8.5,-6.5" Scale=".55" Clicked="SongDownPosition_Clicked" />
                         <Button Grid.Column="2" Image="DelBt.png"  Margin="-4,0,-4,0" Scale=".7" Clicked="DeleteSong_Clicked"/>
                     </Grid>
@@ -100,8 +94,7 @@
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         RowHeight="45"
                         IsPullToRefreshEnabled="True"
-                        Refreshing="ResyncAllClickedAsync"
-                             
+                        Refreshing="ResyncAllClickedAsync"                             
                     >                    
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:Track}">
@@ -121,8 +114,8 @@
                     <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
                         RowHeight="50"
-                              SelectionMode="None"
-                >
+                        SelectionMode="None"
+                    >
                         <d:ListView.ItemsSource>
                             <x:Array Type="{x:Type local:QueuedTrack}">
                                 <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
@@ -137,8 +130,7 @@
             <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" 
                          Spacing="20" Margin="10,0,10,5" HeightRequest="45">
-                <Button Image="AddCloudBt.png" Clicked="AddFolder_Clicked" 
-                       />
+                <Button Image="AddCloudBt.png" Clicked="AddFolder_Clicked"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
