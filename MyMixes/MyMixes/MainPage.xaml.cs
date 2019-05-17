@@ -18,6 +18,10 @@ namespace MyMixes
 
         public MainPage()
         {
+            TransportVMInstance = new TransportViewModel();
+            TransportVMInstance.ErrorCallbackRoutine = ErrorCallbackMsg;
+            this.BindingContext = TransportVMInstance;
+
             try
             {
                 InitializeComponent();
@@ -29,10 +33,6 @@ namespace MyMixes
                 Crashes.TrackError(ex);
                 Debug.Print(ex.ToString());
             }
-
-            TransportVMInstance = new TransportViewModel();
-            TransportVMInstance.ErrorCallbackRoutine = ErrorCallbackMsg;
-            this.BindingContext = TransportVMInstance;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -76,7 +76,7 @@ namespace MyMixes
 
         private async void OnDisappearing(object sender, EventArgs e)
         {
-            await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.PlayingTracks);
+            await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.Playlist);
         }
 
 #pragma warning restore AvoidAsyncVoid
@@ -111,7 +111,7 @@ namespace MyMixes
                 startRecorded = true;
             }
 
-            if (TransportVMInstance.PlayingTracks.Count <= 0)
+            if (TransportVMInstance.Playlist.Count <= 0)
             {
                 await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
             }
