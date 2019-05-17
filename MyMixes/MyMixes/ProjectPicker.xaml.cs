@@ -345,7 +345,8 @@ namespace MyMixes
             PersistentData.LastFolder = CurrentFolder;
             PersistentData.LastCloud = ProviderNameText;
 
-            Application.Current.SavePropertiesAsync();
+            PersistentData.Save();
+
         }
 
         private void LocationDeleted(object sender, EventArgs e)
