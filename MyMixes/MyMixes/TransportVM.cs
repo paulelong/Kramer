@@ -47,15 +47,31 @@ namespace MyMixes
                 PlayCommand = new Command(TransportPlayPressed);
                 PrevCommand = new Command(PrevSong);
                 NextCommand = new Command(NextSong);
-
-                player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-                player.Loop = false;
-                player.PlaybackEnded += Player_PlaybackEnded;
             }
 
             PlayButtonStateImage = "PlayBt.png";
 
+            ResetPlayer();
+
             Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+        }
+
+        public void ResetPlayer()
+        {
+            if(player != null)
+            {
+                player.PlaybackEnded -= Player_PlaybackEnded;
+                player.Dispose();
+                player = null;
+
+            }
+
+            player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+            player.Loop = false;
+            player.PlaybackEnded += Player_PlaybackEnded;
+
+            NowPlaying = "";
+            SongPosition = 0;
         }
 
         #region Properties
@@ -63,7 +79,7 @@ namespace MyMixes
         {
             get
             {
-                return playingTracks.Count;
+                return playlist.Count;
             }
         }
 
@@ -144,17 +160,17 @@ namespace MyMixes
         }
 
 
-        private ObservableCollection<QueuedTrack> playingTracks = null; // new ObservableCollection<QueuedTrack>();
-        public ObservableCollection<QueuedTrack> PlayingTracks
+        private ObservableCollection<QueuedTrack> playlist = null; // new ObservableCollection<QueuedTrack>();
+        public ObservableCollection<QueuedTrack> Playlist
         {
             get
             {
-                if(playingTracks == null)
+                if(playlist == null)
                 {
-                    playingTracks = new ObservableCollection<QueuedTrack>();
-                    PersistentData.LoadQueuedTracks(PlayingTracks);
+                    playlist = new ObservableCollection<QueuedTrack>();
+                    PersistentData.LoadQueuedTracks(Playlist);
                 }
-                return playingTracks;
+                return playlist;
             }
         }
 
@@ -163,9 +179,9 @@ namespace MyMixes
         {
             get
             {
-                if(selectedSong == null && PlayingTracks.Count > 0 && currentTrackNumber >= 0)
+                if(selectedSong == null && Playlist.Count > 0 && currentTrackNumber >= 0)
                 {
-                    selectedSong = PlayingTracks[currentTrackNumber];
+                    selectedSong = Playlist[currentTrackNumber];
                 }
                 return selectedSong;
             }
@@ -175,7 +191,7 @@ namespace MyMixes
                 {
                     if (value?.FullPath != selectedSong?.FullPath)
                     {
-                        currentTrackNumber = PlayingTracks.IndexOf(value);
+                        currentTrackNumber = Playlist.IndexOf(value);
                         PersistentData.LastPlayedSongIndex = currentTrackNumber;
                         if (playerState == PlayerStates.Playing)
                         {
@@ -202,13 +218,13 @@ namespace MyMixes
             }
             set
             {
-                if(currentTrackNumber != value && value < PlayingTracks.Count)
+                if(currentTrackNumber != value && value < Playlist.Count)
                 {
                     currentTrackNumber = value;
                 }
-                if(currentTrackNumber >= 0 && PlayingTracks.Count > 0)
+                if(currentTrackNumber >= 0 && Playlist.Count > 0)
                 {
-                    SelectedSong = PlayingTracks[currentTrackNumber];
+                    SelectedSong = Playlist[currentTrackNumber];
                 }
             }
 
@@ -272,7 +288,7 @@ namespace MyMixes
         {
             get
             {
-                if(PlayingTracks.Count > 0 && nowPlaying != null)
+                if(Playlist.Count > 0 && nowPlaying != null)
                 {
                     return "Now Playing: " + nowPlaying;
                 }
@@ -466,21 +482,21 @@ namespace MyMixes
 
         public void MoveSongUp(QueuedTrack t)
         {
-            int i = PlayingTracks.IndexOf(t);
+            int i = Playlist.IndexOf(t);
 
             if (i > 0)
             {             
-                PlayingTracks.Move(i, i - 1);
+                Playlist.Move(i, i - 1);
             }
             else
             {
-                PlayingTracks.Move(i, PlayingTracks.Count - 1);
+                Playlist.Move(i, Playlist.Count - 1);
             }
         }
 
         private void PlayCurrentSongAsync()
         {
-            PlaySongAsync(PlayingTracks[CurrentTrackNumber].FullPath);
+            PlaySongAsync(Playlist[CurrentTrackNumber].FullPath);
         }
 
         public bool PlaySongAsync(string song)
@@ -493,7 +509,7 @@ namespace MyMixes
 
             var TimeElapsed = DateTime.UtcNow - LastTime;
 
-            properties["TrackCount"] = PlayingTracks.Count.ToString();
+            properties["TrackCount"] = Playlist.Count.ToString();
             properties["LoopMode"] = isLooping.ToString();
             properties["CompareMode"] = isAligned.ToString();
             properties["PlayMode"] = playerState.ToString();
@@ -561,7 +577,7 @@ namespace MyMixes
         {
             List<QueuedTrack> t_remove = new List<QueuedTrack>();
 
-            foreach(QueuedTrack t in PlayingTracks)
+            foreach(QueuedTrack t in Playlist)
             {
                 if(!File.Exists(t.FullPath))
                 {
@@ -571,12 +587,12 @@ namespace MyMixes
 
             foreach(QueuedTrack t in t_remove)
             {
-                PlayingTracks.Remove(t);
+                Playlist.Remove(t);
             }
 
             playingListLoaded = false;
 
-            await PersistentData.SaveQueuedTracksAsync(PlayingTracks);
+            await PersistentData.SaveQueuedTracksAsync(Playlist);
         }
 
         public void RemoveSong(QueuedTrack t)
@@ -584,15 +600,15 @@ namespace MyMixes
             if (t == null)
                 return;
 
-            int i = PlayingTracks.IndexOf(t);
-            PlayingTracks.Remove(t);
+            int i = Playlist.IndexOf(t);
+            Playlist.Remove(t);
             playingListLoaded = false;
 
             if (playerState != PlayerStates.Stopped && CurrentTrackNumber == i)
             {
                 StopPlayer();
 
-                if(i >= PlayingTracks.Count)
+                if(i >= Playlist.Count)
                 {
                     CurrentTrackNumber = 0;
                 }
@@ -607,15 +623,15 @@ namespace MyMixes
         public void AddSong(Track t)
         {
             int i = 0;
-            for (; i < PlayingTracks.Count; i++)
+            for (; i < Playlist.Count; i++)
             {
-                if (PlayingTracks[i].Name == t.Name && PlayingTracks[i].Project == t.Project)
+                if (Playlist[i].Name == t.Name && Playlist[i].Project == t.Project)
                     break;
             }
 
-            if (i >= PlayingTracks.Count)
+            if (i >= Playlist.Count)
             {
-                PlayingTracks.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath, LastModifiedDate = t.LastModifiedDate });
+                Playlist.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath, LastModifiedDate = t.LastModifiedDate });
                 playingListLoaded = false;
             }
         }
