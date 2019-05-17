@@ -61,6 +61,24 @@ namespace MyMixes {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        internal static string Continue {
+            get {
+                return ResourceManager.GetString("Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
         ///
         ///Once completed, return to the main page and play your mixes and take notes..
@@ -81,9 +99,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This screen displays the cloud mix locations you&apos;ve added at the top, which is currently empty.  A mix location is a folder in your cloud storage that contains projects and each project will have songs you&apos;ve mixed out with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
+        ///   Looks up a localized string similar to The top of the screen displays the cloud mix locations you&apos;ve added, which is currently empty.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you&apos;ve mixed  and saved with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
         ///
-        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your  [rest of string was truncated]&quot;;.
+        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the r [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoMixLocations {
             get {
@@ -146,6 +164,42 @@ namespace MyMixes {
         internal static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This action removes the project from this device and the cloud, continue?.
+        /// </summary>
+        internal static string RemoveFolder {
+            get {
+                return ResourceManager.GetString("RemoveFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The remote project in your cloud storage could not be removed.  Make sure you have access and that the project still exists..
+        /// </summary>
+        internal static string RemoveFolderRemoteFailed {
+            get {
+                return ResourceManager.GetString("RemoveFolderRemoteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not remove the cloud project.
+        /// </summary>
+        internal static string RemoveFolderRemoteFailedTitle {
+            get {
+                return ResourceManager.GetString("RemoveFolderRemoteFailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove folder from device and cloud?.
+        /// </summary>
+        internal static string RemoveFolderTitle {
+            get {
+                return ResourceManager.GetString("RemoveFolderTitle", resourceCulture);
             }
         }
         

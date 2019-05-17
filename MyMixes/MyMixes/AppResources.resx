@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
   <data name="MixLocationsNoPlaylist" xml:space="preserve">
     <value>Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
 
@@ -126,9 +132,9 @@ Once completed, return to the main page and play your mixes and take notes.</val
     <value>Choose your playlist</value>
   </data>
   <data name="NoMixLocations" xml:space="preserve">
-    <value>This screen displays the cloud mix locations you've added at the top, which is currently empty.  A mix location is a folder in your cloud storage that contains projects and each project will have songs you've mixed out with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
+    <value>The top of the screen displays the cloud mix locations you've added, which is currently empty.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you've mixed  and saved with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
 
-Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add as a Mix Location which will be copied to your device when you go back to the previous page. </value>
+Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add a Mix Location which will be synchronized to your device when you go back to the previous page.</value>
   </data>
   <data name="NoMixLocationsTitle" xml:space="preserve">
     <value>Add Mix Locations</value>
@@ -151,6 +157,18 @@ The list of projects is empty because you haven't add your first cloud locaiton.
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="RemoveFolder" xml:space="preserve">
+    <value>This action removes the project from this device and the cloud, continue?</value>
+  </data>
+  <data name="RemoveFolderRemoteFailed" xml:space="preserve">
+    <value>The remote project in your cloud storage could not be removed.  Make sure you have access and that the project still exists.</value>
+  </data>
+  <data name="RemoveFolderRemoteFailedTitle" xml:space="preserve">
+    <value>Could not remove the cloud project</value>
+  </data>
+  <data name="RemoveFolderTitle" xml:space="preserve">
+    <value>Remove folder from device and cloud?</value>
   </data>
   <data name="SongPlayFailed" xml:space="preserve">
     <value>The song failed to play for an unknown reason.  Check that you can play the original, and varify there are no invalid characters in the name.</value>

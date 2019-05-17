@@ -255,6 +255,72 @@ namespace MyMixes
             Application.Current.Properties[key] = tracknum;
         }
 
+        private static string ProviderKey(string project, string trackname, string date)
+        {
+            return "ProviderKey_" + project + "_" + trackname + "_" + date;
+        }
+
+        static public void SetProvider(string project, string trackname, string date, CloudProviders provider)
+        {
+            string key = ProviderKey(project, trackname, date);
+            Application.Current.Properties[key] = provider.ToString();
+        }
+
+
+        static public CloudProviders GetProvider(string project, string trackname, string date)
+        {
+            string key = ProviderKey(project, trackname, date);
+            if(Application.Current.Properties.ContainsKey(key))
+            {
+                string cpstr = (string)Application.Current.Properties[key];
+                CloudProviders cp;
+
+                if (Enum.TryParse<CloudStorage.CloudProviders>(cpstr, out cp))
+                {
+                    return cp;
+                }
+            }
+
+            return CloudProviders.NULL;
+        }
+
+        static public void ResetProvider(string project, string trackname, string date)
+        {
+            string key = ProviderKey(project, trackname, date);
+            Application.Current.Properties.Remove(key);
+        }
+
+        private static string CloudRootKey(string project, string trackname, string date)
+        {
+            return "CloudRootKey_" + project + "_" + trackname + "_" + date;
+        }
+
+        static public void SetCloudRoot(string project, string trackname, string date, string root)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            Application.Current.Properties[key] = root;
+        }
+
+
+        static public string GetCloudRoot(string project, string trackname, string date)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            if (Application.Current.Properties.ContainsKey(key))
+            {
+                string cpstr = (string)Application.Current.Properties[key];
+                
+                return cpstr;
+            }
+
+            return null;
+        }
+
+        static public void ResetCloudRoot(string project, string trackname, string date)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            Application.Current.Properties.Remove(key);
+        }
+
         static public void LoadQueuedTracks(ObservableCollection<QueuedTrack> qt)
         {
             qt.Clear();

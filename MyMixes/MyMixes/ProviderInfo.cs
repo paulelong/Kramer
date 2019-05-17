@@ -194,21 +194,21 @@ namespace MyMixes
                 string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), project);
                 string remoteFolderName = "/" + root + "/" + project;
 
-                var items = await cs.GetFolderListAsync(remoteFolderName);
-                foreach (var di in items)
+                // Is local folder created?
+                var d = Directory.CreateDirectory(projectPath);
+                if (d != null)
                 {
-                    if (isAudioFile(di))
+                    var items = await cs.GetFolderListAsync(remoteFolderName);
+                    foreach (var di in items)
                     {
-                        UpdatedSongs.Add(di.name);
-
-                        // Is local folder created?
-                        var d = Directory.CreateDirectory(projectPath);
-                        if (d != null)
+                        if (isAudioFile(di))
                         {
+                            UpdatedSongs.Add(di.name);
+
                             string localFileName = projectPath + "/" + di.name;
                             DateTime localWriteTime = File.GetLastWriteTime(localFileName);
 
-                            if(localWriteTime < di.modifiedDate)
+                            if(Math.Abs((localWriteTime - di.modifiedDate).TotalSeconds) >= 1)
                             {
                                 using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
                                 {
@@ -216,8 +216,11 @@ namespace MyMixes
                                     UpdateStatusRoutine("downloading " + project + "/" + di.name);
                                     if (!await CloudStore.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
                                     {
-                                        PersistentData.SetTrackNumber(projectPath, di.name, di.track);
                                         Debug.Print("FAILED " + localFileName + "\n");
+                                    }
+                                    else
+                                    {
+                                        PersistentData.SetTrackNumber(projectPath, di.name, di.track);
                                     }
 
                                     s.Close();
@@ -227,15 +230,32 @@ namespace MyMixes
                             }
                         }
                     }
+
+                    // Save provider 
+                    PersistentData.SetProvider(project, project, d.LastWriteTime.ToString(), CloudProvider);
+                    PersistentData.SetCloudRoot(project, project, d.LastWriteTime.ToString(), root);
                 }
             }
             catch (Exception ex)
             {
                 Debug.Print("exception " + ex.Message);
-                throw ex;
+                throw;
             }
 
             return UpdatedSongs;
+        }
+
+        public async Task<bool> RemoveFolder(string root, string project, UpdateStatus UpdateStatusRoutine)
+        {
+            string remoteFolderName = "/" + root + "/" + project;
+
+            bool delWorked = await CloudStore.DeleteTakeAsync(remoteFolderName);
+            if(!delWorked)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool isAudioFile(CloudFileData di)

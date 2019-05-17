@@ -16,8 +16,64 @@ namespace MyMixes
         public string ProjectPath { get; set; }
         public bool isProject { get; set; }
         public int TrackNum { get; set; }
-        public string CloudProvider { get; set; }
-        public string CloudRoot { get; set; }
+
+        private bool cloudProviderSet = false;
+        private CloudStorage.CloudProviders cloudProvider = CloudStorage.CloudProviders.NULL;
+        public CloudStorage.CloudProviders CloudProvider
+        {
+            get
+            {
+                if (!cloudProviderSet)
+                {
+                    cloudProvider = PersistentData.GetProvider(Project, Name, LastModifiedDate.ToString());
+                    if(cloudProvider != CloudStorage.CloudProviders.NULL)
+                    {
+                        cloudProviderSet = true;
+                    }
+                }
+
+                return cloudProvider;
+            }
+            set
+            {
+                if(value != cloudProvider)
+                {
+                    if (value == CloudStorage.CloudProviders.NULL)
+                    {
+                        cloudProviderSet = false;
+                        PersistentData.ResetProvider(Project, Name, LastModifiedDateString);
+                    }
+                    else
+                    {
+                        PersistentData.SetProvider(Project, Name, LastModifiedDateString, value);
+                        cloudProviderSet = true;
+                    }
+                }
+            }
+        }
+
+        public string cloudRoot = null;
+        public string CloudRoot
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(cloudRoot))
+                {
+                    cloudRoot = PersistentData.GetCloudRoot(Project, Name, LastModifiedDate.ToString());
+                }
+
+                return cloudRoot;
+            }
+            set
+            {
+                if(value == null)
+                {
+                    cloudRoot = null;
+                    PersistentData.ResetCloudRoot(Project, Name, LastModifiedDate.ToString());
+                }
+            }
+        }
+
         public string LastModifiedDateString
         {
             get
@@ -69,6 +125,8 @@ namespace MyMixes
             }
         }
         public DateTime LastModifiedDate { get; set; }
+
+        public DateTime LastWriteDate { get; set; }
 
         public string Project
         {

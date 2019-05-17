@@ -19,15 +19,11 @@ namespace MyMixes
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AddSongs : ContentPage
 	{
-        //private string selectedFolder = "";
         private Track selectedTrack = null;
         private Track lastPlayingTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        //private ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
         private ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
-
-        //private ObservableCollection<MixLocation> MixLocationList = null;
 
         private BusyBarViewModel ppd;
 
@@ -41,39 +37,23 @@ namespace MyMixes
             this.tvm = tvm;
             this.BindingContext = this.tvm;
 
-            //SelectedTracks.BindingContext = this;
-            SelectedTracks.ItemsSource = tvm.PlayingTracks;
-            //SelectedTracks.ItemsSource = SelectedTrackList;
+            SelectedTracks.ItemsSource = tvm.Playlist;
 
             ppd = new BusyBarViewModel();
             BusyBar.BindingContext = ppd;
 
-            //Projects.BindingContext = this;
             Projects.ItemsSource = LoadedTracks;
-
-            //PersistentData.LoadMixLocations(MixLocationList);
-
-            //PersistentData.LoadQueuedTracks(SelectedTrackList);
 
             if (DesignMode.IsDesignModeEnabled)
             {
                 ppd.BusyText = "Something here";
             }
-
-            //Transport.BindingContext = tvm;
-        }
-
-        private void DeleteFolder_Clicked(object sender, EventArgs e)
-        {
-
         }
 
         private void LocalPlay_Clicked(object sender, EventArgs e)
         {
             Track t = FindTrack((View)sender);
 
-            //if(!SongPickerPlaying)
-            //{
             if (!tvm.PlaySongAsync(t.FullPath))
             {
                 DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
@@ -81,39 +61,78 @@ namespace MyMixes
             else
             {
                 SongPickerPlaying = true;
-                //t.TrackPlaying = true;
                 lastPlayingTrack = t;
             }
-            //}
-            //else
-            //{
-            //    if(lastPlayingTrack == t)
-            //    {
-            //        tvm.StopPlayer();
-            //        SongPickerPlaying = false;
-            //        lastPlayingTrack.TrackPlaying = false;
-            //    }
-            //    else
-            //    {
-            //        lastPlayingTrack.TrackPlaying = false;
-            //        tvm.StopPlayer();
-
-            //        if (!tvm.PlaySongAsync(t.FullPath))
-            //        {
-            //            DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
-            //            SongPickerPlaying = false;
-            //        }
-            //        else
-            //        {
-            //            SongPickerPlaying = true;
-            //            t.TrackPlaying = true;
-            //            lastPlayingTrack = t;
-            //        }
-            //    }
-            //}
         }
 
 #pragma warning disable AvoidAsyncVoid
+        private async void DeleteFolder_Clicked(object sender, EventArgs e)
+        {
+            bool result = await DisplayAlert(AppResources.RemoveFolderTitle, AppResources.RemoveFolder, AppResources.Continue, AppResources.Cancel);
+            if (result)
+            {
+                Track t = FindTrack((View)sender);
+
+                if(t.CloudProvider != CloudStorage.CloudProviders.NULL)
+                {
+                    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(t.CloudProvider);
+
+                    if (await pi.CheckAuthenitcationAsync())
+                    {
+                        bool removeWorked = await pi.RemoveFolder(t.CloudRoot, t.Project, UpdateStatus);
+                        if(removeWorked)
+                        {
+                            // Are we goint to remove a song that is playing?
+                            if(this.tvm.SelectedSong.Project == t.Project)
+                            {
+                                this.tvm.StopPlayer();
+                                this.tvm.ResetPlayer();
+                            }
+
+                            string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), t.Project);
+                            Directory.Delete(projectPath, true);
+
+                            t.CloudProvider = CloudStorage.CloudProviders.NULL;
+                            t.CloudRoot = null;
+
+                            if(selectedTrack?.Project == t.Project)
+                            {
+                                selectedTrack = null;
+                            }
+
+                            // Remove folder from current list
+                            for (int i = LoadedTracks.Count - 1; i >= 0; i--)
+                            {
+                                if (LoadedTracks[i].Project == t.Project)
+                                {
+                                    LoadedTracks.RemoveAt(i);
+                                }
+                            }
+
+                            // If part of playlist, remove from there
+                            for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
+                            {
+                                if (t.Project == this.tvm.Playlist[i].Project)
+                                {
+                                    this.tvm.Playlist.RemoveAt(i);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            await DisplayAlert(AppResources.RemoveFolderRemoteFailedTitle, AppResources.RemoveFolderRemoteFailed, AppResources.OK);
+                        }
+                    }
+                }
+                else
+                {
+                    Analytics.TrackEvent("Cloud Provider for folder invalid");
+
+                    await DisplayAlert("Cloud Provider incorrect", "The cloud provider saved in local storage is missing or incorrect.  This is not an expected error, contact the developer.", "OK");
+                }
+            }
+        }
+
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
             ProjectPicker pp = new ProjectPicker();
@@ -169,7 +188,7 @@ namespace MyMixes
             if(PersistentData.MixLocationList.Count <= 0)
             {
                 await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
-            } else if(tvm.PlayingTracks.Count <= 0)
+            } else if(tvm.Playlist.Count <= 0)
             {
                 await DisplayAlert(AppResources.MixLocationsNoPlaylistTitle, AppResources.MixLocationsNoPlaylist, AppResources.OK);
             }
@@ -181,6 +200,7 @@ namespace MyMixes
             BusyOn(true);
             await SyncProjectsAsync();
             LoadProjects();
+            PersistentData.Save();
             BusyOn(false);
 
             Projects.EndRefresh();
@@ -371,7 +391,9 @@ namespace MyMixes
                 {
                     if (WavDirectory(projFolder))
                     {
-                        Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
+                        //string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + projFolder;
+                        
+                        Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true, ProjectPath = projFolder, LastModifiedDate = Directory.GetLastWriteTime(projFolder) };
 
                         int i;
                         for(i = 0; i < LoadedTracks.Count; i++)
@@ -483,7 +505,7 @@ namespace MyMixes
             return false;
         }
 
-        private async void DeleteSong_Clicked(object sender, EventArgs e)
+        private void DeleteSong_Clicked(object sender, EventArgs e)
         {
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
@@ -510,6 +532,8 @@ namespace MyMixes
                 tvm.NowPlaying = null;
                 lastPlayingTrack.TrackPlaying = false;
             }
+
+            PersistentData.Save();
         }
     }
 }
