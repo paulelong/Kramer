@@ -38,14 +38,14 @@ namespace MyMixes
         {
             PersistentData.SaveNotes(qt, snd.Notes);
 
-            int i = tvm.PlayingTracks.IndexOf(qt) - 1;
+            int i = tvm.Playlist.IndexOf(qt) - 1;
 
             if (i < 0)
             {
-                i = tvm.PlayingTracks.Count - 1;
+                i = tvm.Playlist.Count - 1;
             }
 
-            qt = tvm.PlayingTracks[i];
+            qt = tvm.Playlist[i];
 
             SetSongInfo();
         }
@@ -54,14 +54,14 @@ namespace MyMixes
         {
             PersistentData.SaveNotes(qt, snd.Notes);
 
-            int i = tvm.PlayingTracks.IndexOf(qt) + 1;
+            int i = tvm.Playlist.IndexOf(qt) + 1;
 
-            if (i >= tvm.PlayingTracks.Count)
+            if (i >= tvm.Playlist.Count)
             {
                 i = 0;
             }
 
-            qt = tvm.PlayingTracks[i];
+            qt = tvm.Playlist[i];
 
             SetSongInfo();
 

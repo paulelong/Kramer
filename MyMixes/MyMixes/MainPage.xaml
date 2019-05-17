@@ -48,19 +48,19 @@
                                 Factor=1}">
                 <ListView x:Name="Projects" 
                         ItemTemplate="{StaticResource songListTemplate}" 
-                        ItemsSource="{Binding PlayingTracks}"
+                        ItemsSource="{Binding Playlist}"
                         SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
                         BackgroundColor="Transparent"
                         RowHeight="55" Margin="0,0,0,0"
             >
-                    <d:ListView.ItemsSource>
+                    <!--<d:ListView.ItemsSource>
                         ItemSelected="TrackView_Sel"
                         CachingStrategy="RecycleElement"
                         <x:Array Type="{x:Type local:QueuedTrack}">
                             <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
                             <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
                         </x:Array>
-                    </d:ListView.ItemsSource>
+                    </d:ListView.ItemsSource>-->
                 </ListView>
                 <Grid HorizontalOptions="FillAndExpand" HeightRequest="80" VerticalOptions="EndAndExpand">
                     <Grid.ColumnDefinitions>
