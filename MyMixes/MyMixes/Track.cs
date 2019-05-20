@@ -17,6 +17,117 @@ namespace MyMixes
         public bool isProject { get; set; }
         public int TrackNum { get; set; }
 
+        private bool cloudProviderSet = false;
+        private CloudStorage.CloudProviders cloudProvider = CloudStorage.CloudProviders.NULL;
+        public CloudStorage.CloudProviders CloudProvider
+        {
+            get
+            {
+                if (!cloudProviderSet)
+                {
+                    cloudProvider = PersistentData.GetProvider(Project, Name, LastModifiedDate.ToString());
+                    if(cloudProvider != CloudStorage.CloudProviders.NULL)
+                    {
+                        cloudProviderSet = true;
+                    }
+                }
+
+                return cloudProvider;
+            }
+            set
+            {
+                if(value != cloudProvider)
+                {
+                    if (value == CloudStorage.CloudProviders.NULL)
+                    {
+                        cloudProviderSet = false;
+                        PersistentData.ResetProvider(Project, Name, LastModifiedDateString);
+                    }
+                    else
+                    {
+                        PersistentData.SetProvider(Project, Name, LastModifiedDateString, value);
+                        cloudProviderSet = true;
+                    }
+                }
+            }
+        }
+
+        public string cloudRoot = null;
+        public string CloudRoot
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(cloudRoot))
+                {
+                    cloudRoot = PersistentData.GetCloudRoot(Project, Name, LastModifiedDate.ToString());
+                }
+
+                return cloudRoot;
+            }
+            set
+            {
+                if(value == null)
+                {
+                    cloudRoot = null;
+                    PersistentData.ResetCloudRoot(Project, Name, LastModifiedDate.ToString());
+                }
+            }
+        }
+
+        public string LastModifiedDateString
+        {
+            get
+            {
+                return LastModifiedDate.ToShortDateString();
+            }
+        }
+        public string LastModifiedTimeString
+        {
+            get
+            {
+                return LastModifiedDate.ToShortTimeString();
+            }
+        }
+        public string LastModifiedDateSimple
+        {
+            get
+            {
+                string date = "";
+
+                if (DateTime.Now.DayOfYear == LastModifiedDate.DayOfYear)
+                {
+                    date = "Today";
+                }
+                else
+                {
+                    var diff = DateTime.Now - LastModifiedDate;
+                    if (diff.Days > 365)
+                    {
+                        date = LastModifiedDate.ToShortDateString();
+                    }
+                    else if (DateTime.Now.DayOfYear - 1 == LastModifiedDate.DayOfYear)
+                    {
+                        date = "Yesterday";
+                    }
+                    else
+                    {
+                        date = String.Format("{0:M/d}", LastModifiedDate);
+                    }
+                }
+                return date;
+            }
+        }
+        public string LastModifiedTimeSimple
+        {
+            get
+            {
+                return String.Format("{0:h:mm tt}", LastModifiedDate);
+            }
+        }
+        public DateTime LastModifiedDate { get; set; }
+
+        public DateTime LastWriteDate { get; set; }
+
         public string Project
         {
             get
@@ -48,6 +159,41 @@ namespace MyMixes
             get
             {
                 return updateListImage;
+            }
+        }
+
+        private bool trackPlaying = false;
+        public bool TrackPlaying
+        {
+            get
+            {
+                return trackPlaying;
+            }
+            set
+            {
+                if(value != trackPlaying)
+                {
+                    trackPlaying = value;
+                    OnPropertyChanged("PlayListImage");
+
+                    if (trackPlaying)
+                    {
+                        playListImage = "PauseBt.png";
+                    }
+                    else
+                    {
+                        playListImage = "PlayBt.png";
+                    }
+                }
+            }
+        }
+
+        private string playListImage = "PlayBt.png";
+        public string PlayListImage
+        {
+            get
+            {
+                return playListImage;
             }
         }
 
@@ -85,7 +231,12 @@ namespace MyMixes
             }
             set
             {
-                OnPropertyChanged("Order");
+                int neworder = 0;
+                if(int.TryParse(value, out neworder))
+                {
+                    order = neworder;
+                    OnPropertyChanged("Order");
+                }
             }
 
         }

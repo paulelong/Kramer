@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="MixLocationsNoPlaylist" xml:space="preserve">
+    <value>Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
+
+Once completed, return to the main page and play your mixes and take notes.</value>
+  </data>
+  <data name="MixLocationsNoPlaylistTitle" xml:space="preserve">
+    <value>Choose your playlist</value>
+  </data>
+  <data name="NoMixLocations" xml:space="preserve">
+    <value>The top of the screen displays the cloud mix locations you've added, which is currently empty.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you've mixed  and saved with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
+
+Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add a Mix Location which will be synchronized to your device when you go back to the previous page.</value>
+  </data>
+  <data name="NoMixLocationsTitle" xml:space="preserve">
+    <value>Add Mix Locations</value>
+  </data>
+  <data name="NoPlaylist" xml:space="preserve">
+    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "More cowbell".
+
+Add songs from your master of projects/mixes by using the Add Music button at the bottom.</value>
+  </data>
+  <data name="NoPlaylistTitle" xml:space="preserve">
+    <value>Add songs to your playlist</value>
+  </data>
+  <data name="NoProjects" xml:space="preserve">
+    <value>This screen displays all of your projects that exist in the cloud mix locations you've configured.  A cloud mix location is a folder in your cloud storage which contains project folders.  Each project folder contains songs.
+
+The list of projects is empty because you haven't add your first cloud locaiton.  To add the first cloud location, use the Add Cloud button at the bottom.</value>
+  </data>
+  <data name="NoProjectsTitle" xml:space="preserve">
+    <value>Add Song to Playlist</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="RemoveFolder" xml:space="preserve">
+    <value>This action removes the project from this device and the cloud, continue?</value>
+  </data>
+  <data name="RemoveFolderRemoteFailed" xml:space="preserve">
+    <value>The remote project in your cloud storage could not be removed.  Make sure you have access and that the project still exists.</value>
+  </data>
+  <data name="RemoveFolderRemoteFailedTitle" xml:space="preserve">
+    <value>Could not remove the cloud project</value>
+  </data>
+  <data name="RemoveFolderTitle" xml:space="preserve">
+    <value>Remove folder from device and cloud?</value>
+  </data>
+  <data name="SongPlayFailed" xml:space="preserve">
+    <value>The song failed to play for an unknown reason.  Check that you can play the original, and varify there are no invalid characters in the name.</value>
+  </data>
+  <data name="SongPlayFailedTitle" xml:space="preserve">
+    <value>The song failed to play</value>
+  </data>
+</root>

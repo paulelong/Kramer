@@ -4,6 +4,8 @@ using System.Linq;
 
 using Foundation;
 using UIKit;
+using Microsoft.Identity.Client;
+using OAuthNativeFlow;
 
 namespace MyMixes.iOS
 {
@@ -23,9 +25,33 @@ namespace MyMixes.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+
+            global::Xamarin.Auth.Presenters.XamarinIOS.AuthenticationConfiguration.Init();
+
             LoadApplication(new App());
 
+            var x = typeof(Xamarin.Forms.Themes.DarkThemeResources);
+            if (x == typeof(Xamarin.Forms.Themes.DarkThemeResources))
+            {
+                x = typeof(Xamarin.Forms.Themes.iOS.UnderlineEffect);
+            }
+
+
             return base.FinishedLaunching(app, options);
+        }
+        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        {
+            if (url.AbsoluteString.Contains("google"))
+            {
+                var uri_netfx = new Uri(url.AbsoluteString);
+                AuthenticationState.Authenticator.OnPageLoading(uri_netfx);
+            }
+            else
+            {
+                AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+            }
+
+            return true;
         }
     }
 }

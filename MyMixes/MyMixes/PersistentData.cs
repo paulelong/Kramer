@@ -1,4 +1,4 @@
-﻿using PCLStorage;
+﻿//using PCLStorage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,8 +28,27 @@ namespace MyMixes
             Application.Current.SavePropertiesAsync();
         }
 
-        internal static void LoadMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        static internal ObservableCollection<MixLocation> mixLocationList = null;
+        static public ObservableCollection<MixLocation> MixLocationList
         {
+            get
+            {
+                if(mixLocationList == null)
+                {
+                    mixLocationList = new ObservableCollection<MixLocation>();
+                    LoadMixLocations();
+                }
+
+                return mixLocationList;
+            }
+
+        }
+
+        internal static bool mixLocationsChanged = false;
+        internal static void LoadMixLocations()
+        {
+            MixLocationList.Clear();
+
             foreach (CloudProviders cpn in Enum.GetValues(typeof(CloudProviders)))
             {
                 if (Application.Current.Properties.ContainsKey("ProjectMap_" + cpn))
@@ -44,14 +63,21 @@ namespace MyMixes
                     }
                 }
             }
+
+            mixLocationsChanged = false;
         }
 
-        internal static void SaveMixLocations(ObservableCollection<MixLocation> mixLocationList)
+        internal static void SaveMixLocations()
         {
             Dictionary<CloudProviders, List<string>> ProjectsByProviders = new Dictionary<CloudProviders, List<string>>();
 
-            foreach (MixLocation ml in mixLocationList)
+            foreach (MixLocation ml in MixLocationList)
             {
+                if(!ProjectsByProviders.ContainsKey(ml.Provider))
+                {
+                    ProjectsByProviders[ml.Provider] = new List<string>();
+                }
+
                 ProjectsByProviders[ml.Provider].Add(ml.Path);
             }
 
@@ -59,81 +85,8 @@ namespace MyMixes
             {
                 Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
             }
-        }
 
-        //private static List<ProjectMapping> projectMappings = new List<ProjectMapping>();
-        //public static List<ProjectMapping> ProjectMappings
-        //{
-        //    get
-        //    {
-        //        if(projectMappings == null)
-        //        {
-        //            projectMappings = new List<ProjectMapping>();
-        //            LoadProjectMappings();
-        //        }
-
-        //        return projectMappings;
-        //    }
-        //}
-
-        public static void SaveProjectMappings(Dictionary<string, ProviderInfo> pi_list)
-        {
-            Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
-
-            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
-            {
-                ProjectsByProviders[pmname.ToString()] = new List<string>();
-            }
-
-            foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
-            {
-                var p = kvp.Key.Split(':');
-
-                ProjectsByProviders[p[0]].Add(p[1]);
-            }
-
-            foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
-            {
-                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
-            }
-        }
-
-        //public static void SaveProjectMappings(List<ProviderInfo> pi_list)
-        //{
-        //    Dictionary<string, List<string>> ProjectsByProviders = new Dictionary<string, List<string>>();
-
-        //    foreach (ProviderInfo pi in pi_list)
-        //    {
-        //        ProjectsByProviders[pi.CloudProvider.ToString()].Add(pi.RootPath);
-        //    }
-
-        //    foreach (KeyValuePair<string, List<string>> kvp in ProjectsByProviders)
-        //    {
-        //        Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
-        //    }
-        //}
-
-
-        public static List<string> LoadProjectMappings()
-        {
-            List<string> ProjectMappings = new List<string>();
-
-            foreach (CloudProviders pmname in Enum.GetValues(typeof(CloudProviders)))
-            {
-                if(Application.Current.Properties.ContainsKey("ProjectMap_" + pmname))
-                {
-                    string list = (string)Application.Current.Properties["ProjectMap_" + pmname];
-                    if(!string.IsNullOrEmpty(list))
-                    {
-                        foreach (string p in list.Split(','))
-                        {
-                            ProjectMappings.Add(pmname.ToString() + ":" + p);
-                        }
-                    }
-                }
-            }
-
-            return ProjectMappings;
+            mixLocationsChanged = true;
         }
 
         public static List<string> GetProjectFoldersData(string provider, string root)
@@ -158,79 +111,35 @@ namespace MyMixes
             Application.Current.Properties[key] = value;
         }
 
-        public static async Task<bool> isRemoteNewer(string path, DateTime lastModified)
-        {
-            //IFolder rootfolder = FileSystem.Current.LocalStorage;
-
-            string filepath = Path.GetDirectoryName(path);
-            string name = Path.GetFileName(path);
-
-            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
-            ExistenceCheckResult result = await folder.CheckExistsAsync(name);
-
-            if(result != ExistenceCheckResult.FileExists)
-            {
-                return true;
-            }
-
-            if (Application.Current.Properties.ContainsKey(path))
-            {
-                DateTime localLastModified = (DateTime)Application.Current.Properties[path];
-                if (lastModified <= localLastModified)
-                {
-                    return false;
-                }
-            }
-
-            Application.Current.Properties[path] = lastModified;
-            return true;
-        }
-
-        static List<LocationMapping> mixLocations = new List<LocationMapping>();
-        public static List<LocationMapping> LocationMappings
-        {
-            get
-            {
-                if (Application.Current.Properties.ContainsKey("mixLocCount"))
-                {
-                    int count;
-                    count = (int)Application.Current.Properties["CloudProviderCount"];
-
-                    mixLocations.Clear();
-
-                    for (int n = 0; n < count; n++)
-                    {
-                        string key = "mixloc" + n.ToString();
-                        if (Application.Current.Properties.ContainsKey(key))
-                        {
-                            LocationMapping lm = new LocationMapping
-                            {
-                                path = (string)Application.Current.Properties[key],
-                                provider = (CloudProviders)Application.Current.Properties["cloudprovider" + n.ToString()]
-                            };
-
-                            mixLocations.Add(lm);
-                        }
-                    }
-                }
-
-                return mixLocations;
-            }
-        }
-
-        //static void AddLocation(string path, CloudProviders cp)
+        //public static async Task<bool> isRemoteNewerAsync(string path, DateTime lastModified)
         //{
-        //    string key = "mixloc" + ProviderCount.ToString();
+        //    string filepath = Path.GetDirectoryName(path);
+        //    string name = Path.GetFileName(path);
 
-        //    ProviderInfo pi = new ProviderInfo
+        //    //IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(filepath);
+        //    //ExistenceCheckResult result = await folder.CheckExistsAsync(name);
+
+        //    if(!File.Exists(path))
         //    {
-        //        RootPath = (string)Application.Current.Properties[key],
-        //        CloudProvider = (CloudProviders)Application.Current.Properties["cloudprovider" + ProviderCount.ToString()]
-        //    };
+        //        return true;
+        //    }
 
-        //    ProviderCount++;
+        //    //if(result != ExistenceCheckResult.FileExists)
+        //    //{
+        //    //    return true;
+        //    //}
 
-        //    mixLocations.Add(pi);
+        //    if (Application.Current.Properties.ContainsKey(path))
+        //    {
+        //        DateTime localLastModified = (DateTime)Application.Current.Properties[path];
+        //        if (lastModified <= localLastModified)
+        //        {
+        //            return false;
+        //        }
+        //    }
+
+        //    Application.Current.Properties[path] = lastModified;
+        //    return true;
         //}
 
         static int ProviderCount
@@ -346,6 +255,72 @@ namespace MyMixes
             Application.Current.Properties[key] = tracknum;
         }
 
+        private static string ProviderKey(string project, string trackname, string date)
+        {
+            return "ProviderKey_" + project + "_" + trackname + "_" + date;
+        }
+
+        static public void SetProvider(string project, string trackname, string date, CloudProviders provider)
+        {
+            string key = ProviderKey(project, trackname, date);
+            Application.Current.Properties[key] = provider.ToString();
+        }
+
+
+        static public CloudProviders GetProvider(string project, string trackname, string date)
+        {
+            string key = ProviderKey(project, trackname, date);
+            if(Application.Current.Properties.ContainsKey(key))
+            {
+                string cpstr = (string)Application.Current.Properties[key];
+                CloudProviders cp;
+
+                if (Enum.TryParse<CloudStorage.CloudProviders>(cpstr, out cp))
+                {
+                    return cp;
+                }
+            }
+
+            return CloudProviders.NULL;
+        }
+
+        static public void ResetProvider(string project, string trackname, string date)
+        {
+            string key = ProviderKey(project, trackname, date);
+            Application.Current.Properties.Remove(key);
+        }
+
+        private static string CloudRootKey(string project, string trackname, string date)
+        {
+            return "CloudRootKey_" + project + "_" + trackname + "_" + date;
+        }
+
+        static public void SetCloudRoot(string project, string trackname, string date, string root)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            Application.Current.Properties[key] = root;
+        }
+
+
+        static public string GetCloudRoot(string project, string trackname, string date)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            if (Application.Current.Properties.ContainsKey(key))
+            {
+                string cpstr = (string)Application.Current.Properties[key];
+                
+                return cpstr;
+            }
+
+            return null;
+        }
+
+        static public void ResetCloudRoot(string project, string trackname, string date)
+        {
+            string key = CloudRootKey(project, trackname, date);
+            Application.Current.Properties.Remove(key);
+        }
+
         static public void LoadQueuedTracks(ObservableCollection<QueuedTrack> qt)
         {
             qt.Clear();
@@ -365,10 +340,18 @@ namespace MyMixes
                             string[] trackParams = value.Split(',');
                             if(trackParams.Length >= 3)
                             {
-                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2] });
+                                DateTime d = DateTime.UtcNow;
+
+                                if(trackParams.Length >= 4)
+                                {
+                                    if(!DateTime.TryParse(trackParams[3], out d))
+                                    {
+                                        Debug.Print("Error parsing date for {0}", trackParams[3]);
+                                    }
+                                }
+                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2], LastModifiedDate = d });
                             }
                         }
-
                     }
                 }
             }
@@ -379,18 +362,36 @@ namespace MyMixes
 
         }
 
-        static public async Task SaveQueuedTracks(ObservableCollection<QueuedTrack> qtlist)
+        static public async Task SaveQueuedTracksAsync(ObservableCollection<QueuedTrack> qtlist)
         {
             int i = 0;
             foreach(QueuedTrack qt in qtlist)
             {
                 string key = KEY_QUEUED_TRACK_ID + i.ToString();
-                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath;
+                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToString();
                 i++;
             }
 
             Application.Current.Properties[KEY_QUEUED_TRACK_COUNT] = qtlist.Count;
             await Application.Current.SavePropertiesAsync();
         }
+
+        static public void SaveNotes(QueuedTrack qt, string notes)
+        {
+            Application.Current.Properties[qt.FullPath] = notes;
+        }
+
+        static public string LoadNotes(QueuedTrack qt)
+        {
+            if(Application.Current.Properties.ContainsKey(qt.FullPath))
+            {
+                return (string)Application.Current.Properties[qt.FullPath];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 }

@@ -2,21 +2,74 @@
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
-             x:Class="MyMixes.App">
+             xmlns:local="clr-namespace:MyMixes"
+             x:Class="MyMixes.App"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+             >
 	<Application.Resources>
         <ResourceDictionary MergedWith="dark:DarkThemeResources">
+            <OnPlatform x:TypeArguments="Color" x:Key="PickerBackgroundColor">
+                <On Platform="iOS" Value="#454545"/>
+            </OnPlatform>
+
+            <Style x:Key="DefaultPicker" TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="{StaticResource PickerBackgroundColor}"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontSize" Value="Small"/>
+            </Style>
+
+            <Style x:Key="SongText" TargetType="Label">
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontSize" Value="Medium"/>
+            </Style>
+
+            <Style x:Key="SongSubText" TargetType="Label">
+                <Setter Property="TextColor" Value="#A0A0A0"/>
+                <Setter Property="FontSize" Value="Micro"/>
+            </Style>
+
             <ControlTemplate x:Key="TransportControl">
-                <Grid  VerticalOptions="EndAndExpand">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.33*" />
-                        <ColumnDefinition Width="0.33*" />
-                        <ColumnDefinition Width="0.33*" />
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" x:Name="PrevSongButton" Command="{TemplateBinding Parent.BindingContext.PrevCommand}" Image="PrevBt.png"/>
-                    <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding Parent.BindingContext.PlayCommand}" Image="{TemplateBinding Parent.BindingContext.PlayButtonStateImage}" />
-                    <Button Grid.Column="2" x:Name="NextSongButton" Command="{TemplateBinding Parent.BindingContext.NextCommand}" Image="NextBt.png" />
+                <StackLayout>
+                    <Label Text="{TemplateBinding Parent.BindingContext.NowPlaying}" TextColor="White"/>
+                    <local:SliderX AccurateValue="{TemplateBinding Parent.BindingContext.SongPosition}" Minimum="0" Maximum="1"/>
+                    <Grid  VerticalOptions="End" Margin="5,0,5,0" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.33*" />
+                            <ColumnDefinition Width="0.33*" />
+                            <ColumnDefinition Width="0.33*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="PrevSongButton" Command="{TemplateBinding Parent.BindingContext.PrevCommand}" IsVisible="{TemplateBinding Parent.BindingContext.PrevCommandVisible}"  Image="PrevBt.png"/>
+                        <Button Grid.Column="1" x:Name="PlaySongButton" Command="{TemplateBinding Parent.BindingContext.PlayCommand}" Image="{TemplateBinding Parent.BindingContext.PlayButtonStateImage}" />
+                        <Button Grid.Column="2" x:Name="NextSongButton" Command="{TemplateBinding Parent.BindingContext.NextCommand}" IsVisible="{TemplateBinding Parent.BindingContext.NextCommandVisible}" Image="NextBt.png" />
+                    </Grid>
+                </StackLayout>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="BusyControl">
+                <Grid IsVisible="{TemplateBinding BindingContext.IsVisible}">
+                    <ActivityIndicator x:Name="BusySignal" IsRunning="{TemplateBinding BindingContext.IsRunning}" BackgroundColor="#050505"/>
+                    <Label Text="{TemplateBinding BindingContext.BusyText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="White"/>
                 </Grid>
             </ControlTemplate>
+
+            <ControlTemplate x:Key="PlaylistEntry">
+                <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{TemplateBinding Parent.BindingContext.Project}" Style="{StaticResource SongSubText}"
+                                   VerticalTextAlignment="End" HeightRequest="20"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" Style="{StaticResource SongSubText}"
+                                   VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{TemplateBinding Parent.BindingContext.Name}" Style="{StaticResource SongText}" VerticalOptions="StartAndExpand" Margin="0,-4,0,0"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" Style="{StaticResource SongSubText}"
+                                   VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>
+                    </StackLayout>
+                </StackLayout>
+            </ControlTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

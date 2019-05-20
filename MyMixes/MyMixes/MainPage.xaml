@@ -1,32 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyMixes"
              x:Class="MyMixes.MainPage"
+             xmlns:dark="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark"
+             Style="{DynamicResource dark:DarkThemeResources}"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
              Appearing="OnAppearing"
+             Disappearing="OnDisappearing"
              >
-    <ContentPage.BindingContext>
-        <local:TransportViewModel/>
-    </ContentPage.BindingContext>
 
     <ContentPage.Resources>
-        <ResourceDictionary>
+        <ResourceDictionary  MergedWith="dark:DarkThemeResources">
             <DataTemplate x:Key="songListTemplate">
-                <ViewCell>
-                    <Grid Margin="0,0,0,0" BackgroundColor="#404040">
+                <ViewCell >
+                    <Grid Margin="0,0,0,0" BackgroundColor="Transparent" >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.11*" />
-                            <ColumnDefinition Width="0.78*" />
-                            <ColumnDefinition Width="0.11*" />
+                            <ColumnDefinition Width="0.17*" />
+                            <ColumnDefinition Width="0.76*" />
+                            <ColumnDefinition Width="0.17*" />
+                            <ColumnDefinition Width="0.17*" />
                         </Grid.ColumnDefinitions>
-                        <!--<Button Grid.Column="0" Clicked="EditSong_Click" Image="EditBt2.png" />-->
-                        <Button Grid.Column="0" Image="EditBt.png" />
-                        <!--<Label Grid.Column="1" Text="someting to see"/>-->
-                        <StackLayout Grid.Column="1"  Orientation="Vertical">
-                            <Label Text="{Binding Project, Mode=TwoWay}" TextColor="White" FontSize="Micro" />
-                            <Label Text="{Binding Name, Mode=TwoWay}" TextColor="White" FontAttributes="Bold" FontSize="Medium" />
-                        </StackLayout>
-                        <Button Grid.Column="2" Clicked="DeleteSong_Clicked" Image="DelBt.png" />
+                        <Button x:Name="EditSong" Grid.Column="0" Image="EditBt.png" Scale=".9" Clicked="Notes_Clicked"/>
+                        <ContentView Grid.Column="1" ControlTemplate="{StaticResource PlaylistEntry}" />
+                        <Button Grid.Column="2" Image="UpSongBt.png" Margin="-7,-7,-7,-7" Scale=".7" Clicked="DownPosition_Clicked" />
+                        <Button Grid.Column="3" Image="DelBt.png" Scale=".88" Clicked="DeleteSong_Clicked"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
@@ -34,29 +34,53 @@
     </ContentPage.Resources>
 
     <ContentPage.Content>
-        <StackLayout VerticalOptions="StartAndExpand" x:Name="MainStack">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="10,0,10,0">
-                <Button Image="AddBt.png" Clicked="Add_Clicked" HorizontalOptions="End" VerticalOptions="Center"/>
-            </StackLayout>
-            <!--<ScrollView x:Name="TrackScroll" Margin="10,10,10,10" VerticalOptions="FillAndExpand">-->
+        <RelativeLayout>
+            <!-- Background -->
+            <Image
+                Aspect="AspectFill"
+                Source="MainBackground.png"
+                RelativeLayout.WidthConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+                RelativeLayout.HeightConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Height}">
+            </Image>
+            <StackLayout  x:Name="MainStack" Margin="5,5,5,5" VerticalOptions="Fill" RelativeLayout.HeightConstraint=
+                                "{ConstraintExpression Type=RelativeToParent,
+                                Property=Height,
+                                Factor=1}">
                 <ListView x:Name="Projects" 
-                        ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource songListTemplate}" 
+                        ItemsSource="{Binding Playlist}"
+                        SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
+                        BackgroundColor="Transparent"
+                        RowHeight="55" Margin="0,0,0,0"
+                          CachingStrategy="RecycleElement"
+            >
+                    <!--<d:ListView.ItemsSource>
+                        ItemSelected="TrackView_Sel"
                         CachingStrategy="RecycleElement"
-                >
+                        <x:Array Type="{x:Type local:QueuedTrack}">
+                            <local:QueuedTrack Name="Riffs Reaf" Project="Figure of Speach" />
+                            <local:QueuedTrack Name="Sick or Throwing Up" Project="Figure of Speach" />
+                        </x:Array>
+                    </d:ListView.ItemsSource>-->
                 </ListView>
-            <!--</ScrollView>-->
-            <Grid HorizontalOptions="CenterAndExpand" x:Name="BusyGrid" IsVisible="False">
-                <ActivityIndicator x:Name="BusySignal" HeightRequest="50" HorizontalOptions="FillAndExpand"/>
-                <Label x:Name="BusyStatus" Text="Nothing Yet" HorizontalOptions="CenterAndExpand"/>
-            </Grid>
-            <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" Margin="20,0,20,0">
-                <!--<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">-->
-                    <Label Text="Loop" HorizontalOptions="Start" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
-                    <Switch IsToggled="{Binding isLooping}" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
-                <!--</StackLayout>-->
+                <Grid HorizontalOptions="FillAndExpand" HeightRequest="80" VerticalOptions="EndAndExpand">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.5*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" Orientation="Vertical" HorizontalOptions="Center">
+                        <Label Text="Loop" VerticalTextAlignment="Center" HeightRequest="50"/>
+                        <Switch IsToggled="{Binding isLooping}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Orientation="Vertical"  HorizontalOptions="Center">
+                        <Label Text="Compare" VerticalTextAlignment="Center" HeightRequest="50"/>
+                        <Switch IsToggled="{Binding isAligned}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="50"/>
+                    </StackLayout>
+                </Grid>
+
+                <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" VerticalOptions="End"/>
+                <Button Image="AddMusicBt.png" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160" CornerRadius="-1" Padding="0" Scale="1" ScaleX="1" VerticalOptions="End"/>
             </StackLayout>
-            <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}"/>
-        </StackLayout>
+        </RelativeLayout>
     </ContentPage.Content>
 </ContentPage>

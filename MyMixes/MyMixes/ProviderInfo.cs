@@ -6,23 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CloudStorage;
+//using Microsoft.AppCenter;
 using OAuthNativeFlow;
+using Xamarin.Forms;
 
 namespace MyMixes
 {
     public class ProviderInfo
     {
+        public delegate void UpdateStatus(string status);
         private static Dictionary<CloudProviders, ProviderInfo> providers = new Dictionary<CloudProviders, ProviderInfo>();
 
         public CloudProviders CloudProvider
         {
             get; set;
         }
-
-        //public string RootPath
-        //{
-        //    get; set;
-        //}
 
         private ICloudStore cs = null;
         private ICloudStore CloudStore
@@ -38,75 +36,6 @@ namespace MyMixes
             this.cs = cs;
             this.CloudProvider = cp;
         }
-
-        //private static Dictionary<string, ProviderInfo> pi_list = new Dictionary<string, ProviderInfo>();
-        //private static List<ProviderInfo> providerList = null;
-        //public static List<ProviderInfo> Providers
-        //{
-        //    get
-        //    {
-        //        if(providerList == null)
-        //        {
-        //            providerList = new List<ProviderInfo>();
-        //            List<string> mappings = PersistentData.LoadProjectMappings();
-
-        //            foreach (string s in mappings)
-        //            {
-        //                string[] parts = s.Split(':');
-        //                CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-        //                providerList.Add(new ProviderInfo() { CloudProvider = cp, RootPath = parts[1] });
-        //            }
-        //        }
-        //        //List<ProviderInfo> ret = new List<ProviderInfo>();
-
-        //        //foreach(KeyValuePair<string, ProviderInfo> kvp in pi_list)
-        //        //{
-        //        //    if(kvp.Value != null)
-        //        //    {
-        //        //        ret.Add(kvp.Value);
-        //        //    }
-        //        //}
-
-        //        return providerList;
-        //    }
-        //}
-
-        //public static ProviderInfo FindProvider(string name)
-        //{
-        //    foreach (KeyValuePair<string, ProviderInfo> kvp in pi_list)
-        //    {
-        //        string[] parts = kvp.Key.Split(':');
-        //        if(parts[1] == name)
-        //        {
-        //            return kvp.Value;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public static async Task LoadMappings()
-        //{
-        //    List<string> mappings = PersistentData.LoadProjectMappings();
-
-        //    foreach (string s in mappings)
-        //    {
-        //        string[] parts = s.Split(':');
-        //        CloudProviders cp = (CloudProviders)Enum.Parse(typeof(CloudProviders), parts[0]);
-        //        await GetCloudProviderAsync(cp, parts[1]);
-        //    }
-        //}
-
-        //public static void SaveMappings()
-        //{
-        //    PersistentData.SaveProjectMappings(providerList);
-        //}
-
-        //public async Task<ProviderInfo> GetCloudProviderAsync()
-        //{
-        //    ProviderInfo pi = await GetCloudProviderAsync(CloudProvider, RootPath);
-        //    return pi;
-        //}
 
         public async static Task<ProviderInfo> GetCloudProviderAsync(CloudProviders cp)
         {
@@ -138,8 +67,10 @@ namespace MyMixes
                         cs = CloudStoreFactory.CreateCloudStore(CloudStorage.CloudProviders.GoogleDrive);
 
                         Dictionary<string, object> googledriveparams = new Dictionary<string, object>();
-                        googledriveparams[CloudParams.ClientID.ToString()] = "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
-                        googledriveparams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect";
+                        googledriveparams[CloudParams.ClientID.ToString()] = GetGoogleClientID();
+                        // 133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com
+                        // 133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com 
+                        googledriveparams[CloudParams.RedirectURL.ToString()] = GetGoogleAuthRedirect();
                         googledriveparams[CloudParams.AppName.ToString()] = "MyMixes";
                         googledriveparams[CloudParams.UIParent.ToString()] = App.UiParent;
                         googledriveparams[CloudParams.GoogleToken.ToString()] = null;
@@ -157,7 +88,6 @@ namespace MyMixes
                         break;
                     default:
                         return null;
-                        break;
                 }
 
                 if(newProvider != null)
@@ -174,82 +104,40 @@ namespace MyMixes
             return null;
         }
 
-        //public void UpdatePath(string path)
-        //{
-        //    string key = CloudProvider.ToString() + ":" + RootPath;
+        private static string GetGoogleClientID()
+        {
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                return "133589155347-2he14os3etg7evt97pcu5jil1udh1klk.apps.googleusercontent.com";
+            }
+            else
+            {
+                return "133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k.apps.googleusercontent.com";
+            }
+        }
 
-        //    RootPath = path;
-        //    pi_list[key] = null;
+        private static string GetGoogleAuthRedirect()
+        {
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                return "com.googleusercontent.apps.133589155347-2he14os3etg7evt97pcu5jil1udh1klk:/oauth2redirect";
+            }
+            else if (Device.RuntimePlatform == Device.Android)
+            {
+                return "com.googleusercontent.apps.133589155347-gj93njepme6jp96nh1erjmdi4q4c7d9k:/oauth2redirect";
+            }
+            else // UWP
+            {
+                return "com.paulyshotel.rr:/oauth2redirect";
+            }
+        }
 
-        //    key = CloudProvider.ToString() + ":" + RootPath;
-        //    pi_list[key] = this;
-        //}
-
-        //public void RemoveProvider()
-        //{
-        //    string key = CloudProvider.ToString() + ":" + RootPath;
-
-        //    pi_list[key] = null;
-        //}
-
-        //public async Task<ICloudStore> GetCloudProviderAsync()
-        //{
-        //    return await GetCloudProviderAsync(CloudProvider);
-        //}
-        //public static async Task<List<string>> GetProjectFoldersAsync(string path)
-        //{
-        //    if(providers.ContainsKey(cp))
-        //    {
-        //        ICloudStore cs = providers[cp];
-
-        //        try
-        //        {
-        //            var l = await cs.GetFolderList("/" + path);
-        //            List<string> retl = new List<string>();
-        //            foreach (var i in l)
-        //            {
-        //                retl.Add(i.name);
-        //            }
-
-        //            return retl;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Debug.Print(ex.ToString());
-
-        //            return null;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public async Task< List<string> > GetProjectFoldersAsync(string path)
-        //{
-        //    try
-        //    {
-        //        var l = await CloudStore.GetFolderList("/" + path);
-        //        List<string> retl = new List<string>();
-        //        foreach (var i in l)
-        //        {
-        //            retl.Add(i.name);
-        //        }
-
-        //        return retl;
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Debug.Print(ex.ToString());
-
-        //        return null;
-        //    }
-        //}
 
         public async Task<List<string>> GetFoldersAsync(string folder)
         {
             try
             {
-                var l = await CloudStore.GetFolderList(folder);
+                var l = await CloudStore.GetFolderListAsync(folder);
                 List<string> retl = new List<string>();
                 foreach (var i in l)
                 {
@@ -284,7 +172,7 @@ namespace MyMixes
             }
         }
 
-        public async Task<bool> CheckAuthenitcation()
+        public async Task<bool> CheckAuthenitcationAsync()
         {
             if(!isAuthenticated)
             {
@@ -297,18 +185,7 @@ namespace MyMixes
             return isAuthenticated;
         }
 
-        //public static async Task<bool> CheckAuthenitcation(CloudProviders cp)
-        //{
-        //    if (providers.ContainsKey(cp))
-        //    {
-        //        ICloudStore cs = providers[cp];
-        //        return await cs.AuthenticateAsync();
-        //    }
-
-        //    return false;
-        //}
-
-        public async Task<List<string>> UpdateProjectAsync(string root, string project)
+        public async Task<List<string>> UpdateProjectAsync(string root, string project, UpdateStatus UpdateStatusRoutine)
         {
             List<string> UpdatedSongs = new List<string>();
 
@@ -317,45 +194,68 @@ namespace MyMixes
                 string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), project);
                 string remoteFolderName = "/" + root + "/" + project;
 
-                var items = await cs.GetFolderList(remoteFolderName);
-                foreach (var di in items)
+                // Is local folder created?
+                var d = Directory.CreateDirectory(projectPath);
+                if (d != null)
                 {
-                    if (isAudioFile(di))
+                    var items = await cs.GetFolderListAsync(remoteFolderName);
+                    foreach (var di in items)
                     {
-                        UpdatedSongs.Add(di.name);
-
-                        // Is local folder created?
-                        var d = Directory.CreateDirectory(projectPath);
-                        if (d != null)
+                        if (isAudioFile(di))
                         {
+                            UpdatedSongs.Add(di.name);
+
                             string localFileName = projectPath + "/" + di.name;
                             DateTime localWriteTime = File.GetLastWriteTime(localFileName);
 
-                            if(localWriteTime < di.modifiedDate)
+                            if(Math.Abs((localWriteTime - di.modifiedDate).TotalSeconds) >= 1)
                             {
                                 using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
                                 {
                                     Debug.Print("downloading " + localFileName + "\n");
+                                    UpdateStatusRoutine("downloading " + project + "/" + di.name);
                                     if (!await CloudStore.DownloadFileAsync(remoteFolderName + "/" + di.name, s))
                                     {
-                                        PersistentData.SetTrackNumber(projectPath, di.name, di.track);
                                         Debug.Print("FAILED " + localFileName + "\n");
+                                    }
+                                    else
+                                    {
+                                        PersistentData.SetTrackNumber(projectPath, di.name, di.track);
                                     }
 
                                     s.Close();
+
+                                    File.SetLastWriteTime(localFileName, di.modifiedDate);
                                 }
                             }
                         }
                     }
+
+                    // Save provider 
+                    PersistentData.SetProvider(project, project, d.LastWriteTime.ToString(), CloudProvider);
+                    PersistentData.SetCloudRoot(project, project, d.LastWriteTime.ToString(), root);
                 }
             }
             catch (Exception ex)
             {
                 Debug.Print("exception " + ex.Message);
-                throw ex;
+                throw;
             }
 
             return UpdatedSongs;
+        }
+
+        public async Task<bool> RemoveFolder(string root, string project, UpdateStatus UpdateStatusRoutine)
+        {
+            string remoteFolderName = "/" + root + "/" + project;
+
+            bool delWorked = await CloudStore.DeleteTakeAsync(remoteFolderName);
+            if(!delWorked)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool isAudioFile(CloudFileData di)

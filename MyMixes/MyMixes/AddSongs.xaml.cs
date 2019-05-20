@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,102 +10,145 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 namespace MyMixes
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    [DesignTimeVisible(true)]
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AddSongs : ContentPage
 	{
-        private string selectedFolder = "";
+        private Track selectedTrack = null;
+        private Track lastPlayingTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
 
-        ObservableCollection<QueuedTrack> SelectedTrackList = new ObservableCollection<QueuedTrack>();
-        ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
+        private ObservableCollection<Track> LoadedTracks = new ObservableCollection<Track>();
 
-        ObservableCollection<MixLocation> MixLocationList = null;
+        private BusyBarViewModel ppd;
 
+        private TransportViewModel tvm;
+        private bool SongPickerPlaying;
 
-        public AddSongs (ObservableCollection<MixLocation> list)
-		{
-			InitializeComponent ();
+        public AddSongs(TransportViewModel tvm)
+        {
+            InitializeComponent();
 
-            SelectedTracks.ItemsSource = SelectedTrackList;
+            this.tvm = tvm;
+            this.BindingContext = this.tvm;
+
+            SelectedTracks.ItemsSource = tvm.Playlist;
+
+            ppd = new BusyBarViewModel();
+            BusyBar.BindingContext = ppd;
+
             Projects.ItemsSource = LoadedTracks;
 
-            MixLocationList = list;
-
-            PersistentData.LoadQueuedTracks(SelectedTrackList);            
-        }
-
-        private void DeleteFolder_Clicked(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ResyncProjectClickedAsync(object sender, EventArgs e)
-        {
-
+            if (DesignMode.IsDesignModeEnabled)
+            {
+                ppd.BusyText = "Something here";
+            }
         }
 
         private void LocalPlay_Clicked(object sender, EventArgs e)
         {
+            Track t = FindTrack((View)sender);
 
+            if (!tvm.PlaySongAsync(t.FullPath))
+            {
+                DisplayAlert(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+            }
+            else
+            {
+                SongPickerPlaying = true;
+                lastPlayingTrack = t;
+            }
+        }
+
+#pragma warning disable AvoidAsyncVoid
+        private async void DeleteFolder_Clicked(object sender, EventArgs e)
+        {
+            bool result = await DisplayAlert(AppResources.RemoveFolderTitle, AppResources.RemoveFolder, AppResources.Continue, AppResources.Cancel);
+            if (result)
+            {
+                Track t = FindTrack((View)sender);
+
+                if(t.CloudProvider != CloudStorage.CloudProviders.NULL)
+                {
+                    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(t.CloudProvider);
+
+                    if (await pi.CheckAuthenitcationAsync())
+                    {
+                        bool removeWorked = await pi.RemoveFolder(t.CloudRoot, t.Project, UpdateStatus);
+                        if(removeWorked)
+                        {
+                            // Are we goint to remove a song that is playing?
+                            if(this.tvm.SelectedSong.Project == t.Project)
+                            {
+                                this.tvm.StopPlayer();
+                                this.tvm.ResetPlayer();
+                            }
+
+                            string projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), t.Project);
+                            Directory.Delete(projectPath, true);
+
+                            t.CloudProvider = CloudStorage.CloudProviders.NULL;
+                            t.CloudRoot = null;
+
+                            if(selectedTrack?.Project == t.Project)
+                            {
+                                selectedTrack = null;
+                            }
+
+                            // Remove folder from current list
+                            for (int i = LoadedTracks.Count - 1; i >= 0; i--)
+                            {
+                                if (LoadedTracks[i].Project == t.Project)
+                                {
+                                    LoadedTracks.RemoveAt(i);
+                                }
+                            }
+
+                            // If part of playlist, remove from there
+                            for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
+                            {
+                                if (t.Project == this.tvm.Playlist[i].Project)
+                                {
+                                    this.tvm.Playlist.RemoveAt(i);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            await DisplayAlert(AppResources.RemoveFolderRemoteFailedTitle, AppResources.RemoveFolderRemoteFailed, AppResources.OK);
+                        }
+                    }
+                }
+                else
+                {
+                    Analytics.TrackEvent("Cloud Provider for folder invalid");
+
+                    await DisplayAlert("Cloud Provider incorrect", "The cloud provider saved in local storage is missing or incorrect.  This is not an expected error, contact the developer.", "OK");
+                }
+            }
         }
 
         private async void AddFolder_Clicked(object sender, EventArgs e)
         {
-            ProjectPicker pp = new ProjectPicker(MixLocationList);
-            await Navigation.PushModalAsync(pp);
-
-            //var ProviderChoices = Enum.GetNames(typeof(CloudStorage.CloudProviders));
-
-            //var action = await DisplayActionSheet("Which cloud platform?", "Cancel", null, ProviderChoices);
-            ////            string action = await DisplayActionSheet("Which", "cancel", null, "1", "2", "3");
-            ////var action = await DisplayActionSheet("ActionSheet: Save Photo?", "Cancel", "Delete", "Photo Roll", "Email");
-            ////string action = "GoogleDrive";
-
-            //// BUGBUG: Not finished
-            //if (action != "Cancel")
-            //{
-            //    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync((CloudStorage.CloudProviders)Enum.Parse(typeof(CloudStorage.CloudProviders), action));
-
-            //    if (pi != null)
-            //    {
-            //        ProjectPicker pp = new ProjectPicker(pi);
-            //        await Navigation.PushModalAsync(pp);
-
-            //        // No directory was selected.
-            //        if (pi.RootPath == null)
-            //        {
-            //            pi.RemoveProvider();
-            //            pi = null;
-            //        }
-            //    }
-            //}
+            ProjectPicker pp = new ProjectPicker();
+            await Navigation.PushAsync(pp);
         }
 
         private async void SongOrderClicked(object sender, EventArgs e)
         {
             Track t = FindTrack((View)sender);
 
-            int i = 0;
-            for(;i < SelectedTrackList.Count; i++)
-            {
-                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-                    break;
-            }
-
-            if (i >= SelectedTrackList.Count)
-            {
-                SelectedTrackList.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath });
-            }
-
-            await PersistentData.SaveQueuedTracks(SelectedTrackList);
+            tvm.AddSong(t);
         }
 
-        private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
+        private void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
         {
+            Debug.Print("Track selected\n");
             Track t = (Track)e.SelectedItem;
 
             if (!t.isProject)
@@ -112,38 +157,75 @@ namespace MyMixes
             }
             else
             {
-                selectedFolder = t.Name;
+                if(selectedTrack != t)
+                {
+                    selectedTrack = t;
+                }
+                else
+                {
+                    selectedTrack = null;
+                }
 
-                //double scrollY = TrackScroll.ScrollY;
-
-                await LoadProjects();
-
-                //await TrackScroll.ScrollToAsync(0, scrollY, false);
+                LoadProjects();
             }
         }
 
         private async void OnAppearing(object sender, EventArgs e)
         {
-            BusyOn(true);
-            //await ProviderInfo.LoadMappings();
-            await LoadProjects();
-            BusyOn(false);
+            tvm.MainPlayMode = false;
+
+            if (!BusyOn(true, true))
+            {
+                if (PersistentData.mixLocationsChanged)
+                {
+                    await SyncProjectsAsync();
+                    LoadedTracks.Clear();
+                }
+                LoadProjects();
+                BusyOn(false, true);
+            }
+
+            if(PersistentData.MixLocationList.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
+            } else if(tvm.Playlist.Count <= 0)
+            {
+                await DisplayAlert(AppResources.MixLocationsNoPlaylistTitle, AppResources.MixLocationsNoPlaylist, AppResources.OK);
+            }
         }
 
         private async void ResyncAllClickedAsync(object sender, EventArgs e)
         {
             // DCR: Maybe we don't sync all the time
             BusyOn(true);
-            await SyncProjects();
-            await LoadProjects();
+            await SyncProjectsAsync();
+            LoadProjects();
+            PersistentData.Save();
             BusyOn(false);
-        }
 
-        private void BusyOn(bool TurnOn)
+            Projects.EndRefresh();
+        }
+#pragma warning restore AvoidAsync
+
+        private bool BusyOn(bool TurnOn, bool IsRunning = false)
         {
-            BusyGrid.IsVisible = TurnOn;
-            BusySignal.IsRunning = TurnOn;
+            if (TurnOn && IsBusy)
+            {
+                return true;
+            }
+
+            IsBusy = TurnOn;
+
+            if (IsRunning)
+            {
+                ppd.IsRunning = TurnOn;
+            }
+
+            ppd.IsVisible = TurnOn;
+
             MainStack.IsEnabled = !TurnOn;
+
+            return false;
         }
 
         Track FindTrack(View v)
@@ -153,33 +235,30 @@ namespace MyMixes
             return t;
         }
 
-        QueuedTrack FindQueuedTrack(View v)
+        private void UpdateStatus(string status)
         {
-            Grid g = (Grid)v.Parent;
-            QueuedTrack t = (QueuedTrack)g.BindingContext;
-            return t;
+            ppd.BusyText = status;
         }
 
-        private async Task SyncProjects()
+        private async Task SyncProjectsAsync()
         {
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
-            //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
-            foreach (MixLocation ml in MixLocationList)
+            foreach (MixLocation ml in PersistentData.MixLocationList)
             {
-                BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
+                UpdateStatus(ml.Provider.ToString() + " " + ml.Path);
 
                 ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
 
-                if (await pi.CheckAuthenitcation())
+                if (await pi.CheckAuthenitcationAsync())
                 {
                     List<string> l = await pi.GetFoldersAsync(ml.Path);
                     if (l != null)
                     {
                         foreach (string f in l)
                         {
-                            BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path  + " " + f;
-                            var retList = await pi.UpdateProjectAsync(ml.Path, f);
+                            UpdateStatus(ml.Provider.ToString() + " " + ml.Path  + " " + f);
+                            var retList = await pi.UpdateProjectAsync(ml.Path, f, UpdateStatus);
                             if (AllSongs.ContainsKey(f))
                             {
                                 AllSongs[f].AddRange(retList);
@@ -199,7 +278,7 @@ namespace MyMixes
                 if (!AllSongs.ContainsKey(Path.GetFileName(p)))
                 {
                     Debug.Print("Remove dir " + p + "\n");
-                    BusyStatus.Text = "Removing " + p;
+                    UpdateStatus("Removing " + p);
                     Directory.Delete(p, true);
                 }
                 else
@@ -208,7 +287,7 @@ namespace MyMixes
                     {
                         if (AllSongs[p].Contains(Path.GetFileName(s)))
                         {
-                            BusyStatus.Text = "Removing " + s;
+                            UpdateStatus("Removing " + s);
                             Debug.Print("Remove file " + s + "\n");
                             File.Delete(s);
                         }
@@ -220,73 +299,203 @@ namespace MyMixes
             {
                 foreach (string f in AllSongs[p])
                 {
-                    BusyStatus.Text = p + " " + f;
+                    UpdateStatus(p + " " + f);
                 }
             }
 
             PersistentData.Save();
         }
 
-        private async Task LoadProjects()
+        private void LoadProjects()
         {
-            //Directory folder = Directory.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // FileSystem.Current.LocalStorage;
-            //IList<IFolder> folderList = await folder.GetFoldersAsync();
-            //var tracks = new List<Track>();
-            LoadedTracks.Clear();
+            for (int i = LoadedTracks.Count - 1; i >= 0; i--)
+            {
+                if (!LoadedTracks[i].isProject)
+                {
+                    LoadedTracks.RemoveAt(i);
+                }
+            }
 
-            Debug.Print("Project local {0}\n", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            LoadProjectFolders();
 
+            if (selectedTrack != null)
+            {
+                if(selectedTrack.FullPath != null)
+                {
+                    LoadProjectTracks();
+                }
+                else
+                {
+                    LoadSpeicalFolder();
+                }
+            }
+        }
+
+        private void LoadProjectTracks()
+        {
             try
             {
-                foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
-                //foreach (IFolder f in folderList)
+                string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + selectedTrack.Name;
+                int projectIndex = LoadedTracks.IndexOf(selectedTrack) + 1;
+                int insTrackNumber = 0;
+
+                int songcount = 0;
+
+                foreach (string songFile in Directory.GetFiles(newProjectPath))
                 {
-                    if (await WavDirectory(projFolder))
+                    int tracknum = PersistentData.GetTrackNumber(newProjectPath, Path.GetFileNameWithoutExtension(songFile));
+
+                    var t = new Track
                     {
-                        var p = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
-                        LoadedTracks.Add(p);
+                        Name = Path.GetFileNameWithoutExtension(songFile),
+                        FullPath = songFile,
+                        isProject = false,
+                        ProjectPath = newProjectPath,
+                        OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
+                        TrackNum = tracknum,
+                        LastModifiedDate = File.GetLastWriteTime(songFile),
+                    };
 
-                        if (selectedFolder == Path.GetFileName(projFolder))
-                        {
-                            //IList<IFile> fileList = await f.GetFilesAsync();
-                            foreach (string songFile in Directory.GetFiles(projFolder))
-                            {
-                                int tracknum = PersistentData.GetTrackNumber(projFolder, Path.GetFileNameWithoutExtension(songFile));
-
-                                var t = new Track
-                                {
-                                    Name = Path.GetFileNameWithoutExtension(songFile),
-                                    FullPath = songFile,
-                                    isProject = false,
-                                    ProjectPath = projFolder,
-                                    OrderVal = PlayListOrder.ContainsKey(songFile) ? PlayListOrder[songFile] : 0,
-                                    TrackNum = tracknum,                                    
-                                };
-
-                                if (tracknum != 0)
-                                {
-                                    LoadedTracks.Insert(tracknum - 1, t);
-                                }
-                                else
-                                {
-                                    LoadedTracks.Add(t);
-                                }
-                            }
-                        }
+                    if (tracknum != 0)
+                    {
+                        LoadedTracks.Insert(projectIndex + tracknum - 1, t);
                     }
+                    else
+                    {
+                        LoadedTracks.Insert(projectIndex + insTrackNumber, t);
+                    }
+
+                    insTrackNumber++;
+                    songcount++;
                 }
+
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["songcount"] = songcount.ToString();
+
+                Analytics.TrackEvent("ExpandTracks", properties);
             }
             catch (Exception ex)
             {
                 Debug.Print(ex.Message);
             }
-
-            Debug.Print("Project local {0} DONE\n");
         }
 
-        private async Task<bool> WavDirectory(string f)
+        private void LoadProjectFolders()
         {
-            // IList<IFile> l = await f.GetFilesAsync();
+            try
+            {
+                int songcount = 0, foldercount = 0, dupfoldercount = 0 ;
+
+                foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
+                {
+                    if (WavDirectory(projFolder))
+                    {
+                        //string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + projFolder;
+                        
+                        Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true, ProjectPath = projFolder, LastModifiedDate = Directory.GetLastWriteTime(projFolder) };
+
+                        int i;
+                        for(i = 0; i < LoadedTracks.Count; i++)
+                        {
+                            // if it's already inserted don't insert again.  This is typical if we've added them already.
+                            if(t.Name == LoadedTracks[i].Name)
+                            {
+                                i = -1;
+                                dupfoldercount++;
+                                break;
+                            }
+                            if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        if(i >= 0)
+                        {
+                            LoadedTracks.Insert(i, t);
+                            foldercount++;
+                        }
+                    }
+                }
+
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["songcount"] = songcount.ToString();
+                properties["foldercount"] = foldercount.ToString();
+                properties["dupfoldercount"] = dupfoldercount.ToString();
+
+                Analytics.TrackEvent("AddSongs", properties);
+
+                // Add special DOWNLOADs foloder
+                //Track t2 = new Track { Name = Path.GetFileName("DOWNLOADS"), FullPath = null, isProject = true };
+                //LoadedTracks.Add(t2);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Print(ex.Message);
+            }
+        }
+
+        private void LoadSpeicalFolder()
+        {
+            string DownloadDirectory = DependencyService.Get<IPlatformDirectories>().GetDownloadDirectory();
+            //string DownloadDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DependencyService.Get<IPlatformDirectories>().GetDownloadDirectory());
+
+            if (DownloadDirectory != null)
+            {
+                try
+                {
+                    int songcount = 0, foldercount = 0, dupfoldercount = 0;
+
+                    foreach (string projFolder in Directory.GetDirectories(DownloadDirectory))
+                    {
+                        if (WavDirectory(projFolder))
+                        {
+                            Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
+
+                            int i;
+                            for (i = 0; i < LoadedTracks.Count; i++)
+                            {
+                                // if it's already inserted don't insert again.  This is typical if we've added them already.
+                                if (t.Name == LoadedTracks[i].Name)
+                                {
+                                    i = -1;
+                                    dupfoldercount++;
+                                    break;
+                                }
+                                if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (i >= 0)
+                            {
+                                LoadedTracks.Insert(i, t);
+                                foldercount++;
+                            }
+                        }
+                    }
+
+                    Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                    properties["songcount"] = songcount.ToString();
+                    properties["foldercount"] = foldercount.ToString();
+                    properties["dupfoldercount"] = dupfoldercount.ToString();
+
+                    Analytics.TrackEvent("AddSongs DOWNLOAD", properties);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print(ex.Message);
+                }
+            }
+        }
+
+        private bool WavDirectory(string f)
+        {
             foreach (string fl in Directory.GetFiles(f))
             {
                 if (MusicUtils.isAudioFormat(fl))
@@ -296,20 +505,35 @@ namespace MyMixes
             return false;
         }
 
-        private async void DeleteSong_Clicked(object sender, EventArgs e)
+        private void DeleteSong_Clicked(object sender, EventArgs e)
         {
-            QueuedTrack t = FindQueuedTrack((View)sender);
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
-            for (int i = 0; i < SelectedTrackList.Count; i++)
+            tvm.RemoveSong(t);
+        }
+
+        private void SongDownPosition_Clicked(object sender, EventArgs e)
+        {
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+
+            tvm.MoveSongUp(t);
+        }
+
+        private void ResyncProjectClickedAsync(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OnDisappearing(object sender, EventArgs e)
+        {
+            if(SongPickerPlaying)
             {
-                if (SelectedTrackList[i].Name == t.Name && SelectedTrackList[i].Project == t.Project)
-                {
-                    SelectedTrackList.RemoveAt(i);
-                    break;
-                }
+                tvm.StopPlayer();
+                tvm.NowPlaying = null;
+                lastPlayingTrack.TrackPlaying = false;
             }
 
-            await PersistentData.SaveQueuedTracks(SelectedTrackList);
+            PersistentData.Save();
         }
     }
 }

@@ -306,4 +306,8 @@ RR/RR.iOS/RR.iOS.csproj
 secure/
 [Aa]d/
 releasedoc/
+Media/Stores/
+Media/Website/
+Media/SplashScreen/blendcache*
 RR/Graphics/Stores/
+Media/.DS_Store

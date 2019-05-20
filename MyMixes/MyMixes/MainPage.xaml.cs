@@ -1,340 +1,137 @@
-﻿using PCLStorage;
+﻿using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms;
-//using Xamarin.Plugin.FilePicker;
-
-using Plugin.SimpleAudioPlayer;
-using System.IO;
-using Plugin.FilePicker.Abstractions;
-using Plugin.FilePicker;
-using static MyMixes.ProviderInfo;
-using CloudStorage;
-using System.Collections.ObjectModel;
+using Xamarin.Essentials;
+using System.ComponentModel;
 
 namespace MyMixes
 {
+    [DesignTimeVisible(true)]
     public partial class MainPage : ContentPage
     {
-        private TransportViewModel TrasnportVMInstance;
-        ObservableCollection<MixLocation> MixLocationList = new ObservableCollection<MixLocation>();
-        //private SelectedTracksVM SelectedTracks = new SelectedTracksVM();
-        //private List<string> tl = new List<string>();
-        //private List<Track> SelectedTracks = new List<Track>();
+        private TransportViewModel TransportVMInstance;
+        private DateTime start = DateTime.UtcNow;
+        private bool startRecorded = false;
 
         public MainPage()
         {
+            TransportVMInstance = new TransportViewModel();
+            TransportVMInstance.ErrorCallbackRoutine = ErrorCallbackMsg;
+            this.BindingContext = TransportVMInstance;
 
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            TrasnportVMInstance = (TransportViewModel)this.BindingContext;
-            Projects.ItemsSource = TrasnportVMInstance.PlayingTracks;
+                Analytics.TrackEvent("Started");
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+                Debug.Print(ex.ToString());
+            }
 
-            PersistentData.LoadMixLocations(MixLocationList);
-
-            // seed with static data for now REMOVE
-            //ProviderInfo piA = new ProviderInfo();
-
-            NavigationPage.SetHasNavigationBar(this, false);
+            if (DesignMode.IsDesignModeEnabled)
+            {
+            }
+            else
+            {
+                NavigationPage.SetHasNavigationBar(this, false);
+            }
         }
 
+        private string CohortTime(TimeSpan timeSpan)
+        {
+            if(timeSpan.Seconds < 1)
+            {
+                return "OneSecond";
+            } if(timeSpan.Seconds < 2)
+            {
+                return "OneSeconds";
+            }
+            if (timeSpan.Seconds < 5)
+            {
+                return "FiveSeconds";
+            }
+            if (timeSpan.Seconds < 20)
+            {
+                return "TwentySeconds";
+            }
+            else
+            {
+                return "TooLong";
+            }
+
+        }
+
+#pragma warning disable AvoidAsyncVoid
         private async void Add_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AddSongs(MixLocationList));
-        }
-
-        private async Task SyncProjects()
-        {
-            Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
-            
-            //List<MixLocation> ml_list = await MixLocation.GetMixLocationsAsync();
-            foreach(MixLocation ml in MixLocationList)
-            {
-                BusyStatus.Text = ml.Provider.ToString() + " " + ml.Path;
-
-                ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
-
-                if (await pi.CheckAuthenitcation())
-                {
-                    List<string> l = await pi.GetFoldersAsync(ml.Path);
-                    if (l != null)
-                    {
-                        foreach (string f in l)
-                        {
-                            BusyStatus.Text = pi.CloudProvider.ToString() + " " + ml.Path + " " + f;
-                            var retList = await pi.UpdateProjectAsync(ml.Path, f);
-                            if(AllSongs.ContainsKey(f))
-                            {
-                                AllSongs[f].AddRange(retList);
-                            }
-                            else
-                            {
-                                AllSongs[f] = retList;
-                            }
-                        }
-                    }
-                }
-            }
-
-            string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            foreach(string p in Directory.GetDirectories(rootPath))
-            {
-                if (!AllSongs.ContainsKey(Path.GetFileName(p)))
-                {
-                    Debug.Print("Remove dir " + p + "\n");
-                    BusyStatus.Text = "Removing " + p;
-                    Directory.Delete(p, true);
-                }
-                else
-                {
-                    foreach(string s in Directory.GetDirectories(p))
-                    {
-                        if(AllSongs[p].Contains(Path.GetFileName(s)))
-                        {
-                            BusyStatus.Text = "Removing " + s;
-                            Debug.Print("Remove file " + s + "\n");
-                            File.Delete(s);
-                        }
-                    }
-                }
-            }
-
-            foreach (string p in AllSongs.Keys)
-            {
-                foreach(string f in AllSongs[p])
-                {
-                    BusyStatus.Text = p + " " + f;
-                }
-            }
-
             PersistentData.Save();
+            await Navigation.PushAsync(new AddSongs(TransportVMInstance));
         }
 
-        private void OnAppearing(object sender, EventArgs e)
+        private async void OnDisappearing(object sender, EventArgs e)
         {
-            BusyOn(true);
-            TrasnportVMInstance.LoadProjects();
-            BusyOn(false);
+            await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.Playlist);
         }
 
-        private async void ResyncAllClickedAsync(object sender, EventArgs e)
+#pragma warning restore AvoidAsyncVoid
+
+        private void Notes_Clicked(object sender, EventArgs e)
         {
-            // DCR: Maybe we don't sync all the time
-            BusyOn(true);
-            await SyncProjects();
-            TrasnportVMInstance.LoadProjects();
-            BusyOn(false);
+            PersistentData.Save();
+            Navigation.PushAsync(new SongNotes(TransportVMInstance, QueuedTrack.FindQueuedTrack((View)sender)));
         }
 
-        Track FindTrack(View v)
+        private async void OnAppearing(object sender, EventArgs e)
         {
-            Grid g = (Grid)v.Parent;
-            Track t = (Track)g.BindingContext;
-            return t;
-        }
+            TransportVMInstance.MainPlayMode = true;
 
-        private void BusyOn(bool TurnOn)
-        {
-            BusyGrid.IsVisible = TurnOn;
-            BusySignal.IsRunning = TurnOn;
-            MainStack.IsEnabled = !TurnOn;
+            await TransportVMInstance.LoadProjects();
+
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
+
+            if(!startRecorded)
+            {
+                Dictionary<String, String> properties = new Dictionary<string, string>();
+
+                properties["LoadTime"] = CohortTime(DateTime.UtcNow - start);
+                properties["Model"] = DeviceInfo.Model;
+                properties["Manufacturer"] = DeviceInfo.Manufacturer;
+                properties["Version"] = DeviceInfo.VersionString;
+                properties["Idiom"] = DeviceInfo.Idiom.ToString();
+                properties["Type"] = DeviceInfo.DeviceType.ToString();
+
+                Analytics.TrackEvent("Started Completed", properties);
+
+                startRecorded = true;
+            }
+
+            if (TransportVMInstance.Playlist.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
+            }
         }
 
         private void DeleteSong_Clicked(object sender, EventArgs e)
         {
-
+            TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
         }
 
-        private async void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
+        private void DownPosition_Clicked(object sender, EventArgs e)
         {
-            //Track t = (Track)e.SelectedItem;
-
-            //if (!t.isProject)
-            //{
-
-            //}
-            //else
-            //{
-            //    selectedFolder = t.Name;
-
-            //    double scrollY = TrackScroll.ScrollY;
-
-            //    await LoadProjects();
-
-            //    await TrackScroll.ScrollToAsync(0, scrollY, false);
-            //}
-
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+            
+            TransportVMInstance.MoveSongUp(t);
         }
 
-        //private async void SongOrderClicked(object sender, EventArgs e)
-        //{
-        //    bool songStopped = false;
-
-        //    Track t = FindTrack((View)sender);
-
-        //    if (!PlayListOrder.ContainsKey(t.FullPath) || PlayListOrder[t.FullPath] == 0)
-        //    {
-        //        PlayListOrder[t.FullPath] = ++currentOrder;
-        //        t.OrderButtonText = "-";
-        //        t.ReadyToAdd = false;
-                
-        //        //SelectedTracks.Add(t);
-        //        TrasnportVMInstance.Tracklist.Add(t);
-
-        //        this.BindingContext = null;
-        //        this.BindingContext = TrasnportVMInstance;
-
-        //        //SongList.Items.Add(t.Name);
-        //        //t.OrderVal = currentOrder++;
-        //    }
-        //    else
-        //    {
-        //        if (isSongPlaying && currentSong == t.OrderVal)
-        //        {
-        //            player.Stop();
-        //            songStopped = true;
-        //        }
-
-        //        currentOrder--;
-
-        //        foreach (string key in PlayListOrder.Keys.ToArray())
-        //        {
-        //            if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] > t.OrderVal)
-        //            {
-        //                PlayListOrder[key]--;
-        //            }
-        //        }
-
-        //        foreach (Track ct in (List<Track>)Projects.ItemsSource)
-        //        {
-        //            if (ct.OrderVal > t.OrderVal)
-        //            {
-        //                ct.OrderVal--;
-        //            }
-        //        }
-        //        PlayListOrder[t.FullPath] = 0;
-        //        //SongList.Items.Remove(t.Name);
-        //        //SelectedTracks.Remove(t);
-        //        TrasnportVMInstance.Tracklist.Remove(t);
-        //        this.BindingContext = null;
-        //        this.BindingContext = TrasnportVMInstance;
-
-        //        t.OrderButtonText = "+";
-        //        t.ReadyToAdd = true ;
-
-        //        if ((currentSong - 1) == TrasnportVMInstance.CurrentTrackNumer)
-        //        {
-        //            if (currentSong >= TrasnportVMInstance.SongsQueued)
-        //                currentSong--;
-        //        }
-        //    }
-
-        //    t.OrderVal = PlayListOrder[t.FullPath];
-
-        //    //var kvp = PlayListOrder.FirstOrDefault((x) => x.Value == currentSong);
-
-        //    SetSongIndex(currentSong - 1);
-
-        //    if (isSongPlaying && TrasnportVMInstance.SongsQueued > 0 && songStopped)
-        //    {
-        //        await PlayCurrentSong();
-        //    }
-
-        //    SetCurrentSong();
-        //}
-
-
-        private async void RemoveSong_Clicked(object sender, EventArgs e)
+        private void ErrorCallbackMsg(string title, string text, string button)
         {
-            //Track t = TrasnportVMInstance.CurrentTrack;
-
-            //if (t == null)
-            //    return;
-
-            //if (player.CurrentPosition > 0 && currentSong == t.OrderVal)
-            //{
-            //    player.Stop();
-            //}
-
-            //foreach (string key in PlayListOrder.Keys.ToArray())
-            //{
-            //    if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= t.OrderVal)
-            //    {
-            //        PlayListOrder[key]--;
-            //    }
-            //}
-
-            //foreach (Track ct in (List<Track>)Projects.ItemsSource)
-            //{
-            //    if (ct.OrderVal >= t.OrderVal && ct.OrderVal > 0)
-            //    {
-            //        ct.OrderVal--;
-            //        if(ct.OrderVal == 0)
-            //        {
-            //            ct.OrderButtonText = "+";
-            //            ct.ReadyToAdd = true;
-            //        }
-            //    }
-            //}
-            //PlayListOrder[t.FullPath] = 0;
-
-            //TrasnportVMInstance.Tracklist.Remove(t);
-            //this.BindingContext = null;
-            //this.BindingContext = TrasnportVMInstance;
-
-            //SetSongIndex(t.OrderVal);
-            //currentOrder--;
-
-            //if(isSongPlaying)
-            //{
-            //    if(TrasnportVMInstance.SongsQueued > 0)
-            //    {
-            //        await PlayCurrentSong();
-            //    }
-            //    else
-            //    {
-            //        isSongPlaying = false;
-            //        //PlaySongButton.Image = "PlayBt.png";
-            //    }
-            //}
-        }
-
-
-        //private async void ResyncSongClickedAsync(object sender, EventArgs e)
-        //{
-        //    Track t = (Track)SongList.SelectedItem;
-
-        //    ProjectMapping pm = PersistentData.ProjectMappings.Find((x) => x.project == t.Name);
-
-        //    if (pm != null)
-        //    {
-                
-        //        ICloudStore pi = await GetCloudProviderAsync(pm.provider);
-        //        if(pi != null)
-        //        {
-        //            //await pi.UpdateProjectAsync(t.FullPath);
-        //        }
-        //    }
-        //}
-
-        private void Notes_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new SongNotes());
-        }
-
-        //private void ResyncProjectClickedAsync(object sender, EventArgs e)
-        //{
-
-        //}
-
-        private void SongNameTapped(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new PlayListPicker(TrasnportVMInstance.Tracklist));
+            DisplayAlert(title, text, button);
         }
     }
 }

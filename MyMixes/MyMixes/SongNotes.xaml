@@ -1,9 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MyMixes.SongNotes">
-  <!--Pages can be added as references or inline-->
-  <ContentPage Title="Tab 1" />
-  <ContentPage Title="Tab 2" />
-  <ContentPage Title="Tab 3" />
-</TabbedPage>
+             xmlns:local="clr-namespace:MyMixes"
+             x:Class="MyMixes.SongNotes"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+             Disappearing="OnDisapearing"
+             >
+    <ContentPage.BindingContext>
+        <local:SongNotesData/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Content>
+        <StackLayout>
+            <Editor Text="{Binding Notes, Mode=TwoWay}" VerticalOptions="FillAndExpand"
+                Placeholder="Type in notes about your mix&#13;For instance something to remind you&#13;to lower the drums or&#13;add more cowbell." 
+                PlaceholderColor="#767474"
+                    
+                TextColor="White"
+                TextChanged="TextChanged"/>
+            <StackLayout Orientation="Horizontal">
+                <Button Image="LeftSong.png" Pressed="LeftSongPressed" HorizontalOptions="Start"/>
+                <StackLayout HorizontalOptions="CenterAndExpand" BackgroundColor="#535353">
+                    <Label Text="{Binding ProjectName, Mode=TwoWay}"
+                                TextColor="White" FontSize="Micro" 
+                                VerticalTextAlignment="End" HeightRequest="20"
+                                HorizontalOptions="CenterAndExpand"/>
+                    <Label Text="{Binding SongName, Mode=TwoWay}" 
+                                TextColor="White" FontAttributes="Bold" FontSize="Medium" 
+                                HorizontalTextAlignment="Center"
+                        HorizontalOptions="CenterAndExpand"/>
+                </StackLayout>
+                <Button Image="RightSong.png" Pressed="RightSongPressed" HorizontalOptions="End"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

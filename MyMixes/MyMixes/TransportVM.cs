@@ -1,4 +1,5 @@
-﻿using PCLStorage;
+﻿using Microsoft.AppCenter.Analytics;
+//using PCLStorage;
 using Plugin.SimpleAudioPlayer;
 using System;
 using System.Collections.Generic;
@@ -8,22 +9,230 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MyMixes
 {
-    partial class TransportViewModel : INotifyPropertyChanged
+    public partial class TransportViewModel : INotifyPropertyChanged
     {
-        // Transport Player control
-        public Command PlayCommand { get; set; }
-        public Command PrevCommand { get; set; }
-        public Command NextCommand { get; set; }
-        public ObservableCollection<QueuedTrack> PlayingTracks = new ObservableCollection<QueuedTrack>();
+        private enum PlayerStates
+        {
+            Playing,
+            Paused,
+            Stopped
+        }
+
+        public delegate void ErrorCallback(string title, string text, string button);
+
+        private bool playingListLoaded = false;
+
+        private PlayerStates playerState = PlayerStates.Stopped;
+
+        private CancellationTokenSource cancelTok = new CancellationTokenSource();
+
+        private string currentSel;
+
+        private DateTime LastTime;
+
+        private bool nowPlayingDifferentSong = false;
+
+
+        public TransportViewModel()
+        {
+            if (!DesignMode.IsDesignModeEnabled)
+            {
+                PlayCommand = new Command(TransportPlayPressed);
+                PrevCommand = new Command(PrevSong);
+                NextCommand = new Command(NextSong);
+            }
+
+            PlayButtonStateImage = "PlayBt.png";
+
+            ResetPlayer();
+
+            Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+        }
+
+        public void ResetPlayer()
+        {
+            if(player != null)
+            {
+                player.PlaybackEnded -= Player_PlaybackEnded;
+                player.Dispose();
+                player = null;
+
+            }
+
+            player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+            player.Loop = false;
+            player.PlaybackEnded += Player_PlaybackEnded;
+
+            NowPlaying = "";
+            SongPosition = 0;
+        }
+
+        #region Properties
+        public int SongsQueued
+        {
+            get
+            {
+                return playlist.Count;
+            }
+        }
+
+        private bool prevCommandVisible = true;
+        public bool PrevCommandVisible
+        {
+            get
+            {
+                return prevCommandVisible;
+            }
+            set
+            {
+                if(prevCommandVisible != value)
+                {
+                    prevCommandVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool nextCommandVisible = true;
+        public bool NextCommandVisible
+        {
+            get
+            {
+                return nextCommandVisible;
+            }
+            set
+            {
+                if (nextCommandVisible != value)
+                {
+                    nextCommandVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool mainPlayMode = true;
+        public bool MainPlayMode
+        {
+            get
+            {
+                return mainPlayMode;
+            }
+            set
+            {
+                if(mainPlayMode != value)
+                {
+                    mainPlayMode = value;
+                    if (mainPlayMode)
+                    {
+                        PrevCommandVisible = true;
+                        NextCommandVisible = true;
+                    }
+                    else
+                    {
+                        PrevCommandVisible = false;
+                        NextCommandVisible = false;
+                    }
+                }
+            }
+        }
+
+        private ErrorCallback errorCallbackRoutine = null;
+        public ErrorCallback ErrorCallbackRoutine
+        {
+            get
+            {
+                return errorCallbackRoutine;
+            }
+            set
+            {
+                if(errorCallbackRoutine != value)
+                {
+                    errorCallbackRoutine = value;
+                }
+            }
+        }
+
+
+        private ObservableCollection<QueuedTrack> playlist = null; // new ObservableCollection<QueuedTrack>();
+        public ObservableCollection<QueuedTrack> Playlist
+        {
+            get
+            {
+                if(playlist == null)
+                {
+                    playlist = new ObservableCollection<QueuedTrack>();
+                    PersistentData.LoadQueuedTracks(Playlist);
+                }
+                return playlist;
+            }
+        }
+
+        private QueuedTrack selectedSong = null;
+        public QueuedTrack SelectedSong
+        {
+            get
+            {
+                if(selectedSong == null && Playlist.Count > 0 && currentTrackNumber >= 0)
+                {
+                    selectedSong = Playlist[currentTrackNumber];
+                }
+                return selectedSong;
+            }
+            set
+            {
+                if(value != selectedSong)
+                {
+                    if (value?.FullPath != selectedSong?.FullPath)
+                    {
+                        currentTrackNumber = Playlist.IndexOf(value);
+                        PersistentData.LastPlayedSongIndex = currentTrackNumber;
+                        if (playerState == PlayerStates.Playing)
+                        {
+                            PlayCurrentSongAsync();
+                        }
+                        else
+                        {
+                            nowPlayingDifferentSong = true;
+                            NowPlaying = value.Name;
+                        }
+                    }
+                    selectedSong = value;
+                    OnPropertyChanged("SelectedSong");
+                }
+            }
+        }
+
+        private int currentTrackNumber = -1;
+        public int CurrentTrackNumber
+        {
+            get
+            {
+                return currentTrackNumber;
+            }
+            set
+            {
+                if(currentTrackNumber != value && value < Playlist.Count)
+                {
+                    currentTrackNumber = value;
+                }
+                if(currentTrackNumber >= 0 && Playlist.Count > 0)
+                {
+                    SelectedSong = Playlist[currentTrackNumber];
+                }
+            }
+
+        }
+
         public ISimpleAudioPlayer player { get; set; }
 
-        public string playButtonStateImage;
+        private string playButtonStateImage;
         public string PlayButtonStateImage
         {
             get
@@ -40,250 +249,14 @@ namespace MyMixes
             }
         }
 
-        private string playingSong;
-        private bool isSongPlaying;
-        private int currentSong = 0;
-
-        public TransportViewModel()
-        {
-            PlayCommand = new Command(PlaySong);
-            PrevCommand = new Command(PrevSong);
-            NextCommand = new Command(NextSong);
-
-            player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-            player.Loop = false;
-            player.PlaybackEnded += Player_PlaybackEnded;
-
-            currentSong = PersistentData.LastPlayedSongIndex;
-
-            PlayButtonStateImage = "PlayBt.png";
-        }
-
-        private async void Player_PlaybackEnded(object sender, EventArgs e)
-        {
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                CurrentTrackNumber++;
-                if (CurrentTrackNumber >= SongsQueued)
-                {
-                    CurrentTrackNumber = 0;
-                    if (isLooping)
-                    {
-                        await PlayCurrentSong();
-                    }
-                    else
-                    {
-                        isSongPlaying = false;
-                        player.Stop();
-                        PlayButtonStateImage = "PlayBt.png";
-                    }
-                }
-                else
-                {
-                    await PlayCurrentSong();
-                }
-            });
-        }
-
-        public void SetCurrentSong(Track t)
-        {
-            CurrentProject = Path.GetFileName(t.ProjectPath);
-
-            CurrentSel = t.Name;
-        }
-
-        public async void PlaySong()
-        {
-            if (SongsQueued > 0)
-            {
-                if (player.CurrentPosition > 0)
-                {
-                    if (isSongPlaying)
-                    {
-                        isSongPlaying = false;
-                        player.Pause();
-                        PlayButtonStateImage = "PlayBt.png";
-                    }
-                    else
-                    {
-                        isSongPlaying = true;
-                        player.Play();
-                        PlayButtonStateImage = "PauseBt.png";
-                    }
-                }
-                else
-                {
-                    isSongPlaying = true;
-                    PlayButtonStateImage = "PauseBt.png";
-
-                    await PlayCurrentSong();
-                }
-            }
-        }
-
-        public void NextSong()
-        {
-            CurrentTrackNumber++;
-            if(CurrentTrackNumber >= SongsQueued)
-            {
-                CurrentTrackNumber = 0;
-            }
-
-            if(isSongPlaying)
-            {
-                PlayCurrentSong();
-            }
-        }
-
-        public void PrevSong()
-        {
-            CurrentTrackNumber--;
-            if (CurrentTrackNumber < 0)
-            {
-                CurrentTrackNumber = SongsQueued - 1;
-            }
-
-            if (isSongPlaying)
-            {
-                PlayCurrentSong();
-            }
-        }
-
-        private async Task PlayCurrentSong()
-        {
-            //Track t = CurrentTrack;
-            //ViewModel.CurrentSel = t.Name;
-            //ViewModel.CurrentProject = t.Project;
-
-            string path = Path.GetDirectoryName(PlayingTracks[CurrentTrackNumber].FullPath);
-            string filename = Path.GetFileName(PlayingTracks[CurrentTrackNumber].FullPath);
-
-            Debug.Print("playing {0} {1}\n", filename, path);
-
-            IFolder folder = await FileSystem.Current.GetFolderFromPathAsync(path);
-            if(folder == null)
-            {
-                Debug.Print("Error folder is null, why woudl that happen? No sync?");
-                return ;
-            }
-
-            IFile source = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
-
-            player.Stop();
-            using (Stream s = await source.OpenAsync(PCLStorage.FileAccess.Read))
-            {
-                if (player.Load(s))
-                {
-                    //playingSong = t.FullPath;
-                    //CurrentSong.Text = filename;
-                    //PlaySongButton.Image = "PauseBt.png";
-                    player.Play();
-                    isSongPlaying = true;
-                }
-                else
-                {
-                    //await DisplayAlert("Error openning track ", t.FullPath, "OK");
-                }
-            }
-
-            //SetCurrentSong(t);
-        }
-
-        public void LoadProjects()
-        {
-            PersistentData.LoadQueuedTracks(PlayingTracks);
-        }
-
-        public void RemoveSong(Track t)
-        {
-            //if (t == null)
-            //    return;
-
-            //if (player.CurrentPosition > 0 && currentSong == t.OrderVal)
-            //{
-            //    player.Stop();
-            //}
-
-            //foreach (string key in PlayListOrder.Keys.ToArray())
-            //{
-            //    if (PlayListOrder.ContainsKey(key) && PlayListOrder[key] >= t.OrderVal)
-            //    {
-            //        PlayListOrder[key]--;
-            //    }
-            //}
-
-            //foreach (Track ct in (List<Track>)Projects.ItemsSource)
-            //{
-            //    if (ct.OrderVal >= t.OrderVal && ct.OrderVal > 0)
-            //    {
-            //        ct.OrderVal--;
-            //        if (ct.OrderVal == 0)
-            //        {
-            //            ct.OrderButtonText = "+";
-            //            ct.ReadyToAdd = true;
-            //        }
-            //    }
-            //}
-            //PlayListOrder[t.FullPath] = 0;
-
-            //TrasnportVMInstance.Tracklist.Remove(t);
-            //this.BindingContext = null;
-            //this.BindingContext = TrasnportVMInstance;
-
-            //SetSongIndex(t.OrderVal);
-            //currentOrder--;
-
-            //if (isSongPlaying)
-            //{
-            //    if (TrasnportVMInstance.SongsQueued > 0)
-            //    {
-            //        await PlayCurrentSong();
-            //    }
-            //    else
-            //    {
-            //        isSongPlaying = false;
-            //        //PlaySongButton.Image = "PlayBt.png";
-            //    }
-            //}
-        }
-
-        //private void SetSongIndex(int tracknumber)
-        //{
-        //    TrasnportVMInstance.CurrentTrackNumer = tracknumber;
-        //    SetCurrentSong();
-        //}
-
 
         public bool isLooping { get; set; }
-
-        public int SongsQueued
-        {
-            get
-            {
-                return PlayingTracks.Count;
-            }
-        }
-
-        public int CurrentTrackNumber { get; set; }
-
-        List<Track> trackList = new List<Track>();
-        public List<Track> Tracklist
-        {
-            get { return trackList; }
-            set
-            {
-                if (trackList != value)
-                {
-                    trackList = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public bool isAligned { get; set; }
 
         string currentProject;
         public string CurrentProject
         {
-            get { return currentProject;  }
+            get { return currentProject; }
             set
             {
                 if (currentProject != value)
@@ -294,7 +267,6 @@ namespace MyMixes
             }
         }
 
-        private string currentSel;
         public string CurrentSel
         {
             get
@@ -308,6 +280,390 @@ namespace MyMixes
                     currentSel = value;
                     OnPropertyChanged("CurrentSel");
                 }
+            }
+        }
+
+        public string nowPlaying;
+        public string NowPlaying
+        {
+            get
+            {
+                if(Playlist.Count > 0 && nowPlaying != null)
+                {
+                    return "Now Playing: " + nowPlaying;
+                }
+                else
+                {
+                    return "No track playing";
+                }
+            }
+            set
+            {
+                if(nowPlaying != value)
+                {
+                    nowPlaying = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private double songPosition;
+        public double SongPosition
+        {
+            get
+            {
+                return songPosition;
+
+            }
+            set
+            {
+                if(songPosition != value)
+                {
+                    songPosition = value;
+
+                    if (player.IsPlaying)
+                    {
+                        player.Seek(songPosition * player.Duration);
+                    }
+
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Transport Player control
+        public Command PlayCommand { get; set; }
+        public Command PrevCommand { get; set; }
+        public Command NextCommand { get; set; }
+
+        #endregion Properties
+
+        private async Task UpdateSliderAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (player.IsPlaying)
+                {
+                    if(player.CurrentPosition > 0.001)
+                    {
+                        // We don't want it to seek, so manually set property
+                        songPosition = player.CurrentPosition / player.Duration ;
+                        OnPropertyChanged("SongPosition");
+                    }
+                }
+
+                await Task.Delay(200, token);
+            }
+        }
+
+
+#pragma warning disable AvoidAsyncVoid
+        private async void Player_PlaybackEnded(object sender, EventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(async () => 
+            {
+                if(isAligned)
+                {
+                    player.Play();
+                }
+                else
+                {
+                    if (CurrentTrackNumber + 1 >= SongsQueued)
+                    {
+                        if(!isLooping)
+                        {
+                            StopPlayer();
+                        }
+                        CurrentTrackNumber = 0;
+                    }
+                    else
+                    {
+                        CurrentTrackNumber++;
+                    }
+                }
+            });
+        }
+
+        public void TransportPlayPressed()
+        {
+            if(MainPlayMode)
+            {
+                if (SongsQueued > 0)
+                {
+                    switch (playerState)
+                    {
+                        case PlayerStates.Playing:
+                            PausePlayer();
+                            break;
+                        case PlayerStates.Paused:
+                            if (nowPlayingDifferentSong)
+                            {
+                                nowPlayingDifferentSong = false;
+                                PlayCurrentSongAsync();
+                            }
+                            else
+                            {
+                                StartPlayer();
+                            }
+                            break;
+                        case PlayerStates.Stopped:
+                            PlayCurrentSongAsync();
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                switch (playerState)
+                {
+                    case PlayerStates.Playing:
+                        PausePlayer();
+                        break;
+                    case PlayerStates.Paused:
+                        StartPlayer();
+                        break;
+                    case PlayerStates.Stopped:
+//                        PlayCurrentSongAsync();
+                        break;
+                }
+            }
+        }
+
+#pragma warning restore AvoidAsyncVoid
+
+        public void NextSong()
+        {
+            if(CurrentTrackNumber+1 >= SongsQueued)
+            {
+                CurrentTrackNumber = 0;
+            }
+            else
+            {
+                CurrentTrackNumber++;
+            }
+
+            if (playerState == PlayerStates.Playing)
+            {
+                PlayCurrentSongAsync();
+            }
+            else
+            {
+                playerState = PlayerStates.Stopped;
+            }
+        }
+
+        public void PrevSong()
+        {
+            if(!isAligned && playerState != PlayerStates.Stopped && player.CurrentPosition > 3)
+            {
+                player.Seek(0);
+            }
+            else
+            {
+                if (CurrentTrackNumber <= 0)
+                {
+                    CurrentTrackNumber = SongsQueued - 1;
+                }
+                else
+                {
+                    CurrentTrackNumber--;
+                }
+
+                if (playerState == PlayerStates.Playing)
+                {
+                    PlayCurrentSongAsync();
+                }
+                else
+                {
+                    playerState = PlayerStates.Stopped;
+                }
+            }
+        }
+
+        public void MoveSongUp(QueuedTrack t)
+        {
+            int i = Playlist.IndexOf(t);
+
+            if (i > 0)
+            {             
+                Playlist.Move(i, i - 1);
+            }
+            else
+            {
+                Playlist.Move(i, Playlist.Count - 1);
+            }
+        }
+
+        private void PlayCurrentSongAsync()
+        {
+            PlaySongAsync(Playlist[CurrentTrackNumber].FullPath);
+        }
+
+        public bool PlaySongAsync(string song)
+        {
+            double playerpos = player.CurrentPosition;
+
+            Debug.Print("playing {0}\n", song);
+
+            Dictionary<String, String> properties = new Dictionary<string, string>();
+
+            var TimeElapsed = DateTime.UtcNow - LastTime;
+
+            properties["TrackCount"] = Playlist.Count.ToString();
+            properties["LoopMode"] = isLooping.ToString();
+            properties["CompareMode"] = isAligned.ToString();
+            properties["PlayMode"] = playerState.ToString();
+
+            LastTime = DateTime.UtcNow;
+
+            Analytics.TrackEvent("PlayTrack", properties);
+
+            try
+            {
+                player.Stop();
+
+                using (Stream s = new FileStream(song, FileMode.Open))
+                {
+                    if (player.Load(s))
+                    {
+                        if (playerState != PlayerStates.Stopped && isAligned)
+                        {
+                            player.Seek(playerpos);
+                        }
+
+                        NowPlaying = Path.GetFileNameWithoutExtension(song);
+
+                        StartPlayer();
+                    }
+                    else
+                    {
+                        properties.Clear();
+                        properties["Length"] = s.Length.ToString();
+                        properties["Type"] = Path.GetExtension(song);
+
+                        Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
+
+                        ErrorMsg(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+                        StopPlayer();
+
+                        return false;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorMsg(AppResources.SongPlayFailedTitle, ex.Message, AppResources.OK);
+                Debug.Print(ex.ToString());
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task LoadProjects()
+        {
+            if(!playingListLoaded)
+            {
+                await ValidatePlayingTracks();
+
+                playingListLoaded = true;
+
+                CurrentTrackNumber = 0;
+            }
+        }
+
+        private async Task ValidatePlayingTracks()
+        {
+            List<QueuedTrack> t_remove = new List<QueuedTrack>();
+
+            foreach(QueuedTrack t in Playlist)
+            {
+                if(!File.Exists(t.FullPath))
+                {
+                    t_remove.Add(t);
+                }
+            }
+
+            foreach(QueuedTrack t in t_remove)
+            {
+                Playlist.Remove(t);
+            }
+
+            playingListLoaded = false;
+
+            await PersistentData.SaveQueuedTracksAsync(Playlist);
+        }
+
+        public void RemoveSong(QueuedTrack t)
+        {
+            if (t == null)
+                return;
+
+            int i = Playlist.IndexOf(t);
+            Playlist.Remove(t);
+            playingListLoaded = false;
+
+            if (playerState != PlayerStates.Stopped && CurrentTrackNumber == i)
+            {
+                StopPlayer();
+
+                if(i >= Playlist.Count)
+                {
+                    CurrentTrackNumber = 0;
+                }
+
+                if (isLooping && playerState != PlayerStates.Stopped)
+                {
+                    PlayCurrentSongAsync();
+                }
+            }
+        }
+
+        public void AddSong(Track t)
+        {
+            int i = 0;
+            for (; i < Playlist.Count; i++)
+            {
+                if (Playlist[i].Name == t.Name && Playlist[i].Project == t.Project)
+                    break;
+            }
+
+            if (i >= Playlist.Count)
+            {
+                Playlist.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath, LastModifiedDate = t.LastModifiedDate });
+                playingListLoaded = false;
+            }
+        }
+
+        private void StartPlayer()
+        {
+            playerState = PlayerStates.Playing;
+
+            player.Play();
+
+            PlayButtonStateImage = "PauseBt.png";
+        }
+
+        private void PausePlayer()
+        {
+            playerState = PlayerStates.Paused;
+            player.Pause();
+            PlayButtonStateImage = "PlayBt.png";
+        }
+
+        public void StopPlayer()
+        {
+            playerState = PlayerStates.Stopped;
+            player.Stop();
+            PlayButtonStateImage = "PlayBt.png";
+        }
+
+        public void ErrorMsg(string title, string text, string button)
+        {
+            if(ErrorCallbackRoutine != null)
+            {
+                ErrorCallbackRoutine(title, text, button);
             }
         }
 

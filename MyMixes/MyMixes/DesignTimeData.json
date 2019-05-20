@@ -1,0 +1,41 @@
+{
+  "MainPage.xaml": [
+    {
+      "Name": "Johns hog",
+      "Project": "Freakish"
+    },
+    {
+      "Name": "Bogged Up",
+      "Project": "Freakish"
+    }
+  ],
+
+  "AddSongs.xaml": [
+    {
+      "Name": "Johns hog2",
+      "Order": "1",
+      "UpdateListImage": "AddBt2.png",
+      "isProject":  "1",
+      "Project": "Freakish"
+    },
+    {
+      "Name": "Bogged Up",
+      "Order": "1",
+      "UpdateListImage": "AddBt2.png",
+      "isProject": "0",
+      "Project": "Freakish"
+    }
+  ],
+
+  
+  "ProjectPicker.xaml": [
+    {
+      "Path": "Mixes",
+      "Provider": "OneDrive"
+    },
+    {
+      "Path": "AltMix",
+      "Provider": "Google Drive"
+    }
+  ]
+}
