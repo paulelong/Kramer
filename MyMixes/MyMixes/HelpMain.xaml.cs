@@ -24,7 +24,7 @@ namespace MyMixes
 
         private void OpenWeb_Clicked(object sender, EventArgs e)
         {
-            Uri website = new Uri("https://riffrecorder.wordpress.com/");
+            Uri website = new Uri("https://mymixesapp.wordpress.com/");
             Device.OpenUri(website);
         }
 
