@@ -110,7 +110,7 @@
                     </ListView>
                 </StackLayout >
                 <StackLayout Grid.Row="1" VerticalOptions="FillAndExpand">
-                    <Label Text="Queued Tracks" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
+                    <Label Text="Playlist Queue" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
                     <ListView x:Name="SelectedTracks" 
                         ItemTemplate="{StaticResource selectedTracksTemplate}" 
                         RowHeight="50"
