@@ -42,10 +42,10 @@
                 RelativeLayout.WidthConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Width}"
                 RelativeLayout.HeightConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Height}">
             </Image>
-            <StackLayout  x:Name="MainStack" Margin="5,5,5,5" VerticalOptions="Fill" RelativeLayout.HeightConstraint=
-                                "{ConstraintExpression Type=RelativeToParent,
-                                Property=Height,
-                                Factor=1}">
+            <StackLayout  x:Name="MainStack" Margin="5,5,5,5" VerticalOptions="Fill" 
+                          RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
+                          RelativeLayout.WidthConstraint ="{ConstraintExpression Type=RelativeToParent, Property=Width,  Factor=1}"
+                          >
                 <ListView x:Name="Projects" 
                         ItemTemplate="{StaticResource songListTemplate}" 
                         ItemsSource="{Binding Playlist}"
@@ -79,7 +79,15 @@
                 </Grid>
 
                 <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" VerticalOptions="End"/>
-                <Button Image="AddMusicBt.png" Clicked="Add_Clicked" HorizontalOptions="Center"  HeightRequest="60" WidthRequest="160" CornerRadius="-1" Padding="0" Scale="1" ScaleX="1" VerticalOptions="End"/>
+                <Grid HorizontalOptions="FillAndExpand" VerticalOptions="End" ColumnSpacing="25" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.25*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="1" Image="AddMusicBt.png" Clicked="Add_Clicked" VerticalOptions="End"/>
+                    <Button Grid.Column="2" Image="HelpBt.png" HorizontalOptions="Center" Clicked="Help_Clicked" />
+                </Grid>
             </StackLayout>
         </RelativeLayout>
     </ContentPage.Content>

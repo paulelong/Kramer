@@ -70,7 +70,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Continue.
+        ///   Looks up a localized string similar to Delete.
         /// </summary>
         internal static string Continue {
             get {
@@ -79,9 +79,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
+        ///   Looks up a localized string similar to Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.  Resfresh by pulling down the list.
         ///
-        ///Once completed, return to the main page and play your mixes and take notes..
+        ///After you add mixes you want to audition, return to the main page and play and/or take notes..
         /// </summary>
         internal static string MixLocationsNoPlaylist {
             get {
@@ -90,7 +90,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Choose your playlist.
+        ///   Looks up a localized string similar to Build your playlist.
         /// </summary>
         internal static string MixLocationsNoPlaylistTitle {
             get {
@@ -99,9 +99,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The top of the screen displays the cloud mix locations you&apos;ve added, which is currently empty.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you&apos;ve mixed  and saved with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
+        ///   Looks up a localized string similar to Mix locations that you add appear at the top of the screen.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you&apos;ve mixed and saved with your DAW.
         ///
-        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the r [rest of string was truncated]&quot;;.
+        ///Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add a Mix Location which will be synchronized to your device when  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoMixLocations {
             get {
@@ -119,9 +119,9 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like &quot;verse louder&quot; or &quot;More cowbell&quot;.
+        ///   Looks up a localized string similar to The main screen displays your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like &quot;verse louder&quot; or &quot;more cowbell&quot;.
         ///
-        ///Add songs from your master of projects/mixes by using the Add Music button at the bottom..
+        ///Add any mixes from you master list using the Add Music button at the bottom..
         /// </summary>
         internal static string NoPlaylist {
             get {
@@ -130,7 +130,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add songs to your playlist.
+        ///   Looks up a localized string similar to Your playlist is empty.
         /// </summary>
         internal static string NoPlaylistTitle {
             get {
@@ -168,7 +168,7 @@ namespace MyMixes {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This action removes the project from this device and the cloud, continue?.
+        ///   Looks up a localized string similar to This action PERMANENTLY removes the project from this device and the cloud, continue?.
         /// </summary>
         internal static string RemoveFolder {
             get {

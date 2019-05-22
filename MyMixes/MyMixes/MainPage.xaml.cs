@@ -133,5 +133,11 @@ namespace MyMixes
         {
             DisplayAlert(title, text, button);
         }
+
+        private void Help_Clicked(object sender, EventArgs e)
+        {
+            PersistentData.Save();
+            Navigation.PushAsync(new HelpMain());
+        }
     }
 }

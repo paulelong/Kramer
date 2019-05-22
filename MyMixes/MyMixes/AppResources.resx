@@ -121,18 +121,18 @@
     <value>Cancel</value>
   </data>
   <data name="Continue" xml:space="preserve">
-    <value>Continue</value>
+    <value>Delete</value>
   </data>
   <data name="MixLocationsNoPlaylist" xml:space="preserve">
-    <value>Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.
+    <value>Your playlist is empty.  Choose mixes from the music project folders and add them to the playlist.  Select the play button next to a mix to audition it.  Resfresh by pulling down the list.
 
-Once completed, return to the main page and play your mixes and take notes.</value>
+After you add mixes you want to audition, return to the main page and play and/or take notes.</value>
   </data>
   <data name="MixLocationsNoPlaylistTitle" xml:space="preserve">
-    <value>Choose your playlist</value>
+    <value>Build your playlist</value>
   </data>
   <data name="NoMixLocations" xml:space="preserve">
-    <value>The top of the screen displays the cloud mix locations you've added, which is currently empty.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you've mixed  and saved with your DAW. Ideally you can configure your DAW to store mixes in a structure that has multiple project folders each containing mixed songs for that project.
+    <value>Mix locations that you add appear at the top of the screen.  A mix location is a folder in your cloud storage that contains projects, where each project contains the songs you've mixed and saved with your DAW.
 
 Connect to your cloud storage by selecting a provider.  After providing credentials, you will see all folders in the root of your cloud storage.  Navigate and select the folder which contain your projects and press the Add button to add a Mix Location which will be synchronized to your device when you go back to the previous page.</value>
   </data>
@@ -140,12 +140,12 @@ Connect to your cloud storage by selecting a provider.  After providing credenti
     <value>Add Mix Locations</value>
   </data>
   <data name="NoPlaylist" xml:space="preserve">
-    <value>This main screen is your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "More cowbell".
+    <value>The main screen displays your Playlist, which is currently empty.  Your playlist contains mixes you are currently evaluating.  Each mix can be notated, like "verse louder" or "more cowbell".
 
-Add songs from your master of projects/mixes by using the Add Music button at the bottom.</value>
+Add any mixes from you master list using the Add Music button at the bottom.</value>
   </data>
   <data name="NoPlaylistTitle" xml:space="preserve">
-    <value>Add songs to your playlist</value>
+    <value>Your playlist is empty</value>
   </data>
   <data name="NoProjects" xml:space="preserve">
     <value>This screen displays all of your projects that exist in the cloud mix locations you've configured.  A cloud mix location is a folder in your cloud storage which contains project folders.  Each project folder contains songs.
@@ -159,7 +159,7 @@ The list of projects is empty because you haven't add your first cloud locaiton.
     <value>OK</value>
   </data>
   <data name="RemoveFolder" xml:space="preserve">
-    <value>This action removes the project from this device and the cloud, continue?</value>
+    <value>This action PERMANENTLY removes the project from this device and the cloud, continue?</value>
   </data>
   <data name="RemoveFolderRemoteFailed" xml:space="preserve">
     <value>The remote project in your cloud storage could not be removed.  Make sure you have access and that the project still exists.</value>
