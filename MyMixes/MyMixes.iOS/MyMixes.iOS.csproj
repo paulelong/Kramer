@@ -314,5 +314,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\iOS1242x2208.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BundleResource Include="Resources\HelpBt.png" />
+  </ItemGroup>
 </Project>
