@@ -311,3 +311,6 @@ Media/Website/
 Media/SplashScreen/blendcache*
 RR/Graphics/Stores/
 Media/.DS_Store
+Media/Videos/
+*.blend1
+Media/Backgrounds/
