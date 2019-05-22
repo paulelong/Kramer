@@ -317,4 +317,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\HelpBt.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Icon1024t.png" />
+  </ItemGroup>
 </Project>
