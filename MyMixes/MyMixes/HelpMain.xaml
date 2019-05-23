@@ -7,7 +7,7 @@
             <!--<Label Text="My Mixes" HorizontalOptions="CenterAndExpand" FontSize="70"/>-->
             <Image Source="Icon1024t.png" Scale=".6"/>
             <Label x:Name="VersionText" Text="not set" HorizontalOptions="Center" FontSize="Large"/>
-            <Button Text="Overview Video" HorizontalOptions="Center" Margin="0,20,0,0" Padding="10"  Clicked="OpenVideo_Clicked"/>
+            <Button Text="Tutorial Video" HorizontalOptions="Center" Margin="0,20,0,0" Padding="10"  Clicked="OpenVideo_Clicked"/>
             <Button Text="MyMixes website" HorizontalOptions="Center" Margin="0,20,0,0" Padding="10" Clicked="OpenWeb_Clicked"/>
         </StackLayout>
     </ContentPage.Content>
