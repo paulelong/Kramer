@@ -272,8 +272,14 @@ namespace MyMixes
             {
                 string p = string.IsNullOrEmpty(CurrentFolder) ? "" : (CurrentFolder + "/");
                 DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
-                PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
-                PersistentData.SaveMixLocations();
+
+                // Only add it if it's not there already
+                var previousLoc = PersistentData.MixLocationList.FirstOrDefault((el) => (el.Path == p + de.DirectoryName));
+                if(previousLoc == null)
+                {
+                    PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
+                    PersistentData.SaveMixLocations();
+                }
             }
         }
 
