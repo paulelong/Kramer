@@ -3,7 +3,7 @@
 
   <style name="MainTheme" parent="MainTheme.Base">
     <item name="android:windowBackground">
-      @drawable/Info1nine
+      @drawable/Splash
     </item>
     <item name="android:windowActionBar">false</item>
     <item name="android:windowTitleSize">0dp</item>
