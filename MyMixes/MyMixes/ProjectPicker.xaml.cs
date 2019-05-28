@@ -277,7 +277,7 @@ namespace MyMixes
                 var previousLoc = PersistentData.MixLocationList.FirstOrDefault((el) => (el.Path == p + de.DirectoryName));
                 if(previousLoc == null)
                 {
-                    PersistentData.MixLocationList.Add(new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
+                    PersistentData.MixLocationList.Insert(0, new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
                     PersistentData.SaveMixLocations();
                 }
             }
