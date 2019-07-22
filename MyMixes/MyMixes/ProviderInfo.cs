@@ -206,7 +206,7 @@ namespace MyMixes
                             UpdatedSongs.Add(di.name);
 
                             string localFileName = projectPath + "/" + di.name;
-                            DateTime localWriteTime = File.GetLastWriteTime(localFileName);
+                            DateTime localWriteTime = File.GetLastWriteTimeUtc(localFileName);
 
                             if(Math.Abs((localWriteTime - di.modifiedDate).TotalSeconds) >= 1)
                             {
@@ -225,7 +225,10 @@ namespace MyMixes
 
                                     s.Close();
 
-                                    File.SetLastWriteTime(localFileName, di.modifiedDate);
+                                    File.SetLastWriteTimeUtc(localFileName, di.modifiedDate);
+
+                                    DateTime tempLastWriteTime = File.GetLastWriteTimeUtc(localFileName);
+
                                 }
                             }
                         }
