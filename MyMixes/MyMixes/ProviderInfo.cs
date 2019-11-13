@@ -86,6 +86,26 @@ namespace MyMixes
                             }
                         }
                         break;
+                    case CloudProviders.Dropbox:
+                        cs = CloudStoreFactory.CreateCloudStore(CloudProviders.Dropbox);
+
+                        Dictionary<string, object> dropboxParams = new Dictionary<string, object>();
+
+                        dropboxParams[CloudParams.AppName.ToString()] = "MyMixes";
+                        dropboxParams[CloudParams.UIParent.ToString()] = App.UiParent;
+                        dropboxParams[CloudParams.APIKey.ToString()] = "b2w6zorouokifto"; // for MyMixes for now
+
+                        if (cs.Initialize(dropboxParams))
+                        {
+                            bool worked = await cs.AuthenticateAsync();
+                            AuthenticationState.Authenticator = cs.GetAuthenticator();
+                            bool authCompletWorked = await cs.CompleteAuthenticateAsync(AuthenticationState.Authenticator);
+                            if (authCompletWorked)
+                            {
+                                newProvider = new ProviderInfo(cp, cs);
+                            }
+                        }
+                        break;
                     default:
                         return null;
                 }
@@ -137,12 +157,17 @@ namespace MyMixes
         {
             try
             {
-                var l = await CloudStore.GetFolderListAsync(folder);
                 List<string> retl = new List<string>();
-                foreach (var i in l)
+
+                var l = await CloudStore.GetFolderListAsync(folder);
+
+                if (l != null)
                 {
-                    if(i.isFolder)
-                        retl.Add(i.name);
+                    foreach (var i in l)
+                    {
+                        if (i.isFolder)
+                            retl.Add(i.name);
+                    }
                 }
 
                 return retl;
@@ -174,15 +199,21 @@ namespace MyMixes
 
         public async Task<bool> CheckAuthenitcationAsync()
         {
-            if(!isAuthenticated)
+            if(!(await CloudStore.CheckTokenAsync()))
             {
-                if (cs != null)
-                {
-                    isAuthenticated = await CloudStore.AuthenticateAsync();
-                }
+                return await CloudStore.AuthenticateAsync();
             }
 
-            return isAuthenticated;
+            return true;
+            //if(!isAuthenticated)
+            //{
+            //    if (cs != null)
+            //    {
+            //        isAuthenticated = await CloudStore.AuthenticateAsync();
+            //    }
+            //}
+
+            //return isAuthenticated;
         }
 
         public async Task<List<string>> UpdateProjectAsync(string root, string project, UpdateStatus UpdateStatusRoutine)
