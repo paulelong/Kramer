@@ -173,8 +173,9 @@ namespace MyMixes
                 {
                     providerList = new List<string>();
                     providerList.Add("select provider...");
-                    providerList.Add(CloudStorage.CloudProviders.OneDrive.ToString());
+                    providerList.Add(CloudStorage.CloudProviders.Dropbox.ToString());
                     providerList.Add(CloudStorage.CloudProviders.GoogleDrive.ToString());
+                    providerList.Add(CloudStorage.CloudProviders.OneDrive.ToString());
                 }
 
                 return providerList;
@@ -274,7 +275,7 @@ namespace MyMixes
                 DirectoryEntry de = (DirectoryEntry)FolderList.SelectedItem;
 
                 // Only add it if it's not there already
-                var previousLoc = PersistentData.MixLocationList.FirstOrDefault((el) => (el.Path == p + de.DirectoryName));
+                var previousLoc = PersistentData.MixLocationList.FirstOrDefault((el) => (el.Path == p + de.DirectoryName && el.Provider == pi.CloudProvider));
                 if(previousLoc == null)
                 {
                     PersistentData.MixLocationList.Insert(0, new MixLocation() { Path = p + de.DirectoryName, Provider = pi.CloudProvider });
