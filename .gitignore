@@ -300,6 +300,8 @@ __pycache__/
 
 # End of https://www.gitignore.io/api/visualstudio
 
+## iOS Files
+.DS_Store
 
 RR/RR.iOS/RR.iOS.csproj
 ## stuff I don't want in git
