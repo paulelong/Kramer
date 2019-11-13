@@ -51,8 +51,6 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
 			<key>CFBundleURLName</key>
 			<string>com.PaulysHotel.MyMixes</string>
 			<key>CFBundleURLSchemes</key>
@@ -60,9 +58,12 @@
 				<string>msal7ba22c7f-29be-4dc7-a274-4209fe0b8b72</string>
 				<string>com.googleusercontent.apps.133589155347-2he14os3etg7evt97pcu5jil1udh1klk</string>
 				<string>xamarin-auth</string>
+				<string>com.paulyshotel.mymixes</string>
 			</array>
 			<key>CFBundleURLIconFile</key>
 			<string>Icon58</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 		</dict>
 	</array>
 	<key>XSAppIconAssets</key>
