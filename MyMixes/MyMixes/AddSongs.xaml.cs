@@ -83,7 +83,7 @@ namespace MyMixes
                         if(removeWorked)
                         {
                             // Are we goint to remove a song that is playing?
-                            if(this.tvm.SelectedSong.Project == t.Project)
+                            if (this.tvm.SelectedSong.Project == t.Project)
                             {
                                 this.tvm.StopPlayer();
                                 this.tvm.ResetPlayer();
@@ -95,7 +95,7 @@ namespace MyMixes
                             t.CloudProvider = CloudStorage.CloudProviders.NULL;
                             t.CloudRoot = null;
 
-                            if(selectedTrack?.Project == t.Project)
+                            if (selectedTrack?.Project == t.Project)
                             {
                                 selectedTrack = null;
                             }
@@ -109,14 +109,7 @@ namespace MyMixes
                                 }
                             }
 
-                            // If part of playlist, remove from there
-                            for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
-                            {
-                                if (t.Project == this.tvm.Playlist[i].Project)
-                                {
-                                    this.tvm.Playlist.RemoveAt(i);
-                                }
-                            }
+                            RemovePlaylistFolder(t.Project);
                         }
                         else
                         {
@@ -129,6 +122,30 @@ namespace MyMixes
                     Analytics.TrackEvent("Cloud Provider for folder invalid");
 
                     await DisplayAlert("Cloud Provider incorrect", "The cloud provider saved in local storage is missing or incorrect.  This is not an expected error, contact the developer.", "OK");
+                }
+            }
+        }
+
+        private void RemovePlaylistSong(string song, string project)
+        {
+            // If part of playlist, remove from there
+            for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
+            {
+                if (song == this.tvm.Playlist[i].Name && project == this.tvm.Playlist[i].Project)
+                {
+                    this.tvm.Playlist.RemoveAt(i);
+                }
+            }
+        }
+
+        private void RemovePlaylistFolder(string folder)
+        {
+            // If part of playlist, remove from there
+            for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
+            {
+                if (folder == this.tvm.Playlist[i].Project)
+                {
+                    this.tvm.Playlist.RemoveAt(i);
                 }
             }
         }
@@ -280,16 +297,22 @@ namespace MyMixes
                     Debug.Print("Remove dir " + p + "\n");
                     UpdateStatus("Removing " + p);
                     Directory.Delete(p, true);
+
+                    RemovePlaylistFolder(p);
                 }
                 else
                 {
-                    foreach (string s in Directory.GetDirectories(p))
+                    foreach (string s in Directory.GetFiles(p))
                     {
-                        if (AllSongs[p].Contains(Path.GetFileName(s)))
+                        string folderName = Path.GetFileName(p);
+                        string songName = Path.GetFileName(s);
+                        if (AllSongs.ContainsKey(folderName) && !AllSongs[folderName].Contains(Path.GetFileName(songName)))
                         {
                             UpdateStatus("Removing " + s);
                             Debug.Print("Remove file " + s + "\n");
                             File.Delete(s);
+
+                            RemovePlaylistSong(Path.GetFileNameWithoutExtension(songName), folderName);
                         }
                     }
                 }
