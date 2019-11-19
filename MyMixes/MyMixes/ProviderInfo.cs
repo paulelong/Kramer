@@ -94,6 +94,7 @@ namespace MyMixes
                         dropboxParams[CloudParams.AppName.ToString()] = "MyMixes";
                         dropboxParams[CloudParams.UIParent.ToString()] = App.UiParent;
                         dropboxParams[CloudParams.APIKey.ToString()] = "b2w6zorouokifto"; // for MyMixes for now
+                        dropboxParams[CloudParams.RedirectURL.ToString()] = "com.paulyshotel.mymixes:/oauth2redirect"; // for MyMixes for now
 
                         if (cs.Initialize(dropboxParams))
                         {

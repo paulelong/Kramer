@@ -41,7 +41,7 @@ namespace MyMixes.iOS
         }
         public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
         {
-            if (url.AbsoluteString.Contains("google"))
+            if (url.AbsoluteString.Contains("oauth2redirect"))
             {
                 var uri_netfx = new Uri(url.AbsoluteString);
                 AuthenticationState.Authenticator.OnPageLoading(uri_netfx);
