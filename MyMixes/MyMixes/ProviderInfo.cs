@@ -240,7 +240,8 @@ namespace MyMixes
                             string localFileName = projectPath + "/" + di.name;
                             DateTime localWriteTime = File.GetLastWriteTimeUtc(localFileName);
 
-                            if(Math.Abs((localWriteTime - di.modifiedDate).TotalSeconds) >= 1)
+                            //if(Math.Abs((localWriteTime - di.modifiedDate).TotalSeconds) >= 1)
+                            if ((di.modifiedDate - localWriteTime).TotalSeconds >= 1)
                             {
                                 using (Stream s = new FileStream(localFileName, FileMode.OpenOrCreate))
                                 {
