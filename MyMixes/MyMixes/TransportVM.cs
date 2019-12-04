@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using MediaManager;
+using MediaManager.Library;
 
 namespace MyMixes
 {
@@ -159,6 +161,7 @@ namespace MyMixes
             }
         }
 
+        private List<IMediaItem> mediaPlayList = new List<IMediaItem>();
 
         private ObservableCollection<QueuedTrack> playlist = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> Playlist
@@ -169,9 +172,24 @@ namespace MyMixes
                 {
                     playlist = new ObservableCollection<QueuedTrack>();
                     PersistentData.LoadQueuedTracks(Playlist);
+
+                    foreach(QueuedTrack track in Playlist)
+                    {
+                        IMediaItem mediaItem = new MediaItem(track.FullPath);
+                        mediaItem.Title = track.Name;
+                        mediaItem.Album = track.Project;
+
+                        mediaPlayList.Add(mediaItem);
+                    }
                 }
                 return playlist;
             }
+        }
+
+        public void RemoveTrack(int tracknum)
+        {
+            Playlist.RemoveAt(tracknum);
+            mediaPlayList.RemoveAt(tracknum);
         }
 
         private QueuedTrack selectedSong = null;
@@ -195,7 +213,8 @@ namespace MyMixes
                         PersistentData.LastPlayedSongIndex = currentTrackNumber;
                         if (playerState == PlayerStates.Playing)
                         {
-                            PlayCurrentSongAsync();
+                            CrossMediaManager.Current.PlayQueueItem(currentTrackNumber);
+                            //PlayCurrentSongAsync();
                         }
                         else
                         {
@@ -321,10 +340,10 @@ namespace MyMixes
                 {
                     songPosition = value;
 
-                    if (player.IsPlaying)
-                    {
-                        player.Seek(songPosition * player.Duration);
-                    }
+                    //if (player.IsPlaying)
+                    //{
+                    //    player.Seek(songPosition * player.Duration);
+                    //}
 
                     OnPropertyChanged();
                 }
@@ -501,6 +520,9 @@ namespace MyMixes
 
         public bool PlaySongAsync(string song)
         {
+            CrossMediaManager.Current.Play(mediaPlayList);
+            return true;
+
             double playerpos = player.CurrentPosition;
 
             Debug.Print("playing {0}\n", song);

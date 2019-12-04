@@ -8,6 +8,7 @@ using Android.Widget;
 using Android.OS;
 using Microsoft.Identity.Client;
 using Android.Content;
+using MediaManager;
 
 namespace MyMixes.Droid
 {
@@ -34,6 +35,7 @@ namespace MyMixes.Droid
 
             global::Xamarin.Auth.Presenters.XamarinAndroid.AuthenticationConfiguration.Init(this, bundle);
 
+            CrossMediaManager.Current.Init(this);
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
