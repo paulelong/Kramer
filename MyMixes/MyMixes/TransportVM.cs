@@ -628,7 +628,9 @@ namespace MyMixes
 
             foreach(QueuedTrack t in t_remove)
             {
+                int i = Playlist.IndexOf(t);
                 Playlist.Remove(t);
+                mediaPlayList.RemoveAt(i);
             }
 
             playingListLoaded = false;
@@ -643,6 +645,7 @@ namespace MyMixes
 
             int i = Playlist.IndexOf(t);
             Playlist.Remove(t);
+            mediaPlayList.RemoveAt(i);
             playingListLoaded = false;
 
             if (playerState != PlayerStates.Stopped && CurrentTrackNumber == i)
@@ -674,6 +677,12 @@ namespace MyMixes
             {
                 Playlist.Add(new QueuedTrack() { Name = t.Name, Project = t.Project, FullPath = t.FullPath, LastModifiedDate = t.LastModifiedDate });
                 playingListLoaded = false;
+
+                IMediaItem mediaItem = new MediaItem(t.FullPath);
+                mediaItem.Title = t.Name;
+                mediaItem.Album = t.Project;
+
+                mediaPlayList.Add(mediaItem);
             }
         }
 
