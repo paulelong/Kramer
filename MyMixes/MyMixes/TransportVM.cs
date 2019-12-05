@@ -161,7 +161,7 @@ namespace MyMixes
             }
         }
 
-        private List<IMediaItem> mediaPlayList = new List<IMediaItem>();
+        private ObservableCollection<IMediaItem> mediaPlayList = new ObservableCollection<IMediaItem>();
 
         private ObservableCollection<QueuedTrack> playlist = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> Playlist
@@ -340,6 +340,11 @@ namespace MyMixes
                 {
                     songPosition = value;
 
+                    if(CrossMediaManager.Current.IsPlaying())
+                    {
+                        CrossMediaManager.Current.SeekTo(new TimeSpan((long)(songPosition * player.Duration)));
+                    }
+
                     //if (player.IsPlaying)
                     //{
                     //    player.Seek(songPosition * player.Duration);
@@ -426,7 +431,8 @@ namespace MyMixes
                             }
                             break;
                         case PlayerStates.Stopped:
-                            PlayCurrentSongAsync();
+                            StartPlayer();
+//                            PlayCurrentSongAsync();
                             break;
                     }
                 }
@@ -506,10 +512,13 @@ namespace MyMixes
             if (i > 0)
             {             
                 Playlist.Move(i, i - 1);
+
+                mediaPlayList.Move(i, i - 1);
             }
             else
             {
                 Playlist.Move(i, Playlist.Count - 1);
+                mediaPlayList.Move(i, i - 1);
             }
         }
 
@@ -520,10 +529,9 @@ namespace MyMixes
 
         public bool PlaySongAsync(string song)
         {
-            CrossMediaManager.Current.Play(mediaPlayList);
-            return true;
 
-            double playerpos = player.CurrentPosition;
+            double playerpos = CrossMediaManager.Current.Position.TotalSeconds;
+            //double playerpos = player.CurrentPosition;
 
             Debug.Print("playing {0}\n", song);
 
@@ -539,6 +547,17 @@ namespace MyMixes
             LastTime = DateTime.UtcNow;
 
             Analytics.TrackEvent("PlayTrack", properties);
+
+            if (playerState != PlayerStates.Stopped && isAligned)
+            {
+                player.Seek(playerpos);
+            }
+
+            NowPlaying = Path.GetFileNameWithoutExtension(song);
+
+            StartPlayer();
+
+            return true;
 
             try
             {
@@ -662,7 +681,10 @@ namespace MyMixes
         {
             playerState = PlayerStates.Playing;
 
-            player.Play();
+            CrossMediaManager.Current.Play(mediaPlayList);
+            CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
+            
+            //player.Play();
 
             PlayButtonStateImage = "PauseBt.png";
         }
@@ -670,14 +692,20 @@ namespace MyMixes
         private void PausePlayer()
         {
             playerState = PlayerStates.Paused;
-            player.Pause();
+
+            CrossMediaManager.Current.Pause();
+            //player.Pause();
+
             PlayButtonStateImage = "PlayBt.png";
         }
 
         public void StopPlayer()
         {
             playerState = PlayerStates.Stopped;
-            player.Stop();
+
+            CrossMediaManager.Current.Stop();
+            //player.Stop();
+
             PlayButtonStateImage = "PlayBt.png";
         }
 
