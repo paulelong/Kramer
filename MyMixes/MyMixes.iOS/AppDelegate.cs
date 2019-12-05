@@ -6,6 +6,7 @@ using Foundation;
 using UIKit;
 using Microsoft.Identity.Client;
 using OAuthNativeFlow;
+using MediaManager;
 
 namespace MyMixes.iOS
 {
@@ -36,9 +37,11 @@ namespace MyMixes.iOS
                 x = typeof(Xamarin.Forms.Themes.iOS.UnderlineEffect);
             }
 
+            //CrossMediaManager.Current.Init(this);
 
             return base.FinishedLaunching(app, options);
         }
+
         public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
         {
             if (url.AbsoluteString.Contains("oauth2redirect"))
