@@ -303,7 +303,6 @@ __pycache__/
 ## iOS Files
 .DS_Store
 
-RR/RR.iOS/RR.iOS.csproj
 ## stuff I don't want in git
 secure/
 [Aa]d/
