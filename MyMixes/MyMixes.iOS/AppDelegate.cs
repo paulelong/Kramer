@@ -29,6 +29,8 @@ namespace MyMixes.iOS
 
             global::Xamarin.Auth.Presenters.XamarinIOS.AuthenticationConfiguration.Init();
 
+            CrossMediaManager.Current.Init();
+
             LoadApplication(new App());
 
             var x = typeof(Xamarin.Forms.Themes.DarkThemeResources);
@@ -36,8 +38,6 @@ namespace MyMixes.iOS
             {
                 x = typeof(Xamarin.Forms.Themes.iOS.UnderlineEffect);
             }
-
-            //CrossMediaManager.Current.Init(this);
 
             return base.FinishedLaunching(app, options);
         }
