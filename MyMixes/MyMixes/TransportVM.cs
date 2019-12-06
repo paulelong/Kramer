@@ -78,17 +78,17 @@ namespace MyMixes
 
         public void ResetPlayer()
         {
-            //if(player != null)
-            //{
-            //    player.PlaybackEnded -= Player_PlaybackEnded;
-            //    player.Dispose();
-            //    player = null;
+            if(player != null)
+            {
+                player.PlaybackEnded -= Player_PlaybackEnded;
+                player.Dispose();
+                player = null;
 
-            //}
+            }
 
-            //player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-            //player.Loop = false;
-            //player.PlaybackEnded += Player_PlaybackEnded;
+            player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+            player.Loop = false;
+            player.PlaybackEnded += Player_PlaybackEnded;
 
             NowPlaying = "";
             SongPosition = 0;
@@ -671,8 +671,6 @@ namespace MyMixes
 
         private async Task ValidatePlayingTracks()
         {
-            await ReadyPlaylist();
-
             List<QueuedTrack> t_remove = new List<QueuedTrack>();
 
             foreach(QueuedTrack t in Playlist)
