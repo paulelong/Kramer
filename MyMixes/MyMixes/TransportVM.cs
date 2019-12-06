@@ -66,13 +66,8 @@ namespace MyMixes
         {
             if (isAligned)
             {
-                CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.One;
                 CrossMediaManager.Current.SeekTo(new TimeSpan((long)(last_playerpos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
-                //CrossMediaManager.Current.SeekTo(new TimeSpan(0,0, 10));
-            }
-            else
-            {
-                CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.All;
+                Console.WriteLine("Seeking to {0}", last_playerpos);
             }
         }
 
@@ -224,7 +219,7 @@ namespace MyMixes
                         PersistentData.LastPlayedSongIndex = currentTrackNumber;
                         if (playerState == PlayerStates.Playing)
                         {
-                            //CrossMediaManager.Current.PlayQueueItem(currentTrackNumber);
+                            CrossMediaManager.Current.PlayQueueItem(currentTrackNumber);
                             //PlayCurrentSongAsync();
                         }
                         else
@@ -475,7 +470,7 @@ namespace MyMixes
             {
                 last_playerpos = SongPosition;
 
-                CrossMediaManager.Current.PlayNext();
+                //CrossMediaManager.Current.PlayNext();
 
 //                if (isAligned)
 //                {
@@ -523,7 +518,7 @@ namespace MyMixes
                 last_playerpos = SongPosition;
                 if (playerState == PlayerStates.Playing)
                 {
-                    CrossMediaManager.Current.PlayPrevious();
+                    //CrossMediaManager.Current.PlayPrevious();
                 }
 
                 //if (isAligned)
@@ -575,6 +570,8 @@ namespace MyMixes
                 }
 
                 await CrossMediaManager.Current.Play(mediaPlayList);
+                CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.All;
+
                 //await CrossMediaManager.Current.Stop();
             }
         }
