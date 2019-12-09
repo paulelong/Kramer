@@ -65,7 +65,7 @@
                         </x:Array>
                     </d:ListView.ItemsSource>-->
                 </ListView>
-                <Grid HorizontalOptions="FillAndExpand" HeightRequest="80" VerticalOptions="EndAndExpand">
+                <Grid HorizontalOptions="FillAndExpand" HeightRequest="130" VerticalOptions="EndAndExpand">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.5*" />
                         <ColumnDefinition Width="0.5*" />
@@ -80,8 +80,8 @@
                     </StackLayout>
                 </Grid>
 
-                <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" VerticalOptions="End"/>
-                <Grid HorizontalOptions="FillAndExpand" VerticalOptions="End" ColumnSpacing="25" >
+                <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" VerticalOptions="End" HeightRequest="160"/>
+                <Grid HorizontalOptions="FillAndExpand" VerticalOptions="End" ColumnSpacing="25" HeightRequest="100" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.25*" />
                         <ColumnDefinition Width="0.5*" />
