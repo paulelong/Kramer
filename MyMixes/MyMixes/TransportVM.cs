@@ -77,6 +77,7 @@ namespace MyMixes
             //player.Loop = false;
             //player.PlaybackEnded += Player_PlaybackEnded;
 
+            playlistReady = false;
             NowPlaying = "";
             SongPosition = 0;
         }

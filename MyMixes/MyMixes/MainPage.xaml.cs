@@ -93,6 +93,8 @@ namespace MyMixes
 
             await TransportVMInstance.LoadProjects();
 
+            TransportVMInstance.ResetPlayer();
+
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
 
             if(!startRecorded)
