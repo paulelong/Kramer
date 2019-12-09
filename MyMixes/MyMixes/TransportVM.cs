@@ -356,21 +356,24 @@ namespace MyMixes
 
         private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
         {
-            //Console.WriteLine("STATE CHANGED {0}",  e.State.ToString());
             switch (e.State)
             {
                 case MediaManager.Player.MediaPlayerState.Playing:
-                    if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
+                    if(MainPlayMode)
                     {
-                        CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
-                    }
-                    if (isAligned)
-                    {
-                        SeekTo(last_playerpos);
+                        if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
+                        {
+                            CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
+                        }
+                        if (isAligned)
+                        {
+                            SeekTo(last_playerpos);
+                        }
                     }
                     PlayButtonStateImage = "PauseBt.png";
                     break;
                 case MediaManager.Player.MediaPlayerState.Paused:
+                case MediaManager.Player.MediaPlayerState.Stopped:
                     PlayButtonStateImage = "PlayBt.png";
                     break;
 
@@ -512,15 +515,6 @@ namespace MyMixes
                 {
                     CrossMediaManager.Current.PlayNext();
                 }
-
-                //                if (isAligned)
-                //                {
-                //                    // CrossMediaManager.Current.SeekTo(new TimeSpan(0, 0, 40));
-                //                    CrossMediaManager.Current.SeekTo(new TimeSpan((long)(playerpos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
-                ////                    CrossMediaManager.Current.SeekTo(new TimeSpan((long)(playerpos * 10000000)));
-                //                }
-
-                //    PlayCurrentSongAsync();
             }
             else
             {
@@ -571,36 +565,6 @@ namespace MyMixes
                     CurrentTrackNumber--;
                 }
             }
-
-//            if (!isAligned && playerState != PlayerStates.Stopped && player.CurrentPosition > 3)
-//            {
-//                CrossMediaManager.Current.SeekToStart();
-////                player.Seek(0);
-//            }
-//            else
-//            {
-//                if (CurrentTrackNumber <= 0)
-//                {
-//                    CurrentTrackNumber = SongsQueued - 1;
-//                }
-//                else
-//                {
-//                    CurrentTrackNumber--;
-//                }
-
-//                // Remember the last position for isAlign looping comparison
-//                last_playerpos = SongPosition;
-//                if (playerState == PlayerStates.Playing)
-//                {
-//                    //CrossMediaManager.Current.PlayPrevious();
-//                }
-
-//                //if (isAligned)
-//                //{
-//                //    CrossMediaManager.Current.SeekTo(new TimeSpan((long)(playerpos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
-//                //    //CrossMediaManager.Current.SeekTo(new TimeSpan((long)(playerpos * 10000000)));
-//                //}
-//            }
         }
 
         public void MoveSongUp(QueuedTrack t)
@@ -818,39 +782,19 @@ namespace MyMixes
 
         private async Task StartPlayer()
         {
-            //if(playerState == PlayerStates.Playing)
-            //{
-                //playerState = PlayerStates.Playing;
 
-                //await ReadyPlaylist();
+            await CrossMediaManager.Current.PlayPause();
 
-                //await CrossMediaManager.Current.PlayQueueItem(mediaPlayList[CurrentTrackNumber]);
-                await CrossMediaManager.Current.PlayPause();
-
-                //player.Play();
-
-                //PlayButtonStateImage = "PauseBt.png";
-            //}
         }
 
         private void PausePlayer()
         {
-            //playerState = PlayerStates.Paused;
-
             CrossMediaManager.Current.PlayPause();
-            //player.Pause();
-
-            //PlayButtonStateImage = "PlayBt.png";
         }
 
         public void StopPlayer()
         {
-            playerState = PlayerStates.Stopped;
-
             CrossMediaManager.Current.Stop();
-            //player.Stop();
-
-            //PlayButtonStateImage = "PlayBt.png";
         }
 
         private void SeekTo(double songPos)
