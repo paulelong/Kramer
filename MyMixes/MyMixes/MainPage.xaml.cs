@@ -77,6 +77,7 @@ namespace MyMixes
         private async void OnDisappearing(object sender, EventArgs e)
         {
             await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.Playlist);
+            PersistentData.Save();
         }
 
 #pragma warning restore AvoidAsyncVoid
@@ -85,6 +86,7 @@ namespace MyMixes
         {
             PersistentData.Save();
             Navigation.PushAsync(new SongNotes(TransportVMInstance, QueuedTrack.FindQueuedTrack((View)sender)));
+            PersistentData.Save();
         }
 
         private async void OnAppearing(object sender, EventArgs e)

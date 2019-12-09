@@ -597,8 +597,6 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
-                playlistReady = true;
-
                 mediaPlayList.Clear();
 
                 foreach (QueuedTrack track in Playlist)
@@ -614,6 +612,8 @@ namespace MyMixes
                 CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
 
                 await CrossMediaManager.Current.PlayPause();
+
+                playlistReady = true;
             }
         }
 

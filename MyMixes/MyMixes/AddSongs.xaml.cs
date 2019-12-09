@@ -547,7 +547,7 @@ namespace MyMixes
 
         }
 
-        private void OnDisappearing(object sender, EventArgs e)
+        private async void OnDisappearing(object sender, EventArgs e)
         {
             if(SongPickerPlaying)
             {
@@ -555,7 +555,7 @@ namespace MyMixes
                 tvm.NowPlaying = null;
                 lastPlayingTrack.TrackPlaying = false;
             }
-
+            await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
             PersistentData.Save();
         }
     }
