@@ -360,12 +360,19 @@ namespace MyMixes
             switch (e.State)
             {
                 case MediaManager.Player.MediaPlayerState.Playing:
-                    if(MainPlayMode)
+                    if (MainPlayMode)
                     {
                         if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
                         {
                             CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
                         }
+
+                        if (pausePlay)
+                        {
+                            CrossMediaManager.Current.PlayPause();
+                            pausePlay = false;
+                        }
+
                         if (isAligned)
                         {
                             SeekTo(last_playerpos);
@@ -449,32 +456,6 @@ namespace MyMixes
                     ReadyPlaylist();
 
                     CrossMediaManager.Current.PlayPause();
-
-
-                    //switch (playerState)
-                    //{
-                    //    case PlayerStates.Playing:
-                    //        PausePlayer();
-                    //        break;
-                    //    case PlayerStates.Paused:
-                    //    case PlayerStates.Stopped:
-                    //        if (nowPlayingDifferentSong)
-                    //        {
-                    //            nowPlayingDifferentSong = false;
-                    //            CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
-                    //            if (isAligned)
-                    //            {
-                    //                CrossMediaManager.Current.SeekTo(new TimeSpan((long)(last_playerpos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
-                    //                Console.WriteLine("Seeking to {0}", last_playerpos);
-                    //            }
-                    //            //StartPlayer();
-                    //        }
-                    //        else
-                    //        {
-                    //            StartPlayer();
-                    //        }
-                    //        break;
-                    //}
                 }
             }
             else
@@ -499,7 +480,6 @@ namespace MyMixes
         public void NextSong()
         {
             if (CrossMediaManager.Current.IsPlaying())
-                //if (playerState == PlayerStates.Playing)
             {
                 // Remember the last position for isAlign looping comparison
                 last_playerpos = SongPosition;
@@ -590,6 +570,7 @@ namespace MyMixes
             PlaySongAsync(Playlist[CurrentTrackNumber].FullPath);
         }
 
+        private bool pausePlay;
         private bool playlistReady = false;
         private readonly double MAX_AHEAD_SEEK = 0.01;
 
@@ -610,8 +591,9 @@ namespace MyMixes
 
                 await CrossMediaManager.Current.Play(mediaPlayList);
                 CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
-
                 await CrossMediaManager.Current.PlayPause();
+
+                pausePlay = true;                
 
                 playlistReady = true;
             }
@@ -739,23 +721,27 @@ namespace MyMixes
 
             int i = Playlist.IndexOf(t);
             Playlist.Remove(t);
-            mediaPlayList.RemoveAt(i);
+
+            playlistReady = false;
             playingListLoaded = false;
 
-            if (playerState != PlayerStates.Stopped && CurrentTrackNumber == i)
+            if (CrossMediaManager.Current.IsPlaying() && CurrentTrackNumber == i)
             {
                 StopPlayer();
+            }
 
-                if(i >= Playlist.Count)
-                {
-                    CurrentTrackNumber = 0;
-                }
+            if (i > Playlist.Count)
+            {
+                currentTrackNumber--;
+            }
+            else
+            {
+                currentTrackNumber = 0;
+            }
 
-                if (isLooping && playerState != PlayerStates.Stopped)
-                {
-                    StartPlayer();
-                    //PlayCurrentSongAsync();
-                }
+            if (Playlist.Count > 0)
+            {
+                ReadyPlaylist();
             }
         }
 
@@ -783,9 +769,7 @@ namespace MyMixes
 
         private async Task StartPlayer()
         {
-
             await CrossMediaManager.Current.PlayPause();
-
         }
 
         private void PausePlayer()
