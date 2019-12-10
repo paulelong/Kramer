@@ -48,7 +48,8 @@ namespace MyMixes
             if(timeSpan.Seconds < 1)
             {
                 return "OneSecond";
-            } if(timeSpan.Seconds < 2)
+            } 
+            if(timeSpan.Seconds < 2)
             {
                 return "OneSeconds";
             }
