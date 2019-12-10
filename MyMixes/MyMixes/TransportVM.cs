@@ -57,10 +57,16 @@ namespace MyMixes
 
             CrossMediaManager.Current.MediaItemChanged += Current_MediaItemChanged;
             CrossMediaManager.Current.StateChanged += Current_StateChanged;
+            CrossMediaManager.Current.MediaItemFailed += Current_MediaItemFailed;
 
             ResetPlayer();
 
             Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+        }
+
+        private void Current_MediaItemFailed(object sender, MediaManager.Media.MediaItemFailedEventArgs e)
+        {
+            Console.WriteLine("Failed to load media item {0}", e);
         }
 
         public void ResetPlayer()
@@ -270,7 +276,6 @@ namespace MyMixes
             get
             {
                 return songPosition;
-
             }
             set
             {
@@ -370,8 +375,11 @@ namespace MyMixes
                     }
                     PlayButtonStateImage = "PauseBt.png";
                     break;
-                case MediaManager.Player.MediaPlayerState.Paused:
                 case MediaManager.Player.MediaPlayerState.Stopped:
+                    Console.WriteLine("Player stopped");
+                    PlayButtonStateImage = "PlayBt.png";
+                    break;
+                case MediaManager.Player.MediaPlayerState.Paused:
                     PlayButtonStateImage = "PlayBt.png";
                     break;
 
@@ -568,6 +576,8 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
+                CrossMediaManager.Current.Stop();
+
                 CrossMediaManager.Current.Queue.Clear();
 
                 foreach (QueuedTrack track in Playlist)
