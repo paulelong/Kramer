@@ -444,32 +444,38 @@ namespace MyMixes
             });
         }
 
-        public void TransportPlayPressed()
+        public async void TransportPlayPressed()
         {
             // We use a universal transport that can be used from different pages in the UI
             if(MainPlayMode)
             {
                 if (SongsQueued > 0)
                 {
-                    ReadyPlaylist();
+                    await ReadyPlaylist();
 
-                    CrossMediaManager.Current.PlayPause();
+                    Console.WriteLine("State is {0} and prepared={1}", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
+
+                    await CrossMediaManager.Current.PlayPause();
                 }
             }
             else
             {
-                switch (playerState)
+                if(CrossMediaManager.Current.IsPrepared())
                 {
-                    case PlayerStates.Playing:
-                        PausePlayer();
-                        break;
-                    case PlayerStates.Paused:
-                        StartPlayer();
-                        break;
-                    case PlayerStates.Stopped:
-//                        PlayCurrentSongAsync();
-                        break;
+                    CrossMediaManager.Current.PlayPause();
                 }
+                //switch (playerState)
+                //{
+                //    case PlayerStates.Playing:
+                //        PausePlayer();
+                //        break;
+                //    case PlayerStates.Paused:
+                //        StartPlayer();
+                //        break;
+                //    case PlayerStates.Stopped:
+                //        //                        PlayCurrentSongAsync();
+                //        break;
+                //}
             }
         }
 
@@ -576,7 +582,7 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
-                CrossMediaManager.Current.Stop();
+                //await CrossMediaManager.Current.Stop();
 
                 CrossMediaManager.Current.Queue.Clear();
 
