@@ -444,16 +444,16 @@ namespace MyMixes
             });
         }
 
-        public void TransportPlayPressed()
+        public async void TransportPlayPressed()
         {
             // We use a universal transport that can be used from different pages in the UI
             if(MainPlayMode)
             {
                 if (SongsQueued > 0)
                 {
-                    ReadyPlaylist();
+                    await ReadyPlaylist();
 
-                    CrossMediaManager.Current.PlayPause();
+                    await CrossMediaManager.Current.PlayPause();
                 }
             }
             else
