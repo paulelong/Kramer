@@ -453,23 +453,29 @@ namespace MyMixes
                 {
                     await ReadyPlaylist();
 
+                    Console.WriteLine("State is {0} and prepared={1}", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
+
                     await CrossMediaManager.Current.PlayPause();
                 }
             }
             else
             {
-                switch (playerState)
+                if(CrossMediaManager.Current.IsPrepared())
                 {
-                    case PlayerStates.Playing:
-                        PausePlayer();
-                        break;
-                    case PlayerStates.Paused:
-                        StartPlayer();
-                        break;
-                    case PlayerStates.Stopped:
-//                        PlayCurrentSongAsync();
-                        break;
+                    CrossMediaManager.Current.PlayPause();
                 }
+                //switch (playerState)
+                //{
+                //    case PlayerStates.Playing:
+                //        PausePlayer();
+                //        break;
+                //    case PlayerStates.Paused:
+                //        StartPlayer();
+                //        break;
+                //    case PlayerStates.Stopped:
+                //        //                        PlayCurrentSongAsync();
+                //        break;
+                //}
             }
         }
 
@@ -576,7 +582,7 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
-                CrossMediaManager.Current.Stop();
+                //await CrossMediaManager.Current.Stop();
 
                 CrossMediaManager.Current.Queue.Clear();
 
