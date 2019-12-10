@@ -582,7 +582,9 @@ namespace MyMixes
 
                 foreach (QueuedTrack track in Playlist)
                 {
-                    IMediaItem mediaItem = new MediaItem(track.FullPath);
+                    IMediaItem mediaItem = new MediaItem(track.FullPath) { IsMetadataExtracted = true };
+                    mediaItem = await CrossMediaManager.Current.Extractor.UpdateMediaItem(mediaItem).ConfigureAwait(false);
+                    
                     mediaItem.Title = track.Name;
                     mediaItem.Album = track.Project;
 
@@ -627,6 +629,10 @@ namespace MyMixes
 
             NowPlaying = Path.GetFileNameWithoutExtension(song);
 
+            if(File.Exists(song))
+            {
+                Console.WriteLine("Song exists " + song);
+            }
             CrossMediaManager.Current.Play(song);
             //StartPlayer();
 
@@ -698,6 +704,7 @@ namespace MyMixes
             {
                 if(!File.Exists(t.FullPath))
                 {
+                    Console.WriteLine("Song missing " + t.FullPath);
                     t_remove.Add(t);
                 }
             }
