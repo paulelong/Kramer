@@ -65,17 +65,7 @@ namespace MyMixes
 
         public void ResetPlayer()
         {
-            //if(player != null)
-            //{
-            //    player.PlaybackEnded -= Player_PlaybackEnded;
-            //    player.Dispose();
-            //    player = null;
-
-            //}
-
-            //player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-            //player.Loop = false;
-            //player.PlaybackEnded += Player_PlaybackEnded;
+            //CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
 
             playlistReady = false;
             NowPlaying = "";
@@ -396,7 +386,7 @@ namespace MyMixes
             }
 
             // Figure out the song index
-            CurrentTrackNumber = mediaPlayList.IndexOf(e.MediaItem);
+            CurrentTrackNumber = CrossMediaManager.Current.Queue.IndexOf(e.MediaItem);
         }
 
         private async Task UpdateSliderAsync(CancellationToken token)
@@ -556,12 +546,12 @@ namespace MyMixes
             {             
                 Playlist.Move(i, i - 1);
 
-                mediaPlayList.Move(i, i - 1);
+                CrossMediaManager.Current.Queue.Move(i, i - 1);
             }
             else
             {
                 Playlist.Move(i, Playlist.Count - 1);
-                mediaPlayList.Move(i, i - 1);
+                CrossMediaManager.Current.Queue.Move(i, i - 1);
             }
         }
 
@@ -578,7 +568,7 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
-                mediaPlayList.Clear();
+                CrossMediaManager.Current.Queue.Clear();
 
                 foreach (QueuedTrack track in Playlist)
                 {
@@ -588,14 +578,16 @@ namespace MyMixes
                     mediaItem.Title = track.Name;
                     mediaItem.Album = track.Project;
 
-                    mediaPlayList.Add(mediaItem);
+                    //mediaPlayList.Add(mediaItem);
+                    CrossMediaManager.Current.Queue.Add(mediaItem);
                 }
 
-                await CrossMediaManager.Current.Play(mediaPlayList);
-                CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
-                await CrossMediaManager.Current.PlayPause();
+                //CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
 
-                pausePlay = true;                
+                //await CrossMediaManager.Current.Play(mediaPlayList);
+                //await CrossMediaManager.Current.PlayPause();
+
+                //pausePlay = true;                
 
                 playlistReady = true;
             }
@@ -770,7 +762,7 @@ namespace MyMixes
                 mediaItem.Title = t.Name;
                 mediaItem.Album = t.Project;
 
-                mediaPlayList.Add(mediaItem);
+                CrossMediaManager.Current.Queue.Add(mediaItem);
             }
         }
 
