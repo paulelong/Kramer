@@ -76,6 +76,8 @@ namespace MyMixes
             playlistReady = false;
             NowPlaying = "";
             SongPosition = 0;
+
+            CrossMediaManager.Current.Stop();
         }
 
         #region Properties
