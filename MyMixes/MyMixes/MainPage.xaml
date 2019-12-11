@@ -54,9 +54,9 @@
                         SelectedItem="{Binding SelectedSong, Mode=TwoWay}"
                         BackgroundColor="Transparent"
                         RowHeight="55" Margin="0,0,0,0"
-                          CachingStrategy="RecycleElement"
+                        CachingStrategy="RecycleElement"
             >
-                    <!--<d:ListView.ItemsSource>
+                    <!--<d:ListView.ItemsSource>                        
                         ItemSelected="TrackView_Sel"
                         CachingStrategy="RecycleElement"
                         <x:Array Type="{x:Type local:QueuedTrack}">
