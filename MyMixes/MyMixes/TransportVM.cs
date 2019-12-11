@@ -359,20 +359,23 @@ namespace MyMixes
                 case MediaManager.Player.MediaPlayerState.Playing:
                     if (MainPlayMode)
                     {
-                        if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
+                        if(CrossMediaManager.Current.Queue.Current != null)
                         {
-                            CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
-                        }
+                            if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
+                            {
+                                CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
+                            }
 
-                        if (pausePlay)
-                        {
-                            CrossMediaManager.Current.PlayPause();
-                            pausePlay = false;
-                        }
+                            //if (pausePlay)
+                            //{
+                            //    CrossMediaManager.Current.PlayPause();
+                            //    pausePlay = false;
+                            //}
 
-                        if (isAligned)
-                        {
-                            SeekTo(last_playerpos);
+                            if (isAligned)
+                            {
+                                SeekTo(last_playerpos);
+                            }
                         }
                     }
                     PlayButtonStateImage = "PauseBt.png";
@@ -576,7 +579,7 @@ namespace MyMixes
             PlaySongAsync(Playlist[CurrentTrackNumber].FullPath);
         }
 
-        private bool pausePlay;
+        //private bool pausePlay;
         private bool playlistReady = false;
         private readonly double MAX_AHEAD_SEEK = 0.01;
 
