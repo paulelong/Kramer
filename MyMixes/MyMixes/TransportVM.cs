@@ -460,7 +460,16 @@ namespace MyMixes
 
                     Console.WriteLine("State is {0} and prepared={1}", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
 
-                    await CrossMediaManager.Current.PlayPause();
+                    if(newPlaylist && Device.RuntimePlatform == Device.iOS)
+                    {                        
+                        await CrossMediaManager.Current.PlayQueueItem(0);
+                    }
+                    else
+                    {
+                        await CrossMediaManager.Current.PlayPause();
+                    }
+                        
+                    newPlaylist = false;
                 }
             }
             else
@@ -581,15 +590,22 @@ namespace MyMixes
 
         //private bool pausePlay;
         private bool playlistReady = false;
+        private bool newPlaylist = false;
         private readonly double MAX_AHEAD_SEEK = 0.01;
 
         public async Task ReadyPlaylist()
         {
             if(!playlistReady)
             {
-                //await CrossMediaManager.Current.Stop();
+                //if(CrossMediaManager.Current.IsPlaying())
+                //{
+                //    await CrossMediaManager.Current.Stop();
+                //}
 
-                CrossMediaManager.Current.Queue.Clear();
+                if (CrossMediaManager.Current.Queue != null)
+                {
+                    CrossMediaManager.Current.Queue.Clear();
+                }
 
                 foreach (QueuedTrack track in Playlist)
                 {
@@ -609,7 +625,7 @@ namespace MyMixes
                 //await CrossMediaManager.Current.PlayPause();
 
                 //pausePlay = true;                
-
+                newPlaylist = true;
                 playlistReady = true;
             }
         }
