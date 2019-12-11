@@ -156,7 +156,7 @@ namespace MyMixes
             await Navigation.PushAsync(pp);
         }
 
-        private async void SongOrderClicked(object sender, EventArgs e)
+        private void SongOrderClicked(object sender, EventArgs e)
         {
             Track t = FindTrack((View)sender);
 
@@ -528,11 +528,11 @@ namespace MyMixes
             return false;
         }
 
-        private void DeleteSong_Clicked(object sender, EventArgs e)
+        private async void DeleteSong_Clicked(object sender, EventArgs e)
         {
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
-            tvm.RemoveSong(t);
+            await tvm.RemoveSong(t);
         }
 
         private void SongDownPosition_Clicked(object sender, EventArgs e)

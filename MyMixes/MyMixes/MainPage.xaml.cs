@@ -122,9 +122,9 @@ namespace MyMixes
             }
         }
 
-        private void DeleteSong_Clicked(object sender, EventArgs e)
+        private async void DeleteSong_Clicked(object sender, EventArgs e)
         {
-            TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
+            await TransportVMInstance.RemoveSong(QueuedTrack.FindQueuedTrack((View)sender));
         }
 
         private void DownPosition_Clicked(object sender, EventArgs e)

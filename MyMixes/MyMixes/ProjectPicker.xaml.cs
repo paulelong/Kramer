@@ -267,7 +267,7 @@ namespace MyMixes
             }
         }
 
-        private async void SelectPressed(object sender, EventArgs e)
+        private void SelectPressed(object sender, EventArgs e)
         {
             if (FolderList.SelectedItem != null)
             {
@@ -297,7 +297,7 @@ namespace MyMixes
             }
         }
 
-        private async void Cancel(object sender, EventArgs e)
+        private void Cancel(object sender, EventArgs e)
         {
         }
 

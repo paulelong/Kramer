@@ -39,7 +39,7 @@ namespace MyMixes
 
         private DateTime LastTime;
 
-        private bool nowPlayingDifferentSong = false;
+        //private bool nowPlayingDifferentSong = false;
 
         private double last_playerpos;
 
@@ -418,9 +418,9 @@ namespace MyMixes
 
 
 #pragma warning disable AvoidAsyncVoid
-        private async void Player_PlaybackEnded(object sender, EventArgs e)
+        private void Player_PlaybackEnded(object sender, EventArgs e)
         {
-            Device.BeginInvokeOnMainThread(async () => 
+            Device.BeginInvokeOnMainThread(() => 
             {
                 if(isAligned)
                 {
@@ -462,7 +462,7 @@ namespace MyMixes
             {
                 if(CrossMediaManager.Current.IsPrepared())
                 {
-                    CrossMediaManager.Current.PlayPause();
+                    await CrossMediaManager.Current.PlayPause();
                 }
                 //switch (playerState)
                 //{
@@ -646,47 +646,47 @@ namespace MyMixes
 
             return true;
 
-            try
-            {
-                player.Stop();
+            //try
+            //{
+            //    player.Stop();
 
-                using (Stream s = new FileStream(song, FileMode.Open))
-                {
-                    if (player.Load(s))
-                    {
-                        if (playerState != PlayerStates.Stopped && isAligned)
-                        {
-                            player.Seek(playerpos);
-                        }
+            //    using (Stream s = new FileStream(song, FileMode.Open))
+            //    {
+            //        if (player.Load(s))
+            //        {
+            //            if (playerState != PlayerStates.Stopped && isAligned)
+            //            {
+            //                player.Seek(playerpos);
+            //            }
 
-                        NowPlaying = Path.GetFileNameWithoutExtension(song);
+            //            NowPlaying = Path.GetFileNameWithoutExtension(song);
 
-                        StartPlayer();
-                    }
-                    else
-                    {
-                        properties.Clear();
-                        properties["Length"] = s.Length.ToString();
-                        properties["Type"] = Path.GetExtension(song);
+            //            StartPlayer();
+            //        }
+            //        else
+            //        {
+            //            properties.Clear();
+            //            properties["Length"] = s.Length.ToString();
+            //            properties["Type"] = Path.GetExtension(song);
 
-                        Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
+            //            Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
 
-                        ErrorMsg(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
-                        StopPlayer();
+            //            ErrorMsg(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
+            //            StopPlayer();
 
-                        return false;
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                ErrorMsg(AppResources.SongPlayFailedTitle, ex.Message, AppResources.OK);
-                Debug.Print(ex.ToString());
+            //            return false;
+            //        }
+            //    }
+            //}
+            //catch(Exception ex)
+            //{
+            //    ErrorMsg(AppResources.SongPlayFailedTitle, ex.Message, AppResources.OK);
+            //    Debug.Print(ex.ToString());
 
-                return false;
-            }
+            //    return false;
+            //}
 
-            return true;
+            //return true;
         }
 
         public async Task LoadProjects()
@@ -729,7 +729,7 @@ namespace MyMixes
             await PersistentData.SaveQueuedTracksAsync(Playlist);
         }
 
-        public void RemoveSong(QueuedTrack t)
+        public async Task RemoveSong(QueuedTrack t)
         {
             if (t == null)
                 return;
@@ -756,7 +756,7 @@ namespace MyMixes
 
             if (Playlist.Count > 0)
             {
-                ReadyPlaylist();
+                await ReadyPlaylist();
             }
         }
 
