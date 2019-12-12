@@ -314,6 +314,7 @@ namespace MyMixes
                         CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
                         if (isAligned)
                         {
+                            Console.Write("Selected Song: ");
                             SeekTo(last_playerpos);
                         }
                     }
@@ -374,6 +375,7 @@ namespace MyMixes
 
                             if (isAligned)
                             {
+                                Console.Write("State Change Song: ");
                                 SeekTo(last_playerpos);
                             }
                         }
@@ -395,6 +397,7 @@ namespace MyMixes
         {
             if (isAligned)
             {
+                Console.Write("Media Changed Song: ");
                 SeekTo(last_playerpos);
             }
 
@@ -494,6 +497,7 @@ namespace MyMixes
                     CrossMediaManager.Current.PlayQueueItem(0);
                     if (isAligned)
                     {
+                        Console.Write("Next Song: ");
                         SeekTo(last_playerpos);
                     }
                 }
@@ -530,6 +534,7 @@ namespace MyMixes
                         CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
                         if (isAligned)
                         {
+                            Console.Write("Prev Song: ");
                             SeekTo(last_playerpos);
                         }
                     }
