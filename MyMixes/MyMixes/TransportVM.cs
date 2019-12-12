@@ -478,18 +478,6 @@ namespace MyMixes
                 {
                     await CrossMediaManager.Current.PlayPause();
                 }
-                //switch (playerState)
-                //{
-                //    case PlayerStates.Playing:
-                //        PausePlayer();
-                //        break;
-                //    case PlayerStates.Paused:
-                //        StartPlayer();
-                //        break;
-                //    case PlayerStates.Stopped:
-                //        //                        PlayCurrentSongAsync();
-                //        break;
-                //}
             }
         }
 
@@ -651,11 +639,6 @@ namespace MyMixes
 
             Analytics.TrackEvent("PlayTrack", properties);
 
-            //if (playerState != PlayerStates.Stopped && isAligned)
-            //{
-            //    player.Seek(playerpos);
-            //}
-
             NowPlaying = Path.GetFileNameWithoutExtension(song);
 
             if(File.Exists(song))
@@ -666,48 +649,6 @@ namespace MyMixes
             //StartPlayer();
 
             return true;
-
-            //try
-            //{
-            //    player.Stop();
-
-            //    using (Stream s = new FileStream(song, FileMode.Open))
-            //    {
-            //        if (player.Load(s))
-            //        {
-            //            if (playerState != PlayerStates.Stopped && isAligned)
-            //            {
-            //                player.Seek(playerpos);
-            //            }
-
-            //            NowPlaying = Path.GetFileNameWithoutExtension(song);
-
-            //            StartPlayer();
-            //        }
-            //        else
-            //        {
-            //            properties.Clear();
-            //            properties["Length"] = s.Length.ToString();
-            //            properties["Type"] = Path.GetExtension(song);
-
-            //            Analytics.TrackEvent("PlayCurrent player.Load failed", properties);
-
-            //            ErrorMsg(AppResources.SongPlayFailedTitle, AppResources.SongPlayFailed, AppResources.OK);
-            //            StopPlayer();
-
-            //            return false;
-            //        }
-            //    }
-            //}
-            //catch(Exception ex)
-            //{
-            //    ErrorMsg(AppResources.SongPlayFailedTitle, ex.Message, AppResources.OK);
-            //    Debug.Print(ex.ToString());
-
-            //    return false;
-            //}
-
-            //return true;
         }
 
         public async Task LoadProjects()
@@ -822,7 +763,8 @@ namespace MyMixes
         {
             double curPos = CrossMediaManager.Current.Position.TotalSeconds / CrossMediaManager.Current.Duration.TotalSeconds;
 
-            if(CrossMediaManager.Current.Duration.TotalSeconds > 0 && CrossMediaManager.Current.Duration.TotalSeconds < 3600 && songPos > 0 && songPos < 1 && (songPos - curPos) > MAX_AHEAD_SEEK)
+            if(CrossMediaManager.Current.Duration.TotalSeconds > 0 && CrossMediaManager.Current.Duration.TotalSeconds < 3600 && 
+                songPos > 0 && songPos < 1 && Math.Abs(songPos - curPos) > MAX_AHEAD_SEEK)
             {
                 CrossMediaManager.Current.SeekTo(new TimeSpan((long)(songPos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
             }
