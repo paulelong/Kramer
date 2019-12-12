@@ -88,7 +88,7 @@
                     </StackLayout>
 
                     <ListView x:Name="FolderList" 
-                            RowHeight="40" BackgroundColor="#242424" HeightRequest="300" 
+                            RowHeight="40" BackgroundColor="Transparent" HeightRequest="300" 
                             ItemTemplate="{StaticResource DirectoryListTemplate}" ItemSelected="FolderList_ItemSelected">
                         <d:ListView.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
