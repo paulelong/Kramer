@@ -495,7 +495,6 @@ namespace MyMixes
                     if (isAligned)
                     {
                         SeekTo(last_playerpos);
-                        Console.WriteLine("Seeking to {0}", last_playerpos);
                     }
                 }
                 else
@@ -528,13 +527,18 @@ namespace MyMixes
                     if (CurrentTrackNumber <= 0)
                     {
                         CurrentTrackNumber = SongsQueued - 1;
+                        CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
+                        if (isAligned)
+                        {
+                            SeekTo(last_playerpos);
+                        }
                     }
                     else
                     {
                         CurrentTrackNumber--;
+                        CrossMediaManager.Current.PlayPrevious();
                     }
 
-                    CrossMediaManager.Current.PlayPrevious();
                 }
                 else
                 {
@@ -763,9 +767,10 @@ namespace MyMixes
         {
             double curPos = CrossMediaManager.Current.Position.TotalSeconds / CrossMediaManager.Current.Duration.TotalSeconds;
 
-            if(CrossMediaManager.Current.Duration.TotalSeconds > 0 && CrossMediaManager.Current.Duration.TotalSeconds < 3600 && 
-                songPos > 0 && songPos < 1 && Math.Abs(songPos - curPos) > MAX_AHEAD_SEEK)
+            if(/*CrossMediaManager.Current.Duration.TotalSeconds > 0 &&*/ CrossMediaManager.Current.Duration.TotalSeconds < 3600 && 
+                songPos > 0 && songPos <= 1 && Math.Abs(songPos - curPos) > MAX_AHEAD_SEEK)
             {
+                Console.WriteLine("Seeking: Songpos={0}, curPos={1}, pos={2}, dur={3}", songPos, curPos, CrossMediaManager.Current.Position.TotalSeconds, CrossMediaManager.Current.Duration.TotalSeconds);
                 CrossMediaManager.Current.SeekTo(new TimeSpan((long)(songPos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
             }
         }
