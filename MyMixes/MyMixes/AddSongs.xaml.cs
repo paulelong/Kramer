@@ -133,7 +133,8 @@ namespace MyMixes
             {
                 if (song == this.tvm.Playlist[i].Name && project == this.tvm.Playlist[i].Project)
                 {
-                    this.tvm.RemoveTrack(i);
+                    //this.tvm.RemoveTrack(i);
+                    this.tvm.RemoveSong(this.tvm.Playlist[i]);
                 }
             }
         }
