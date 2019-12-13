@@ -567,16 +567,27 @@ namespace MyMixes
         {
             int i = Playlist.IndexOf(t);
 
+
             if (i > 0)
             {             
                 Playlist.Move(i, i - 1);
 
                 CrossMediaManager.Current.Queue.Move(i, i - 1);
+
+                if (i == CurrentTrackNumber)
+                {
+                    currentTrackNumber--;
+                }
             }
             else
             {
                 Playlist.Move(i, Playlist.Count - 1);
-                CrossMediaManager.Current.Queue.Move(i, i - 1);
+                CrossMediaManager.Current.Queue.Move(i, Playlist.Count - 1);
+
+                if (i == CurrentTrackNumber)
+                {
+                    currentTrackNumber = Playlist.Count - 1;
+                }
             }
         }
 
@@ -773,7 +784,7 @@ namespace MyMixes
             double curPos = CrossMediaManager.Current.Position.TotalSeconds / CrossMediaManager.Current.Duration.TotalSeconds;
 
             if(/*CrossMediaManager.Current.Duration.TotalSeconds > 0 &&*/ CrossMediaManager.Current.Duration.TotalSeconds < 3600 && 
-                songPos > 0 && songPos <= 1 && Math.Abs(songPos - curPos) > MAX_AHEAD_SEEK)
+                songPos > 0 && songPos <= 1 /*&& Math.Abs(songPos - curPos) > MAX_AHEAD_SEEK*/)
             {
                 Console.WriteLine("Seeking: Songpos={0}, curPos={1}, pos={2}, dur={3}", songPos, curPos, CrossMediaManager.Current.Position.TotalSeconds, CrossMediaManager.Current.Duration.TotalSeconds);
                 CrossMediaManager.Current.SeekTo(new TimeSpan((long)(songPos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
