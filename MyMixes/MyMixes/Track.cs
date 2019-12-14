@@ -157,7 +157,6 @@ namespace MyMixes
 
 
         private int order = 0;
-
         public string Order
         {
             get
@@ -196,16 +195,5 @@ namespace MyMixes
 
             }
         }
-
-
-
-        //protected virtual void OnPropertyChanged(string propertyName)
-        //{
-        //    var changed = PropertyChanged;
-        //    if (changed != null)
-        //    {
-        //        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        //    }
-        //}
     }
 }
