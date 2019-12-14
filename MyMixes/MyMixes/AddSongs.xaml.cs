@@ -146,7 +146,7 @@ namespace MyMixes
             {
                 if (folder == this.tvm.Playlist[i].Project)
                 {
-                    this.tvm.RemoveTrack(i);
+                    this.tvm.RemoveSong(this.tvm.Playlist[i]);
                 }
             }
         }

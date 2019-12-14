@@ -165,7 +165,7 @@ namespace MyMixes
             }
         }
 
-        private ObservableCollection<IMediaItem> mediaPlayList = new ObservableCollection<IMediaItem>();
+        //private ObservableCollection<IMediaItem> mediaPlayList = new ObservableCollection<IMediaItem>();
 
         private ObservableCollection<QueuedTrack> playlist = null; // new ObservableCollection<QueuedTrack>();
         public ObservableCollection<QueuedTrack> Playlist
@@ -183,11 +183,11 @@ namespace MyMixes
             }
         }
 
-        public void RemoveTrack(int tracknum)
-        {
-            Playlist.RemoveAt(tracknum);
-            mediaPlayList.RemoveAt(tracknum);
-        }
+        //public void RemoveTrack(int tracknum)
+        //{
+        //    Playlist.RemoveAt(tracknum);
+        //    mediaPlayList.RemoveAt(tracknum);
+        //}
 
         public ISimpleAudioPlayer player { get; set; }
 
@@ -247,7 +247,7 @@ namespace MyMixes
         {
             get
             {
-                if(Playlist.Count > 0 && nowPlaying != null)
+                if(Playlist.Count > 0 && !string.IsNullOrEmpty(nowPlaying))
                 {
                     return "Now Playing: " + nowPlaying;
                 }
@@ -378,6 +378,8 @@ namespace MyMixes
                                 Console.WriteLine("*** State Change Song ***");
                                 SeekTo(last_playerpos);
                             }
+
+                            NowPlaying = Playlist[CurrentTrackNumber].Name;
                         }
                     }
                     PlayButtonStateImage = "PauseBt.png";
@@ -403,6 +405,8 @@ namespace MyMixes
 
             // Figure out the song index
             CurrentTrackNumber = CrossMediaManager.Current.Queue.IndexOf(e.MediaItem);
+
+            NowPlaying = Playlist[CurrentTrackNumber].Name;
         }
 
         private async Task UpdateSliderAsync(CancellationToken token)
