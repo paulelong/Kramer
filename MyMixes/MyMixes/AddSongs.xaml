@@ -50,7 +50,7 @@
                                VerticalTextAlignment="Center" HorizontalTextAlignment="Center" 
                                FontSize="Large" />
                         <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="FillAndExpand">
-                            <Label Text="{Binding Name}" TextColor="White" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
+                            <Label Text="{Binding DisplayName}" TextColor="White" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
                             <StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" VerticalOptions="Fill">
                                 <Label Text="{Binding LastModifiedTimeString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
                                 <Label Text="{Binding LastModifiedDateString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>

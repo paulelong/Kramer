@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
 namespace MyMixes
 {
-    public class Track : INotifyPropertyChanged
+    public class Track : BaseTrack//, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        public string Name { get; set; }
-        public string FullPath { get; set; }
+        //public string Name { get; set; }
+        //public string DisplayName
+        //{
+        //    get
+        //    {
+        //        return Name;
+        //    }
+        //}
+
         public string ProjectPath { get; set; }
-        public bool isProject { get; set; }
+        //public bool isProject { get; set; }
         public int TrackNum { get; set; }
 
         private bool cloudProviderSet = false;
@@ -74,13 +80,13 @@ namespace MyMixes
             }
         }
 
-        public string LastModifiedDateString
-        {
-            get
-            {
-                return LastModifiedDate.ToShortDateString();
-            }
-        }
+        //public string LastModifiedDateString
+        //{
+        //    get
+        //    {
+        //        return LastModifiedDate.ToShortDateString();
+        //    }
+        //}
         public string LastModifiedTimeString
         {
             get
@@ -88,45 +94,45 @@ namespace MyMixes
                 return LastModifiedDate.ToShortTimeString();
             }
         }
-        public string LastModifiedDateSimple
-        {
-            get
-            {
-                string date = "";
+        //public string LastModifiedDateSimple
+        //{
+        //    get
+        //    {
+        //        string date = "";
 
-                if (DateTime.Now.DayOfYear == LastModifiedDate.DayOfYear)
-                {
-                    date = "Today";
-                }
-                else
-                {
-                    var diff = DateTime.Now - LastModifiedDate;
-                    if (diff.Days > 365)
-                    {
-                        date = LastModifiedDate.ToShortDateString();
-                    }
-                    else if (DateTime.Now.DayOfYear - 1 == LastModifiedDate.DayOfYear)
-                    {
-                        date = "Yesterday";
-                    }
-                    else
-                    {
-                        date = String.Format("{0:M/d}", LastModifiedDate);
-                    }
-                }
-                return date;
-            }
-        }
-        public string LastModifiedTimeSimple
-        {
-            get
-            {
-                return String.Format("{0:h:mm tt}", LastModifiedDate);
-            }
-        }
-        public DateTime LastModifiedDate { get; set; }
+        //        if (DateTime.Now.DayOfYear == LastModifiedDate.DayOfYear)
+        //        {
+        //            date = "Today";
+        //        }
+        //        else
+        //        {
+        //            var diff = DateTime.Now - LastModifiedDate;
+        //            if (diff.Days > 365)
+        //            {
+        //                date = LastModifiedDate.ToShortDateString();
+        //            }
+        //            else if (DateTime.Now.DayOfYear - 1 == LastModifiedDate.DayOfYear)
+        //            {
+        //                date = "Yesterday";
+        //            }
+        //            else
+        //            {
+        //                date = String.Format("{0:M/d}", LastModifiedDate);
+        //            }
+        //        }
+        //        return date;
+        //    }
+        //}
+        //public string LastModifiedTimeSimple
+        //{
+        //    get
+        //    {
+        //        return String.Format("{0:h:mm tt}", LastModifiedDate);
+        //    }
+        //}
+        //public DateTime LastModifiedDate { get; set; }
 
-        public DateTime LastWriteDate { get; set; }
+        //public DateTime LastWriteDate { get; set; }
 
         public string Project
         {
@@ -255,19 +261,15 @@ namespace MyMixes
             }
         }
 
-        public void Print()
-        {
-            
-            Debug.Print("{2} {0} {1}\n", Name, FullPath, isProject ? "Project" : "Track");
-        }
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            var changed = PropertyChanged;
-            if (changed != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
+
+        //protected virtual void OnPropertyChanged(string propertyName)
+        //{
+        //    var changed = PropertyChanged;
+        //    if (changed != null)
+        //    {
+        //        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        //    }
+        //}
     }
 }

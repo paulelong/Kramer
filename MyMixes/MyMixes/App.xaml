@@ -63,7 +63,7 @@
                                    VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
                     </StackLayout>
                     <StackLayout Orientation="Horizontal">
-                        <Label Text="{TemplateBinding Parent.BindingContext.Name}" Style="{StaticResource SongText}" VerticalOptions="StartAndExpand" Margin="0,-4,0,0"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.DisplayName}" Style="{StaticResource SongText}" VerticalOptions="StartAndExpand" Margin="0,-4,0,0"/>
                         <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" Style="{StaticResource SongSubText}"
                                    VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>
                     </StackLayout>
