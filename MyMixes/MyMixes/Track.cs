@@ -6,18 +6,15 @@ using System.Text;
 
 namespace MyMixes
 {
-    public class Track : BaseTrack//, INotifyPropertyChanged
+    public class Track : BaseTrack
     {
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //public string Name { get; set; }
-        //public string DisplayName
-        //{
-        //    get
-        //    {
-        //        return Name;
-        //    }
-        //}
+        public string Project
+        {
+            get
+            {
+                return Path.GetFileName(ProjectPath);
+            }
+        }
 
         public string ProjectPath { get; set; }
         //public bool isProject { get; set; }
@@ -80,67 +77,6 @@ namespace MyMixes
             }
         }
 
-        //public string LastModifiedDateString
-        //{
-        //    get
-        //    {
-        //        return LastModifiedDate.ToShortDateString();
-        //    }
-        //}
-        public string LastModifiedTimeString
-        {
-            get
-            {
-                return LastModifiedDate.ToShortTimeString();
-            }
-        }
-        //public string LastModifiedDateSimple
-        //{
-        //    get
-        //    {
-        //        string date = "";
-
-        //        if (DateTime.Now.DayOfYear == LastModifiedDate.DayOfYear)
-        //        {
-        //            date = "Today";
-        //        }
-        //        else
-        //        {
-        //            var diff = DateTime.Now - LastModifiedDate;
-        //            if (diff.Days > 365)
-        //            {
-        //                date = LastModifiedDate.ToShortDateString();
-        //            }
-        //            else if (DateTime.Now.DayOfYear - 1 == LastModifiedDate.DayOfYear)
-        //            {
-        //                date = "Yesterday";
-        //            }
-        //            else
-        //            {
-        //                date = String.Format("{0:M/d}", LastModifiedDate);
-        //            }
-        //        }
-        //        return date;
-        //    }
-        //}
-        //public string LastModifiedTimeSimple
-        //{
-        //    get
-        //    {
-        //        return String.Format("{0:h:mm tt}", LastModifiedDate);
-        //    }
-        //}
-        //public DateTime LastModifiedDate { get; set; }
-
-        //public DateTime LastWriteDate { get; set; }
-
-        public string Project
-        {
-            get
-            {
-                return Path.GetFileName(ProjectPath);
-            }
-        }
 
         private string orderButtonText = "+";
         public string OrderButtonText
