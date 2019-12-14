@@ -59,6 +59,8 @@ namespace MyMixes
             CrossMediaManager.Current.StateChanged += Current_StateChanged;
             CrossMediaManager.Current.MediaItemFailed += Current_MediaItemFailed;
 
+            CrossMediaManager.Current.KeepScreenOn = true;
+
             ResetPlayer();
 
             Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });

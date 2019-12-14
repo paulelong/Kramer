@@ -17,7 +17,6 @@ namespace MyMixes
                 return Name + Path.GetExtension(FullPath);
             }
         }
-
         public string FullPath { get; set; }
         public bool isProject { get; set; }
 
