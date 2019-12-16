@@ -406,7 +406,10 @@ namespace MyMixes
             }
 
             // Figure out the song index
-            CurrentTrackNumber = CrossMediaManager.Current.Queue.IndexOf(e.MediaItem);
+            if (CrossMediaManager.Current.Queue != null)
+            {
+                CurrentTrackNumber = CrossMediaManager.Current.Queue.IndexOf(e.MediaItem);
+            }
 
             NowPlaying = Playlist[CurrentTrackNumber].Name;
         }
@@ -578,7 +581,10 @@ namespace MyMixes
             {             
                 Playlist.Move(i, i - 1);
 
-                CrossMediaManager.Current.Queue.Move(i, i - 1);
+                if(CrossMediaManager.Current.Queue != null)
+                {
+                    CrossMediaManager.Current.Queue.Move(i, i - 1);
+                }
 
                 if (i == CurrentTrackNumber)
                 {
@@ -588,7 +594,11 @@ namespace MyMixes
             else
             {
                 Playlist.Move(i, Playlist.Count - 1);
-                CrossMediaManager.Current.Queue.Move(i, Playlist.Count - 1);
+
+                if (CrossMediaManager.Current.Queue != null)
+                {
+                    CrossMediaManager.Current.Queue.Move(i, Playlist.Count - 1);
+                }
 
                 if (i == CurrentTrackNumber)
                 {
