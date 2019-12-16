@@ -18,8 +18,8 @@ namespace MyMixes
 {
     [DesignTimeVisible(true)]
     [XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class AddSongs : ContentPage
-	{
+    public partial class AddSongs : ContentPage, INotifyPropertyChanged
+    {
         private Track selectedTrack = null;
         private Track lastPlayingTrack = null;
         private Dictionary<string, int> PlayListOrder = new Dictionary<string, int>();
@@ -32,6 +32,30 @@ namespace MyMixes
         private bool SongPickerPlaying;
 
         CancellationTokenSource cts;
+
+        private int storageSize = 0;
+        public int StorageSize
+        {
+            get
+            {
+                return storageSize;
+            }
+            set
+            {
+                if(storageSize != value)
+                {
+                    storageSize = value;
+                    OnPropertyChanged("StorageSizeDisplay");
+                }
+            }
+        }
+        public string StorageSizeDisplay
+        {
+            get
+            {
+                return string.Format("{0} MB", StorageSize);
+            }
+        }
 
         public Command CancelWork { get; set; }
 
@@ -48,6 +72,8 @@ namespace MyMixes
             BusyBar.BindingContext = ppd;
 
             Projects.ItemsSource = LoadedTracks;
+
+            StoreSize.BindingContext = this;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -189,6 +215,9 @@ namespace MyMixes
                     LoadedTracks.Clear();
                 }
                 LoadProjects();
+
+                ComputeStorageSize();
+
                 BusyOn(false, true);
             }
 
@@ -394,9 +423,10 @@ namespace MyMixes
 
             cts = null;
 
+            ComputeStorageSize();
+
             PersistentData.Save();
         }
-
 
         private void LoadProjects()
         {
@@ -481,7 +511,7 @@ namespace MyMixes
 
                 foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
                 {
-                    if (WavDirectory(projFolder))
+                    if (IsWavDirectory(projFolder))
                     {
                         //string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + projFolder;
                         
@@ -543,7 +573,7 @@ namespace MyMixes
 
                     foreach (string projFolder in Directory.GetDirectories(DownloadDirectory))
                     {
-                        if (WavDirectory(projFolder))
+                        if (IsWavDirectory(projFolder))
                         {
                             Track t = new Track { Name = Path.GetFileName(projFolder), FullPath = projFolder, isProject = true };
 
@@ -586,7 +616,7 @@ namespace MyMixes
             }
         }
 
-        private bool WavDirectory(string f)
+        private bool IsWavDirectory(string f)
         {
             foreach (string fl in Directory.GetFiles(f))
             {
@@ -597,6 +627,35 @@ namespace MyMixes
             return false;
         }
 
+        private void ComputeStorageSize()
+        {
+            long totalsize = 0;
+            foreach (string projFolder in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)))
+            {
+                if (IsWavDirectory(projFolder))
+                {
+                    //string newProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/" + projFolder;
 
+                    foreach (string songFile in Directory.GetFiles(projFolder))
+                    {
+                        FileInfo info = new FileInfo(songFile);
+
+                        totalsize += info.Length;
+                    }
+                }
+            }
+
+            StorageSize = (int)(totalsize / (1024*1024));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            var changed = PropertyChanged;
+            if (changed != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }
