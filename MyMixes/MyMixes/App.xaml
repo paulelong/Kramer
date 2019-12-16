@@ -48,10 +48,17 @@
             </ControlTemplate>
 
             <ControlTemplate x:Key="BusyControl">
-                <Grid IsVisible="{TemplateBinding BindingContext.IsVisible}">
-                    <ActivityIndicator x:Name="BusySignal" IsRunning="{TemplateBinding BindingContext.IsRunning}" BackgroundColor="#050505"/>
-                    <Label Text="{TemplateBinding BindingContext.BusyText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="White"/>
-                </Grid>
+                <StackLayout Orientation="Horizontal">
+                    <Grid IsVisible="{TemplateBinding BindingContext.IsVisible}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.8*" />
+                            <ColumnDefinition Width="0.2*" />
+                        </Grid.ColumnDefinitions>
+                        <ActivityIndicator x:Name="BusySignal" IsRunning="{TemplateBinding BindingContext.IsRunning}" BackgroundColor="#050505"/>
+                        <Label Text="{TemplateBinding BindingContext.BusyText}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="White"/>
+                        <Button Grid.Column="1" Text="Cancel" FontSize="Micro" Command="{TemplateBinding Parent.BindingContext.CancelWork}"/>
+                    </Grid>
+                </StackLayout>
             </ControlTemplate>
 
             <ControlTemplate x:Key="PlaylistEntry">

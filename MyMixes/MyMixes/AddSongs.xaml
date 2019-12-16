@@ -95,7 +95,7 @@
                         ItemSelected="TrackView_Sel"
                         ItemTemplate="{StaticResource trackDataTemplateSelector}" 
                         RowHeight="45"
-                        IsPullToRefreshEnabled="True"
+                        IsPullToRefreshEnabled="True"                              
                         Refreshing="ResyncAllClickedAsync"                             
                     >                    
                         <d:ListView.ItemsSource>

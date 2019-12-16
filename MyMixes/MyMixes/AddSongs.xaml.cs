@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -30,6 +31,10 @@ namespace MyMixes
         private TransportViewModel tvm;
         private bool SongPickerPlaying;
 
+        CancellationTokenSource cts;
+
+        public Command CancelWork { get; set; }
+
         public AddSongs(TransportViewModel tvm)
         {
             InitializeComponent();
@@ -48,6 +53,17 @@ namespace MyMixes
             {
                 ppd.BusyText = "Something here";
             }
+
+            if (!DesignMode.IsDesignModeEnabled)
+            {
+                CancelWork = new Command(CancelWorkRoutine);
+            }
+
+        }
+
+        public void CancelWorkRoutine()
+        {
+            cts.Cancel();
         }
 
         private void LocalPlay_Clicked(object sender, EventArgs e)
@@ -125,6 +141,66 @@ namespace MyMixes
                 }
             }
         }
+        private async void DeleteSong_Clicked(object sender, EventArgs e)
+        {
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+
+            await tvm.RemoveSong(t);
+        }
+
+        private void SongDownPosition_Clicked(object sender, EventArgs e)
+        {
+            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
+
+            tvm.MoveSongUp(t);
+        }
+
+        private void ResyncProjectClickedAsync(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void OnDisappearing(object sender, EventArgs e)
+        {
+            if(cts != null)
+            {
+                cts.Cancel();
+            }
+
+            if (SongPickerPlaying)
+            {
+                tvm.StopPlayer();
+                tvm.NowPlaying = null;
+                lastPlayingTrack.TrackPlaying = false;
+            }
+            await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
+            PersistentData.Save();
+        }
+
+        private async void OnAppearing(object sender, EventArgs e)
+        {
+            tvm.MainPlayMode = false;
+
+            if (!BusyOn(true, true))
+            {
+                if (PersistentData.mixLocationsChanged)
+                {
+                    await SyncProjectsAsync();
+                    LoadedTracks.Clear();
+                }
+                LoadProjects();
+                BusyOn(false, true);
+            }
+
+            if (PersistentData.MixLocationList.Count <= 0)
+            {
+                await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
+            }
+            else if (tvm.Playlist.Count <= 0)
+            {
+                await DisplayAlert(AppResources.MixLocationsNoPlaylistTitle, AppResources.MixLocationsNoPlaylist, AppResources.OK);
+            }
+        }
 
         private void RemovePlaylistSong(string song, string project)
         {
@@ -188,30 +264,6 @@ namespace MyMixes
             }
         }
 
-        private async void OnAppearing(object sender, EventArgs e)
-        {
-            tvm.MainPlayMode = false;
-
-            if (!BusyOn(true, true))
-            {
-                if (PersistentData.mixLocationsChanged)
-                {
-                    await SyncProjectsAsync();
-                    LoadedTracks.Clear();
-                }
-                LoadProjects();
-                BusyOn(false, true);
-            }
-
-            if(PersistentData.MixLocationList.Count <= 0)
-            {
-                await DisplayAlert(AppResources.NoProjectsTitle, AppResources.NoProjects, AppResources.OK);
-            } else if(tvm.Playlist.Count <= 0)
-            {
-                await DisplayAlert(AppResources.MixLocationsNoPlaylistTitle, AppResources.MixLocationsNoPlaylist, AppResources.OK);
-            }
-        }
-
         private async void ResyncAllClickedAsync(object sender, EventArgs e)
         {
             // DCR: Maybe we don't sync all the time
@@ -241,7 +293,7 @@ namespace MyMixes
 
             ppd.IsVisible = TurnOn;
 
-            MainStack.IsEnabled = !TurnOn;
+            //MainStack.IsEnabled = !TurnOn;
 
             return false;
         }
@@ -260,63 +312,76 @@ namespace MyMixes
 
         private async Task SyncProjectsAsync()
         {
+            cts = new CancellationTokenSource();
+
             Dictionary<string, List<string>> AllSongs = new Dictionary<string, List<string>>();
 
-            foreach (MixLocation ml in PersistentData.MixLocationList)
+            try
             {
-                UpdateStatus(ml.Provider.ToString() + " " + ml.Path);
-
-                ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
-
-                if (await pi.CheckAuthenitcationAsync())
+                foreach (MixLocation ml in PersistentData.MixLocationList)
                 {
-                    List<string> l = await pi.GetFoldersAsync(ml.Path);
-                    if (l != null)
+                    UpdateStatus(ml.Provider.ToString() + " " + ml.Path);
+
+                    ProviderInfo pi = await ProviderInfo.GetCloudProviderAsync(ml.Provider);
+
+                    if (await pi.CheckAuthenitcationAsync())
                     {
-                        foreach (string f in l)
+                        List<string> l = await pi.GetFoldersAsync(ml.Path);
+                        if (l != null)
                         {
-                            UpdateStatus(ml.Provider.ToString() + " " + ml.Path  + " " + f);
-                            var retList = await pi.UpdateProjectAsync(ml.Path, f, UpdateStatus);
-                            if (AllSongs.ContainsKey(f))
+                            foreach (string f in l)
                             {
-                                AllSongs[f].AddRange(retList);
+                                UpdateStatus(ml.Provider.ToString() + " " + ml.Path + " " + f);
+                                var retList = await pi.UpdateProjectAsync(ml.Path, f, UpdateStatus);
+                                if (AllSongs.ContainsKey(f))
+                                {
+                                    AllSongs[f].AddRange(retList);
+                                }
+                                else
+                                {
+                                    AllSongs[f] = retList;
+                                }
                             }
-                            else
+                        }
+                    }
+                }
+
+                string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                foreach (string p in Directory.GetDirectories(rootPath))
+                {
+                    if (!AllSongs.ContainsKey(Path.GetFileName(p)))
+                    {
+                        Debug.Print("Remove dir " + p + "\n");
+                        UpdateStatus("Removing " + p);
+                        Directory.Delete(p, true);
+
+                        RemovePlaylistFolder(p);
+                    }
+                    else
+                    {
+                        foreach (string s in Directory.GetFiles(p))
+                        {
+                            string folderName = Path.GetFileName(p);
+                            string songName = Path.GetFileName(s);
+                            if (AllSongs.ContainsKey(folderName) && !AllSongs[folderName].Contains(Path.GetFileName(songName)))
                             {
-                                AllSongs[f] = retList;
+                                UpdateStatus("Removing " + s);
+                                Debug.Print("Remove file " + s + "\n");
+                                File.Delete(s);
+
+                                RemovePlaylistSong(Path.GetFileNameWithoutExtension(songName), folderName);
                             }
                         }
                     }
                 }
             }
-
-            string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            foreach (string p in Directory.GetDirectories(rootPath))
+            catch (OperationCanceledException)
             {
-                if (!AllSongs.ContainsKey(Path.GetFileName(p)))
-                {
-                    Debug.Print("Remove dir " + p + "\n");
-                    UpdateStatus("Removing " + p);
-                    Directory.Delete(p, true);
-
-                    RemovePlaylistFolder(p);
-                }
-                else
-                {
-                    foreach (string s in Directory.GetFiles(p))
-                    {
-                        string folderName = Path.GetFileName(p);
-                        string songName = Path.GetFileName(s);
-                        if (AllSongs.ContainsKey(folderName) && !AllSongs[folderName].Contains(Path.GetFileName(songName)))
-                        {
-                            UpdateStatus("Removing " + s);
-                            Debug.Print("Remove file " + s + "\n");
-                            File.Delete(s);
-
-                            RemovePlaylistSong(Path.GetFileNameWithoutExtension(songName), folderName);
-                        }
-                    }
-                }
+                UpdateStatus("Sync canceled");
+            }
+            catch (Exception)
+            {
+                UpdateStatus("Sync error exception");
             }
 
             foreach (string p in AllSongs.Keys)
@@ -327,8 +392,11 @@ namespace MyMixes
                 }
             }
 
+            cts = null;
+
             PersistentData.Save();
         }
+
 
         private void LoadProjects()
         {
@@ -529,35 +597,6 @@ namespace MyMixes
             return false;
         }
 
-        private async void DeleteSong_Clicked(object sender, EventArgs e)
-        {
-            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
-            await tvm.RemoveSong(t);
-        }
-
-        private void SongDownPosition_Clicked(object sender, EventArgs e)
-        {
-            QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
-
-            tvm.MoveSongUp(t);
-        }
-
-        private void ResyncProjectClickedAsync(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void OnDisappearing(object sender, EventArgs e)
-        {
-            if(SongPickerPlaying)
-            {
-                tvm.StopPlayer();
-                tvm.NowPlaying = null;
-                lastPlayingTrack.TrackPlaying = false;
-            }
-            await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
-            PersistentData.Save();
-        }
     }
 }
