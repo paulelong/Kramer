@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="MyMixes.Test">
+    <ContentPage.Content>
+        <Grid VerticalOptions="FillAndExpand">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="6*"/>
+            </Grid.RowDefinitions>
+            <StackLayout>
+                <StackLayout Orientation="Horizontal" Padding="0,0,0,0" Margin="0" HeightRequest="38" >
+                    <Label Text="Projects" FontSize="Large" Margin="10,5,0,0" VerticalTextAlignment="Center"/>
+                    <Label Text="(424 MB)" x:Name="StoreSize" Margin="10,6,0,0" VerticalTextAlignment="Center" HorizontalOptions="FillAndExpand" />
+                    <Button Image="AZOrder32a.png" Scale="1" WidthRequest="38"  />
+                    <Button Image="AddCloudBt32.png" WidthRequest="38" />
+                </StackLayout>
+                <ListView x:Name="Projects" >
+
+                </ListView>
+            </StackLayout >
+            <StackLayout Grid.Row="1" VerticalOptions="FillAndExpand">
+                <Label Text="Playlist Queue" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,20,5,0"/>
+                <ListView x:Name="SelectedTracks" 
+                        RowHeight="50"
+                        SelectionMode="None"
+                    >
+                </ListView>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

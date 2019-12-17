@@ -68,7 +68,7 @@ namespace MyMixes
 
         private void Current_MediaItemFailed(object sender, MediaManager.Media.MediaItemFailedEventArgs e)
         {
-            Console.WriteLine("Failed to load media item {0}", e);
+            Debug.Print("Failed to load media item {0}\n", e);
         }
 
         public void ResetPlayer()
@@ -377,7 +377,7 @@ namespace MyMixes
 
                             if (isAligned)
                             {
-                                Console.WriteLine("*** State Change Song ***");
+                                Debug.Print("*** State Change Song ***\n");
                                 await SeekTo(last_playerpos);
                             }
 
@@ -387,7 +387,7 @@ namespace MyMixes
                     PlayButtonStateImage = "PauseBt.png";
                     break;
                 case MediaManager.Player.MediaPlayerState.Stopped:
-                    Console.WriteLine("Player stopped");
+                    Debug.Print("Player stopped\n");
                     PlayButtonStateImage = "PlayBt.png";
                     break;
                 case MediaManager.Player.MediaPlayerState.Paused:
@@ -401,7 +401,7 @@ namespace MyMixes
         {
             if (isAligned)
             {
-                Console.WriteLine("*** Media Changed Song ***");
+                Debug.Print("*** Media Changed Song ***\n");
                 await SeekTo(last_playerpos);
             }
 
@@ -420,13 +420,13 @@ namespace MyMixes
             {
                 if (CrossMediaManager.Current.IsPlaying())
                 {
-                    if(CrossMediaManager.Current.Position.TotalSeconds > 0.001)
+                    if(CrossMediaManager.Current.Position.TotalSeconds > 0.001 && CrossMediaManager.Current.Duration.TotalSeconds > 0.001)
                     {
                         // We don't want it to seek, so manually set property
                         //songPosition = player.CurrentPosition / player.Duration ;
-                        Console.WriteLine("Slider changed");
+                        Debug.Print("Slider changed pos={0} dur={1}\n", CrossMediaManager.Current.Position.TotalSeconds, CrossMediaManager.Current.Duration.TotalSeconds);
                         songPosition = CrossMediaManager.Current.Position.TotalSeconds / CrossMediaManager.Current.Duration.TotalSeconds;
-                        Console.WriteLine("Slider changed new song pos is {0}", songPosition);
+                        Debug.Print("Slider changed new song pos is {0}\n", songPosition);
                         OnPropertyChanged("SongPosition");
                     }
                 }
@@ -472,7 +472,7 @@ namespace MyMixes
                 {
                     await ReadyPlaylist();
 
-                    Console.WriteLine("State is {0} and prepared={1}", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
+                    Debug.Print("State is {0} and prepared={1}\n", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
 
                     if(newPlaylist && Device.RuntimePlatform == Device.iOS)
                     {                        
@@ -508,7 +508,7 @@ namespace MyMixes
                     await CrossMediaManager.Current.PlayQueueItem(0);
                     if (isAligned)
                     {
-                        Console.WriteLine("*** Next Song ***");
+                        Debug.Print("*** Next Song ***\n");
                         await SeekTo(last_playerpos);
                     }
                 }
@@ -545,7 +545,7 @@ namespace MyMixes
                         await CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
                         if (isAligned)
                         {
-                            Console.WriteLine("*** Prev Song ***");
+                            Debug.Print("*** Prev Song ***\n");
                             await SeekTo(last_playerpos);
                         }
                     }
@@ -681,7 +681,7 @@ namespace MyMixes
 
             if(File.Exists(song))
             {
-                Console.WriteLine("Song exists " + song);
+                Debug.Print("Song exists {0}\n", song);
             }
             CrossMediaManager.Current.Play(song);
             //StartPlayer();
@@ -712,7 +712,7 @@ namespace MyMixes
             {
                 if(!File.Exists(t.FullPath))
                 {
-                    Console.WriteLine("Song missing " + t.FullPath);
+                    Debug.Print("Song missing {0}\n", t.FullPath);
                     t_remove.Add(t);
                 }
             }
@@ -806,13 +806,13 @@ namespace MyMixes
             {
                 try
                 {
-                    Console.WriteLine("Seeking: Songpos={0}, curPos={1}, pos={2}, dur={3}", songPos, curPos, CrossMediaManager.Current.Position.TotalSeconds, CrossMediaManager.Current.Duration.TotalSeconds);
+                    Debug.Print("Seeking: Songpos={0}, curPos={1}, pos={2}, dur={3}\n", songPos, curPos, CrossMediaManager.Current.Position.TotalSeconds, CrossMediaManager.Current.Duration.TotalSeconds);
                     await CrossMediaManager.Current.SeekTo(new TimeSpan((long)(songPos * CrossMediaManager.Current.Duration.TotalSeconds * 10000000)));
-                    Console.WriteLine("Seek completed");
+                    Debug.Print("Seek completed\n");
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine("Exception with timespan {0}", ex.ToString());
+                    Debug.Print("Exception with timespan {0}\n", ex.ToString());
                 }
             }
         }
