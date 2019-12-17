@@ -25,29 +25,7 @@ namespace MyMixes
         {
             get
             {
-                string date = "";
-
-                if (DateTime.Now.DayOfYear == LastModifiedDate.DayOfYear)
-                {
-                    date = "Today";
-                }
-                else
-                {
-                    var diff = DateTime.Now - LastModifiedDate;
-                    if (diff.Days > 365)
-                    {
-                        date = LastModifiedDate.ToShortDateString();
-                    }
-                    else if (DateTime.Now.DayOfYear - 1 == LastModifiedDate.DayOfYear)
-                    {
-                        date = "Yesterday";
-                    }
-                    else
-                    {
-                        date = String.Format("{0:M/d}", LastModifiedDate);
-                    }
-                }
-                return date;
+                return simpleDate(LastModifiedDate);
             }
         }
         public string LastModifiedTimeSimple
@@ -66,6 +44,88 @@ namespace MyMixes
             }
         }
 
+        public string LastModifiedDateTimeString
+        {
+            get
+            {
+                return LastModifiedTimeSimple + "\n" + LastModifiedDateSimple;
+            }
+        }
+
+        private DateTime earliest = DateTime.MaxValue;
+        public DateTime Earliest
+        {
+            get
+            {
+                if(earliest == DateTime.MaxValue)
+                {
+                    ComputeFirstLastDate();
+                }
+
+                return earliest;
+            }
+        }
+
+        private DateTime latest = DateTime.MinValue;
+        public DateTime Latest
+        {
+            get
+            {
+                if (latest == DateTime.MinValue)
+                {
+                    ComputeFirstLastDate();
+                }
+
+                return latest;
+            }
+        }
+
+        private string folderDateTimeString = null;
+        public string FolderDateTimeString
+        {
+            get
+            {
+                if(folderDateTimeString == null)
+                {
+                    ComputeFirstLastDate();
+
+                    if (earliest.Date == latest.Date)
+                    {
+                        folderDateTimeString = simpleDate(earliest);
+                    }
+                    else
+                    {
+                        folderDateTimeString = simpleDate(earliest) + "\n" + simpleDate(latest);
+                    }
+                }
+
+                return folderDateTimeString;
+            }
+        }
+
+        private void ComputeFirstLastDate()
+        {
+            foreach (string songFile in Directory.GetFiles(FullPath))
+            {
+                if (MusicUtils.isAudioFormat(songFile))
+                {
+                    FileInfo info = new FileInfo(songFile);
+
+                    if (info.LastWriteTime > latest)
+                    {
+                        latest = info.LastWriteTime;
+                    }
+
+                    if (info.LastWriteTime < earliest)
+                    {
+                        earliest = info.LastWriteTime;
+                    }
+                }
+            }
+
+
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -76,6 +136,37 @@ namespace MyMixes
             }
         }
 
+        private string simpleDate(DateTime dt)
+        {
+            string date = "";
+
+            if (DateTime.Now.DayOfYear == dt.DayOfYear)
+            {
+                date = "Today";
+            }
+            else
+            {
+                var diff = DateTime.Now - dt;
+                if (diff.Days > 365)
+                {
+                    date = dt.ToShortDateString();
+                }
+                else if (DateTime.Now.DayOfYear - 1 == dt.DayOfYear)
+                {
+                    date = "Yesterday";
+                }
+                else
+                {
+                    date = String.Format("{0:M/d}", dt);
+                }
+            }
+            return date;
+        }
+
+        private string simpleTime(DateTime dt)
+        {
+            return String.Format("{0:h:mm tt}", LastModifiedDate);
+        }
 
         public void Print()
         {

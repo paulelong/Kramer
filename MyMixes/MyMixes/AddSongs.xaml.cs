@@ -42,7 +42,7 @@ namespace MyMixes
             }
             set
             {
-                if(storageSize != value)
+                if (storageSize != value)
                 {
                     storageSize = value;
                     OnPropertyChanged("StorageSizeDisplay");
@@ -54,6 +54,38 @@ namespace MyMixes
             get
             {
                 return string.Format("{0} MB", StorageSize);
+            }
+        }
+
+        private bool sortModeAlpha = true;
+        public bool SortModeAlpha
+        {
+            get
+            {
+                return sortModeAlpha;
+            }
+            set
+            {
+                if(value != sortModeAlpha)
+                {
+                    sortModeAlpha = value;
+                    OnPropertyChanged("SortModeImage");
+                }
+            }
+        }
+
+        public string SortModeImage
+        {
+            get
+            {
+                if (sortModeAlpha)
+                {
+                    return "AZOrder32a.png";
+                }
+                else
+                {
+                    return "TimeOrder32.png";
+                }
             }
         }
 
@@ -74,6 +106,7 @@ namespace MyMixes
             Projects.ItemsSource = LoadedTracks;
 
             StoreSize.BindingContext = this;
+            SortButton.BindingContext = this;
 
             if (DesignMode.IsDesignModeEnabled)
             {
@@ -84,7 +117,6 @@ namespace MyMixes
             {
                 CancelWork = new Command(CancelWorkRoutine);
             }
-
         }
 
         public void CancelWorkRoutine()
@@ -151,7 +183,7 @@ namespace MyMixes
                                 }
                             }
 
-                            RemovePlaylistFolder(t.Project);
+                            await RemovePlaylistFolder(t.Project);
                         }
                         else
                         {
@@ -231,7 +263,7 @@ namespace MyMixes
             }
         }
 
-        private void RemovePlaylistSong(string song, string project)
+        private async Task RemovePlaylistSong(string song, string project)
         {
             // If part of playlist, remove from there
             for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
@@ -239,19 +271,19 @@ namespace MyMixes
                 if (song == this.tvm.Playlist[i].Name && project == this.tvm.Playlist[i].Project)
                 {
                     //this.tvm.RemoveTrack(i);
-                    this.tvm.RemoveSong(this.tvm.Playlist[i]);
+                    await this.tvm.RemoveSong(this.tvm.Playlist[i]);
                 }
             }
         }
 
-        private void RemovePlaylistFolder(string folder)
+        private async Task RemovePlaylistFolder(string folder)
         {
             // If part of playlist, remove from there
             for (int i = this.tvm.Playlist.Count - 1; i >= 0; i--)
             {
                 if (folder == this.tvm.Playlist[i].Project)
                 {
-                    this.tvm.RemoveSong(this.tvm.Playlist[i]);
+                    await this.tvm.RemoveSong(this.tvm.Playlist[i]);
                 }
             }
         }
@@ -384,7 +416,7 @@ namespace MyMixes
                         UpdateStatus("Removing " + p);
                         Directory.Delete(p, true);
 
-                        RemovePlaylistFolder(p);
+                        await RemovePlaylistFolder(p);
                     }
                     else
                     {
@@ -398,7 +430,7 @@ namespace MyMixes
                                 Debug.Print("Remove file " + s + "\n");
                                 File.Delete(s);
 
-                                RemovePlaylistSong(Path.GetFileNameWithoutExtension(songName), folderName);
+                                await RemovePlaylistSong(Path.GetFileNameWithoutExtension(songName), folderName);
                             }
                         }
                     }
@@ -484,7 +516,26 @@ namespace MyMixes
                     }
                     else
                     {
-                        LoadedTracks.Insert(projectIndex + insTrackNumber, t);
+                        int i;
+                        for (i = projectIndex; i < projectIndex + songcount; i++)
+                        {
+                            // if it's already inserted don't insert again.  This is typical if we've added them already.
+                            if (t.Name == LoadedTracks[i].Name)
+                            {
+                                i = -1;
+                                break;
+                            }
+
+                            if (isSortedLocationFound(t, LoadedTracks[i]))
+                            {
+                                break;
+                            }
+                        }
+
+                        if (i >= 0)
+                        {
+                            LoadedTracks.Insert(i, t);
+                        }
                     }
 
                     insTrackNumber++;
@@ -527,13 +578,14 @@ namespace MyMixes
                                 dupfoldercount++;
                                 break;
                             }
-                            if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+
+                            if (isSortedLocationFound(t, LoadedTracks[i]))
                             {
                                 break;
                             }
                         }
 
-                        if(i >= 0)
+                        if (i >= 0)
                         {
                             LoadedTracks.Insert(i, t);
                             foldercount++;
@@ -587,7 +639,8 @@ namespace MyMixes
                                     dupfoldercount++;
                                     break;
                                 }
-                                if (string.Compare(t.Name, LoadedTracks[i].Name) < 0)
+
+                                if (isSortedLocationFound(t, LoadedTracks[i]))
                                 {
                                     break;
                                 }
@@ -648,14 +701,36 @@ namespace MyMixes
             StorageSize = (int)(totalsize / (1024*1024));
         }
 
+        private bool isSortedLocationFound(Track t1, Track t2)
+        {
+            if (SortModeAlpha && string.Compare(t1.Name, t2.Name) < 0)
+            {
+                return true;
+            }
+            else if (!SortModeAlpha && ((t1.isProject && t2.Latest <= t1.Latest) || (!t1.isProject && t2.LastModifiedDate <= t1.LastModifiedDate)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected override void OnPropertyChanged(string propertyName)
         {
             var changed = PropertyChanged;
             if (changed != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        private void ChangeSortOrder_Clicked(object sender, EventArgs e)
+        {
+            SortModeAlpha = !SortModeAlpha;
+            LoadedTracks.Clear();
+            selectedTrack = null;
+            LoadProjects();
         }
     }
 }

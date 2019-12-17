@@ -28,9 +28,16 @@
                             <ColumnDefinition Width="0.12*" />
                         </Grid.ColumnDefinitions>
                         <Image Source="MusicFolderBt.png" Scale="0.8"/>
-                        <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" 
+                        <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="FillAndExpand">
+                            <Label Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" 
                                TextColor="White" FontAttributes="Bold" FontSize="Medium"
                                VerticalOptions="Center"/>
+                            <!--<StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" VerticalOptions="Fill">
+                                <Label Text="{Binding LastModifiedTimeString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
+                                <Label Text="{Binding LastModifiedDateString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
+                            </StackLayout>-->
+                            <Label Text="{Binding FolderDateTimeString}" MaxLines="2" Style="{StaticResource SongSubText}" HorizontalOptions="EndAndExpand" LineBreakMode="WordWrap" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
                         <Button Grid.Column="2" Image="TrashBt.png" Scale="0.9"   Clicked="DeleteFolder_Clicked"/>
                         <Button Grid.Column="3" Image="ResyncBt3.png" Scale="0.9" Clicked="ResyncProjectClickedAsync" />
                     </Grid>
@@ -51,10 +58,7 @@
                                FontSize="Large" />
                         <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="FillAndExpand">
                             <Label Text="{Binding DisplayName}" TextColor="White" HorizontalOptions="Start" VerticalTextAlignment="Center"/>
-                            <StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" VerticalOptions="Fill">
-                                <Label Text="{Binding LastModifiedTimeString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="End" VerticalOptions="FillAndExpand"/>
-                                <Label Text="{Binding LastModifiedDateString}" Style="{StaticResource SongSubText}" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
-                            </StackLayout>
+                            <Label Text="{Binding LastModifiedDateTimeString}" MaxLines="2" Style="{StaticResource SongSubText}" HorizontalOptions="EndAndExpand" LineBreakMode="WordWrap" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                         </StackLayout>
                         <Button Grid.Column="2" Image="{Binding UpdateListImage}" Scale="0.9"  Clicked="SongOrderClicked"/>
                         <Button Grid.Column="3" Image="{Binding PlayListImage}" Scale="0.9" Clicked="LocalPlay_Clicked"/>
@@ -90,9 +94,11 @@
                     <RowDefinition Height="6*"/>
                 </Grid.RowDefinitions>
                 <StackLayout>
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="Projects" HorizontalOptions="FillAndExpand" FontSize="Large" Margin="10,5,0,0"/>
-                        <Label Text="{Binding Path=StorageSizeDisplay}" x:Name="StoreSize"/>
+                    <StackLayout Orientation="Horizontal" HeightRequest="40" Margin="0,0,20,0">
+                        <Label Text="Projects" FontSize="Large" Margin="10,5,0,0" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding Path=StorageSizeDisplay}" x:Name="StoreSize" Margin="10,6,0,0" VerticalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
+                        <Button Image="{Binding Path=SortModeImage}" x:Name="SortButton" Clicked="ChangeSortOrder_Clicked" WidthRequest="38"/>
+                        <Button Image="AddCloudBt32.png" Clicked="AddFolder_Clicked" WidthRequest="38"/>
                     </StackLayout>
                     <ListView x:Name="Projects" 
                         ItemSelected="TrackView_Sel"
@@ -132,11 +138,11 @@
                     </ListView>
                 </StackLayout>
             </Grid>
-            <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" />
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" 
+            <ContentView x:Name="Transport" ControlTemplate="{StaticResource TransportControl}" HeightRequest="120" />
+            <!--<StackLayout Orientation="Horizontal" HorizontalOptions="Center" 
                          Spacing="20" Margin="10,0,10,5" HeightRequest="45">
                 <Button Image="AddCloudBt.png" Clicked="AddFolder_Clicked"/>
-            </StackLayout>
+            </StackLayout>-->
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

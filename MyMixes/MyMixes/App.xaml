@@ -62,18 +62,20 @@
             </ControlTemplate>
 
             <ControlTemplate x:Key="PlaylistEntry">
-                <StackLayout Grid.Column="0"  Orientation="Vertical"  Margin="5,0,0,0">
-                    <StackLayout Orientation="Horizontal">
+                <StackLayout Grid.Column="0"  Orientation="Horizontal"  Margin="5,0,0,0">
+                    <StackLayout Orientation="Vertical">
                         <Label Text="{TemplateBinding Parent.BindingContext.Project}" Style="{StaticResource SongSubText}"
                                    VerticalTextAlignment="End" HeightRequest="20"/>
-                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" Style="{StaticResource SongSubText}"
-                                   VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
-                    </StackLayout>
-                    <StackLayout Orientation="Horizontal">
                         <Label Text="{TemplateBinding Parent.BindingContext.DisplayName}" Style="{StaticResource SongText}" VerticalOptions="StartAndExpand" Margin="0,-4,0,0"/>
-                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" Style="{StaticResource SongSubText}"
-                                   VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>
                     </StackLayout>
+                    <!--<StackLayout Orientation="Vertical"  HorizontalOptions="EndAndExpand">-->
+                        <!--<Label Text="{TemplateBinding Parent.BindingContext.LastModifiedTimeSimple}" Style="{StaticResource SongSubText}"
+                                   VerticalTextAlignment="End" HeightRequest="20" HorizontalOptions="EndAndExpand"/>
+                        <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateSimple}" Style="{StaticResource SongSubText}"
+                                   VerticalTextAlignment="Start" HeightRequest="20" HorizontalOptions="EndAndExpand" VerticalOptions="Start"/>-->
+                    <Label Text="{TemplateBinding Parent.BindingContext.LastModifiedDateTimeString}" MaxLines="2" Style="{StaticResource SongSubText}" LineBreakMode="WordWrap" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HorizontalOptions="EndAndExpand"/>
+
+                    <!--</StackLayout>-->
                 </StackLayout>
             </ControlTemplate>
 
