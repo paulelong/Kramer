@@ -331,4 +331,13 @@
   <ItemGroup>
     <BundleResource Include="Resources\SplashiOS.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\TimeOrder16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\AddCloudBt16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\AZOrder16.png" />
+  </ItemGroup>
 </Project>
