@@ -340,4 +340,13 @@
   <ItemGroup>
     <BundleResource Include="Resources\AZOrder16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\AddCloudBt32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\AZOrder32a.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\TimeOrder32.png" />
+  </ItemGroup>
 </Project>
