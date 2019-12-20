@@ -94,11 +94,11 @@ namespace MyMixes
         {
             TransportVMInstance.MainPlayMode = true;
 
-            await TransportVMInstance.LoadProjects();
+            //await TransportVMInstance.LoadProjects();
 
-            TransportVMInstance.ResetPlayer();
+            //TransportVMInstance.ResetPlayer();
 
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
+            //Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { TransportVMInstance.CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
 
             if(!startRecorded)
             {
@@ -120,6 +120,9 @@ namespace MyMixes
             {
                 await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
             }
+
+
+            TransportVMInstance.UpdateUI();
         }
 
         private async void DeleteSong_Clicked(object sender, EventArgs e)

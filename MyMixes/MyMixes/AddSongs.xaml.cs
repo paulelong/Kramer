@@ -230,9 +230,14 @@ namespace MyMixes
                 tvm.StopPlayer();
                 tvm.NowPlaying = null;
                 lastPlayingTrack.TrackPlaying = false;
+
+                tvm.ResetPlayer();
             }
             await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
             PersistentData.Save();
+
+            await tvm.LoadProjects();
+
         }
 
         private async void OnAppearing(object sender, EventArgs e)

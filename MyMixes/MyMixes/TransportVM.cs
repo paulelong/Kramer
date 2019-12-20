@@ -44,43 +44,6 @@ namespace MyMixes
         private double last_playerpos;
 
 
-        public TransportViewModel()
-        {
-            if (!DesignMode.IsDesignModeEnabled)
-            {
-                PlayCommand = new Command(TransportPlayPressed);
-                PrevCommand = new Command(PrevSong);
-                NextCommand = new Command(NextSong);
-            }
-
-            PlayButtonStateImage = "PlayBt.png";
-
-            CrossMediaManager.Current.MediaItemChanged += Current_MediaItemChanged;
-            CrossMediaManager.Current.StateChanged += Current_StateChanged;
-            CrossMediaManager.Current.MediaItemFailed += Current_MediaItemFailed;
-
-            CrossMediaManager.Current.KeepScreenOn = true;
-
-            ResetPlayer();
-
-            Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
-        }
-
-        private void Current_MediaItemFailed(object sender, MediaManager.Media.MediaItemFailedEventArgs e)
-        {
-            Debug.Print("Failed to load media item {0}\n", e);
-        }
-
-        public void ResetPlayer()
-        {
-            //CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
-
-            playlistReady = false;
-            NowPlaying = "";
-            SongPosition = 0;
-
-            CrossMediaManager.Current.Stop();
-        }
 
         #region Properties
         public int SongsQueued
@@ -214,35 +177,35 @@ namespace MyMixes
         public bool isLooping { get; set; }
         public bool isAligned { get; set; }
 
-        string currentProject;
-        public string CurrentProject
-        {
-            get { return currentProject; }
-            set
-            {
-                if (currentProject != value)
-                {
-                    currentProject = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        //string currentProject;
+        //public string CurrentProject
+        //{
+        //    get { return currentProject; }
+        //    set
+        //    {
+        //        if (currentProject != value)
+        //        {
+        //            currentProject = value;
+        //            OnPropertyChanged();
+        //        }
+        //    }
+        //}
 
-        public string CurrentSel
-        {
-            get
-            {
-                return currentSel;
-            }
-            set
-            {
-                if (currentSel != value)
-                {
-                    currentSel = value;
-                    OnPropertyChanged("CurrentSel");
-                }
-            }
-        }
+        //public string CurrentSel
+        //{
+        //    get
+        //    {
+        //        return currentSel;
+        //    }
+        //    set
+        //    {
+        //        if (currentSel != value)
+        //        {
+        //            currentSel = value;
+        //            OnPropertyChanged("CurrentSel");
+        //        }
+        //    }
+        //}
 
         public string nowPlaying;
         public string NowPlaying
@@ -325,6 +288,8 @@ namespace MyMixes
                         currentTrackNumber = Playlist.IndexOf(value);
                     }
 
+                    PersistentData.LastPlayedSongIndex = CurrentTrackNumber;
+
                     selectedSong = value;
                     OnPropertyChanged("SelectedSong");
                 }
@@ -354,6 +319,51 @@ namespace MyMixes
         }
 
         #endregion Properties
+
+        public TransportViewModel()
+        {
+            if (!DesignMode.IsDesignModeEnabled)
+            {
+                PlayCommand = new Command(TransportPlayPressed);
+                PrevCommand = new Command(PrevSong);
+                NextCommand = new Command(NextSong);
+            }
+
+            PlayButtonStateImage = "PlayBt.png";
+
+            CrossMediaManager.Current.MediaItemChanged += Current_MediaItemChanged;
+            CrossMediaManager.Current.StateChanged += Current_StateChanged;
+            CrossMediaManager.Current.MediaItemFailed += Current_MediaItemFailed;
+
+            CrossMediaManager.Current.KeepScreenOn = true;
+
+            ResetPlayer();
+
+            Task.Run(async () => { await UpdateSliderAsync(cancelTok.Token); });
+        }
+
+        private void Current_MediaItemFailed(object sender, MediaManager.Media.MediaItemFailedEventArgs e)
+        {
+            Debug.Print("Failed to load media item {0}\n", e);
+        }
+
+        public void ResetPlayer()
+        {
+            //CrossMediaManager.Current.RepeatMode = MediaManager.Playback.RepeatMode.Off;
+
+            playlistReady = false;
+            //NowPlaying = "";
+            SongPosition = 0;
+
+            CrossMediaManager.Current.Stop();
+        }
+
+        public void UpdateUI()
+        {
+            //currentTrackNumber = PersistentData.LastPlayedSongIndex;
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { CurrentTrackNumber = PersistentData.LastPlayedSongIndex; });
+            //OnPropertyChanged("SelectedSong");
+        }
 
         private async void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
         {
