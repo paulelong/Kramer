@@ -159,7 +159,7 @@ namespace MyMixes
                             // Are we goint to remove a song that is playing?
                             if (this.tvm.SelectedSong.Project == t.Project)
                             {
-                                this.tvm.StopPlayer();
+                                await this.tvm.StopPlayer();
                                 this.tvm.ResetPlayer();
                             }
 
@@ -227,7 +227,7 @@ namespace MyMixes
 
             if (SongPickerPlaying)
             {
-                tvm.StopPlayer();
+                await tvm.StopPlayer();
                 tvm.NowPlaying = null;
                 lastPlayingTrack.TrackPlaying = false;
 
