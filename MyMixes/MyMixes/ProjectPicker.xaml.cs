@@ -128,8 +128,8 @@ namespace MyMixes
             {
                 if (addEnabled != value)
                 {
-                    OnPropertyChanged();
                     addEnabled = value;
+                    OnPropertyChanged();
                 }
             }
         }
