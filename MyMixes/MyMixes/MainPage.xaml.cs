@@ -121,6 +121,7 @@ namespace MyMixes
                 await DisplayAlert(AppResources.NoPlaylistTitle, AppResources.NoPlaylist, AppResources.OK);
             }
 
+            Debug.Print("Reloaded state info, last song played index is {0} itemsource = {1}", PersistentData.LastPlayedSongIndex, Projects.ItemsSource);
 
             TransportVMInstance.UpdateUI();
         }
