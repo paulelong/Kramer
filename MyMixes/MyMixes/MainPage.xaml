@@ -72,11 +72,11 @@
                     </Grid.ColumnDefinitions>
                     <StackLayout Grid.Column="0" Orientation="Vertical" HorizontalOptions="Center">
                         <Label Text="Loop" VerticalTextAlignment="Center" HeightRequest="20"/>
-                        <Switch IsToggled="{Binding isLooping}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="30"/>
+                        <Switch IsToggled="{Binding IsLooping}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="30"/>
                     </StackLayout>
                     <StackLayout Grid.Column="1" Orientation="Vertical"  HorizontalOptions="Center">
                         <Label Text="Compare" VerticalTextAlignment="Center" HeightRequest="20"/>
-                        <Switch IsToggled="{Binding isAligned}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="30"/>
+                        <Switch IsToggled="{Binding IsAligned}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"  HeightRequest="30"/>
                     </StackLayout>
                 </Grid>
 

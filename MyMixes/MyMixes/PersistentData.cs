@@ -33,7 +33,7 @@ namespace MyMixes
         {
             get
             {
-                if(mixLocationList == null)
+                if (mixLocationList == null)
                 {
                     mixLocationList = new ObservableCollection<MixLocation>();
                     LoadMixLocations();
@@ -73,7 +73,7 @@ namespace MyMixes
 
             foreach (MixLocation ml in MixLocationList)
             {
-                if(!ProjectsByProviders.ContainsKey(ml.Provider))
+                if (!ProjectsByProviders.ContainsKey(ml.Provider))
                 {
                     ProjectsByProviders[ml.Provider] = new List<string>();
                 }
@@ -93,7 +93,7 @@ namespace MyMixes
         {
             string key = provider + "_" + root;
 
-            if(Application.Current.Properties.ContainsKey(key))
+            if (Application.Current.Properties.ContainsKey(key))
             {
                 string projects = (string)Application.Current.Properties[key];
                 return new List<string>(projects.Split(','));
@@ -195,6 +195,41 @@ namespace MyMixes
             }
         }
 
+        public static bool lastAlign
+        {
+            get 
+            {
+                if (Application.Current.Properties.ContainsKey("lastAlign"))
+                {
+                    bool s = (bool)Application.Current.Properties["lastAlign"];
+                    return s;
+                }
+
+                return false;
+            }
+            set
+            {
+                Application.Current.Properties["lastAlign"] = value;
+            }
+        }
+
+        public static bool lastLoop
+        {
+            get
+            {
+                if (Application.Current.Properties.ContainsKey("lastLoop"))
+                {
+                    bool s = (bool)Application.Current.Properties["lastLoop"];
+                    return s;
+                }
+
+                return false;
+            }
+            set
+            {
+                Application.Current.Properties["lastLoop"] = value;
+            }
+        }
         static public string LastFolder
         {
             get

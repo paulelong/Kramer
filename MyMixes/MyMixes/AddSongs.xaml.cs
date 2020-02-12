@@ -33,6 +33,8 @@ namespace MyMixes
 
         CancellationTokenSource cts;
 
+        bool dirty = false;
+
         private int storageSize = 0;
         public int StorageSize
         {
@@ -204,6 +206,8 @@ namespace MyMixes
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
             await tvm.RemoveSong(t);
+
+            dirty = true;
         }
 
         private void SongDownPosition_Clicked(object sender, EventArgs e)
@@ -211,6 +215,8 @@ namespace MyMixes
             QueuedTrack t = QueuedTrack.FindQueuedTrack((View)sender);
 
             tvm.MoveSongUp(t);
+
+            dirty = true;
         }
 
         private void ResyncProjectClickedAsync(object sender, EventArgs e)
@@ -233,11 +239,14 @@ namespace MyMixes
 
                 tvm.ResetPlayer();
             }
-            await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
-            PersistentData.Save();
 
-            await tvm.LoadProjects();
+            if(dirty)
+            {
+                await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
+                PersistentData.Save();
 
+                await tvm.LoadProjects();
+            }
         }
 
         private async void OnAppearing(object sender, EventArgs e)
@@ -277,6 +286,7 @@ namespace MyMixes
                 {
                     //this.tvm.RemoveTrack(i);
                     await this.tvm.RemoveSong(this.tvm.Playlist[i]);
+                    dirty = true;
                 }
             }
         }
@@ -289,6 +299,7 @@ namespace MyMixes
                 if (folder == this.tvm.Playlist[i].Project)
                 {
                     await this.tvm.RemoveSong(this.tvm.Playlist[i]);
+                    dirty = true;
                 }
             }
         }
@@ -304,6 +315,7 @@ namespace MyMixes
             Track t = FindTrack((View)sender);
 
             tvm.AddSong(t);
+            dirty = true;
         }
 
         private void TrackView_Sel(object sender, SelectedItemChangedEventArgs e)
