@@ -566,31 +566,31 @@ namespace MyMixes
 
 
 #pragma warning disable AvoidAsyncVoid
-        private void Player_PlaybackEnded(object sender, EventArgs e)
-        {
-            Device.BeginInvokeOnMainThread(async () => 
-            {
-                if(IsAligned)
-                {
-                    player.Play();
-                }
-                else
-                {
-                    if (CurrentTrackNumber + 1 >= SongsQueued)
-                    {
-                        if(!IsLooping)
-                        {
-                            await StopPlayer();
-                        }
-                        CurrentTrackNumber = 0;
-                    }
-                    else
-                    {
-                        CurrentTrackNumber++;
-                    }
-                }
-            });
-        }
+        //private void Player_PlaybackEnded(object sender, EventArgs e)
+        //{
+        //    Device.BeginInvokeOnMainThread(async () => 
+        //    {
+        //        if(IsAligned)
+        //        {
+        //            player.Play();
+        //        }
+        //        else
+        //        {
+        //            if (CurrentTrackNumber + 1 >= SongsQueued)
+        //            {
+        //                if(!IsLooping)
+        //                {
+        //                    await StopPlayer();
+        //                }
+        //                CurrentTrackNumber = 0;
+        //            }
+        //            else
+        //            {
+        //                CurrentTrackNumber++;
+        //            }
+        //        }
+        //    });
+        //}
 
         public async void TransportPlayPressed()
         {
@@ -826,7 +826,7 @@ namespace MyMixes
 
             NowPlaying = Path.GetFileNameWithoutExtension(song);
 
-            if(File.Exists(song))
+            if (File.Exists(song))
             {
                 Debug.Print("Song exists {0}\n", song);
             }
@@ -897,7 +897,7 @@ namespace MyMixes
                 RemovedSong = true;
             }
 
-            if (i >= Playlist.Count)
+            if (CurrentTrackNumber >= i)
             {
                 CurrentTrackNumber--;
             }
