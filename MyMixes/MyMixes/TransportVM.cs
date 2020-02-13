@@ -603,9 +603,18 @@ namespace MyMixes
 
                     Debug.Print("State is {0} and prepared={1}\n", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
 
-                    if(newPlaylist && Device.RuntimePlatform == Device.iOS)
-                    {                        
-                        await CrossMediaManager.Current.PlayQueueItem(0);
+                    if(Device.RuntimePlatform == Device.iOS)
+                    {
+                        if(newPlaylist)
+                        {
+                            await CrossMediaManager.Current.PlayQueueItem(0);
+                        }
+                        else
+                        {
+                            //await CrossMediaManager.Current.PlayQueueItem(0);
+                            await CrossMediaManager.Current.Play();
+                        }
+
                     }
                     else
                     {
