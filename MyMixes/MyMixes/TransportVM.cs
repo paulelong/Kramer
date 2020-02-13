@@ -894,7 +894,10 @@ namespace MyMixes
             }
             else
             {
-                SelectedSong = Playlist[CurrentTrackNumber];
+                if(CurrentTrackNumber >= 0)
+                {
+                    SelectedSong = Playlist[CurrentTrackNumber];
+                }
             }
 
             Debug.Print("Selected song {0}", CurrentTrackNumber);
