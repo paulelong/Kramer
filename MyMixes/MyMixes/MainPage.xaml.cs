@@ -71,23 +71,23 @@ namespace MyMixes
 #pragma warning disable AvoidAsyncVoid
         private async void Add_Clicked(object sender, EventArgs e)
         {
-            PersistentData.Save();
+            //PersistentData.Save();
             await Navigation.PushAsync(new AddSongs(TransportVMInstance));
         }
 
-        private async void OnDisappearing(object sender, EventArgs e)
+        private void OnDisappearing(object sender, EventArgs e)
         {
-            await PersistentData.SaveQueuedTracksAsync(TransportVMInstance.Playlist);
-            PersistentData.Save();
+            PersistentData.SaveQueuedTracks(TransportVMInstance.Playlist);
+            //PersistentData.Save();
         }
 
 #pragma warning restore AvoidAsyncVoid
 
         private void Notes_Clicked(object sender, EventArgs e)
         {
-            PersistentData.Save();
+            //PersistentData.Save();
             Navigation.PushAsync(new SongNotes(TransportVMInstance, QueuedTrack.FindQueuedTrack((View)sender)));
-            PersistentData.Save();
+            //PersistentData.Save();
         }
 
         private async void OnAppearing(object sender, EventArgs e)
@@ -145,7 +145,7 @@ namespace MyMixes
 
         private void Help_Clicked(object sender, EventArgs e)
         {
-            PersistentData.Save();
+            //PersistentData.Save();
             Navigation.PushAsync(new HelpMain());
         }
     }

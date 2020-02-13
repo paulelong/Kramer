@@ -9,6 +9,7 @@ using Xamarin.Forms;
 using CloudStorage;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Xamarin.Essentials;
 
 namespace MyMixes
 {
@@ -25,7 +26,7 @@ namespace MyMixes
 
         public static void Save()
         {
-            Application.Current.SavePropertiesAsync();
+            //Application.Current.SavePropertiesAsync();
         }
 
         static internal ObservableCollection<MixLocation> mixLocationList = null;
@@ -51,16 +52,18 @@ namespace MyMixes
 
             foreach (CloudProviders cpn in Enum.GetValues(typeof(CloudProviders)))
             {
-                if (Application.Current.Properties.ContainsKey("ProjectMap_" + cpn))
+                string list = Preferences.Get("ProjectMap_" + cpn, GetOldValue<string>("ProjectMap_" + cpn, null));
+                if (!string.IsNullOrEmpty(list)) 
+                //if (Application.Current.Properties.ContainsKey("ProjectMap_" + cpn))
                 {
-                    string list = (string)Application.Current.Properties["ProjectMap_" + cpn];
-                    if (!string.IsNullOrEmpty(list))
-                    {
+                    //string list = (string)Application.Current.Properties["ProjectMap_" + cpn];
+                    //if (!string.IsNullOrEmpty(list))
+                    //{
                         foreach (string p in list.Split(','))
                         {
                             mixLocationList.Add(new MixLocation() { Provider = cpn, Path = p });
                         }
-                    }
+                    //}
                 }
             }
 
@@ -83,7 +86,8 @@ namespace MyMixes
 
             foreach (KeyValuePair<CloudProviders, List<string>> kvp in ProjectsByProviders)
             {
-                Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
+                Preferences.Set("ProjectMap_" + kvp.Key, string.Join(",", kvp.Value.ToArray()));
+                //Application.Current.Properties["ProjectMap_" + kvp.Key] = string.Join(",", kvp.Value.ToArray());
             }
 
             mixLocationsChanged = true;
@@ -91,13 +95,20 @@ namespace MyMixes
 
         public static List<string> GetProjectFoldersData(string provider, string root)
         {
-            string key = provider + "_" + root;
-
-            if (Application.Current.Properties.ContainsKey(key))
+            string projects = Preferences.Get(provider + "_" + root, GetOldValue<string>(provider + "_" + root, null));
+            if(!string.IsNullOrEmpty(projects))
             {
-                string projects = (string)Application.Current.Properties[key];
                 return new List<string>(projects.Split(','));
             }
+
+            //string key = provider + "_" + root;
+            
+
+            //if (Application.Current.Properties.ContainsKey(key))
+            //{
+            //    string projects = (string)Application.Current.Properties[key];
+            //    return new List<string>(projects.Split(','));
+            //}
             else
             {
                 return null;
@@ -106,9 +117,10 @@ namespace MyMixes
 
         public static void PutProjectFoldersData(string provider, string root, string value)
         {
-            string key = provider + "_" + root;
+            Preferences.Set(provider + "_" + root, value);
+            //string key = provider + "_" + root;
 
-            Application.Current.Properties[key] = value;
+            //Application.Current.Properties[key] = value;
         }
 
         //public static async Task<bool> isRemoteNewerAsync(string path, DateTime lastModified)
@@ -144,125 +156,168 @@ namespace MyMixes
 
         static int ProviderCount
         {
-            get
-            {
-                return (int)Application.Current.Properties["CloudProviderCount"];
-            }
+
+            get => Preferences.Get(nameof(ProviderCount), GetOldValue<int>("CloudProviderCount"));
             set
             {
-                Application.Current.Properties["CloudProviderCount"] = value;
+                Preferences.Set(nameof(ProviderCount), value);
             }
+
+            //get
+            //{
+            //    return (int)Application.Current.Properties["CloudProviderCount"];
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["CloudProviderCount"] = value;
+            //}
         }
 
         static string googleToken;
         public static string GoogleToken
         {
-            get
-            {
-                if (googleToken == null)
-                {
-                    googleToken = LoadPersitedValue("GoogleToken");
-                    if (googleToken == null)
-                    {
-                        return "";
-                    }
-                }
 
-                return googleToken;
-            }
+            get => Preferences.Get(nameof(GoogleToken), GetOldValue<string>(nameof(GoogleToken), ""));
             set
             {
-                googleToken = value;
-                Application.Current.Properties["GoogleToken"] = googleToken;
+                Preferences.Set(nameof(GoogleToken), value);
             }
+
+            //get
+            //{
+            //    if (googleToken == null)
+            //    {
+            //        googleToken = LoadPersitedValue("GoogleToken");
+            //        if (googleToken == null)
+            //        {
+            //            return "";
+            //        }
+            //    }
+
+            //    return googleToken;
+            //}
+            //set
+            //{
+            //    googleToken = value;
+            //    Application.Current.Properties["GoogleToken"] = googleToken;
+            //}
         }
 
         public static int LastPlayedSongIndex
         {
-            get
-            {
-                if (Application.Current.Properties.ContainsKey("CurrentSongIndex"))
-                {
-                    int s = (int)Application.Current.Properties["CurrentSongIndex"];
-                    return s;
-                }
 
-                return 0;
-            }
+
+            get => Preferences.Get(nameof(LastPlayedSongIndex), GetOldValue<int>("CurrentSongIndex", 0));
             set
             {
-                Application.Current.Properties["CurrentSongIndex"] = value;
+                Preferences.Set(nameof(LastPlayedSongIndex), value);
             }
+
+            //get
+            //{
+            //    if (Application.Current.Properties.ContainsKey("CurrentSongIndex"))
+            //    {
+            //        int s = (int)Application.Current.Properties["CurrentSongIndex"];
+            //        return s;
+            //    }
+
+            //    return 0;
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["CurrentSongIndex"] = value;
+            //}
         }
 
-        public static bool lastAlign
+        public static bool LastAlign
         {
-            get 
-            {
-                if (Application.Current.Properties.ContainsKey("lastAlign"))
-                {
-                    bool s = (bool)Application.Current.Properties["lastAlign"];
-                    return s;
-                }
 
-                return false;
-            }
+            get => Preferences.Get(nameof(LastAlign), GetOldValue<bool>("lastAlign", false));
             set
             {
-                Application.Current.Properties["lastAlign"] = value;
+                Preferences.Set(nameof(LastAlign), value);
             }
+
+            //get 
+            //{
+            //    if (Application.Current.Properties.ContainsKey("lastAlign"))
+            //    {
+            //        bool s = (bool)Application.Current.Properties["lastAlign"];
+            //        return s;
+            //    }
+
+            //    return false;
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["lastAlign"] = value;
+            //}
         }
 
-        public static bool lastLoop
+        public static bool LastLoop
         {
-            get
-            {
-                if (Application.Current.Properties.ContainsKey("lastLoop"))
-                {
-                    bool s = (bool)Application.Current.Properties["lastLoop"];
-                    return s;
-                }
 
-                return false;
-            }
+            get => Preferences.Get(nameof(LastLoop), GetOldValue<bool>("lastLoop", false));
             set
             {
-                Application.Current.Properties["lastLoop"] = value;
+                Preferences.Set(nameof(LastLoop), value);
             }
+
+            //get
+            //{
+            //    if (Application.Current.Properties.ContainsKey("lastLoop"))
+            //    {
+            //        bool s = (bool)Application.Current.Properties["lastLoop"];
+            //        return s;
+            //    }
+
+            //    return false;
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["lastLoop"] = value;
+            //}
         }
         static public string LastFolder
         {
-            get
-            {
-                return LoadPersitedValue("LastFolder");
-            }
+
+            get => Preferences.Get(nameof(LastFolder), GetOldValue<string>(nameof(LastFolder)));
             set
             {
-                Application.Current.Properties["LastFolder"] = value;
+                Preferences.Set(nameof(LastFolder), value);
             }
+
+            //get
+            //{
+            //    return LoadPersitedValue("LastFolder");
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["LastFolder"] = value;
+            //}
         }
 
         static public string LastCloud
         {
-            get
-            {
-                return LoadPersitedValue("LastCloud");
-            }
+            get => Preferences.Get(nameof(LastCloud), GetOldValue<string>(nameof(LastCloud)));
             set
             {
-                Application.Current.Properties["LastCloud"] = value;
+                Preferences.Set(nameof(LastCloud), value);
             }
+
+            //get
+            //{
+            //    return LoadPersitedValue("LastCloud");
+            //}
+            //set
+            //{
+            //    Application.Current.Properties["LastCloud"] = value;
+            //}
         }
 
         static private string LoadPersitedValue(string storedName)
         {
-            if (Application.Current.Properties.ContainsKey(storedName))
-            {
-                string s = (string)Application.Current.Properties[storedName];
-                return s;
-            }
-
-            return null;
+            return Preferences.Get(storedName, GetOldValue<string>(storedName, null));
         }
 
         static private string TrackNumberKey(string project, string trackname)
@@ -273,21 +328,23 @@ namespace MyMixes
 
         static public int GetTrackNumber(string project, string trackname)
         {
-            string key = TrackNumberKey(project, trackname);
+            return Preferences.Get(TrackNumberKey(project, trackname), GetOldValue<int>(TrackNumberKey(project, trackname), 0));
+            //string key = TrackNumberKey(project, trackname);
 
-            if (Application.Current.Properties.ContainsKey(key))
-            {
-                int tracknum = (int)Application.Current.Properties[key];
-                return tracknum;
-            }
+            //if (Application.Current.Properties.ContainsKey(key))
+            //{
+            //    int tracknum = (int)Application.Current.Properties[key];
+            //    return tracknum;
+            //}
 
-            return 0;
+            //return 0;
         }
 
         static public void SetTrackNumber(string project, string trackname, int tracknum)
         {
-            string key = TrackNumberKey(project, trackname);
-            Application.Current.Properties[key] = tracknum;
+            Preferences.Set(TrackNumberKey(project, trackname), tracknum);
+            //string key = TrackNumberKey(project, trackname);
+            //Application.Current.Properties[key] = tracknum;
         }
 
         private static string ProviderKey(string project, string trackname, string date)
@@ -297,17 +354,17 @@ namespace MyMixes
 
         static public void SetProvider(string project, string trackname, string date, CloudProviders provider)
         {
-            string key = ProviderKey(project, trackname, date);
-            Application.Current.Properties[key] = provider.ToString();
+            Preferences.Set(ProviderKey(project, trackname, date), provider.ToString());
+            //string key = ProviderKey(project, trackname, date);
+            //Application.Current.Properties[key] = provider.ToString();
         }
 
 
         static public CloudProviders GetProvider(string project, string trackname, string date)
         {
-            string key = ProviderKey(project, trackname, date);
-            if(Application.Current.Properties.ContainsKey(key))
+            string cpstr = Preferences.Get(ProviderKey(project, trackname, date), GetOldValue<string>(ProviderKey(project, trackname, date), null));
+            if(!string.IsNullOrEmpty(cpstr))
             {
-                string cpstr = (string)Application.Current.Properties[key];
                 CloudProviders cp;
 
                 if (Enum.TryParse<CloudStorage.CloudProviders>(cpstr, out cp))
@@ -316,13 +373,26 @@ namespace MyMixes
                 }
             }
 
+            //string key = ProviderKey(project, trackname, date);
+            //if(Application.Current.Properties.ContainsKey(key))
+            //{
+            //    string cpstr = (string)Application.Current.Properties[key];
+            //    CloudProviders cp;
+
+            //    if (Enum.TryParse<CloudStorage.CloudProviders>(cpstr, out cp))
+            //    {
+            //        return cp;
+            //    }
+            //}
+
             return CloudProviders.NULL;
         }
 
         static public void ResetProvider(string project, string trackname, string date)
         {
-            string key = ProviderKey(project, trackname, date);
-            Application.Current.Properties.Remove(key);
+            Preferences.Remove(ProviderKey(project, trackname, date));
+            //string key = ProviderKey(project, trackname, date);
+            //Application.Current.Properties.Remove(key);
         }
 
         private static string CloudRootKey(string project, string trackname, string date)
@@ -332,28 +402,30 @@ namespace MyMixes
 
         static public void SetCloudRoot(string project, string trackname, string date, string root)
         {
-            string key = CloudRootKey(project, trackname, date);
-            Application.Current.Properties[key] = root;
+            Preferences.Set(CloudRootKey(project, trackname, date), root);
+            //string key = CloudRootKey(project, trackname, date);
+            //Application.Current.Properties[key] = root;
         }
 
 
         static public string GetCloudRoot(string project, string trackname, string date)
         {
-            string key = CloudRootKey(project, trackname, date);
-            if (Application.Current.Properties.ContainsKey(key))
-            {
-                string cpstr = (string)Application.Current.Properties[key];
+            //string key = CloudRootKey(project, trackname, date);
+            //if (Application.Current.Properties.ContainsKey(key))
+            //{
+            //    string cpstr = (string)Application.Current.Properties[key];
                 
-                return cpstr;
-            }
+            //    return cpstr;
+            //}
 
-            return null;
+            return Preferences.Get(CloudRootKey(project, trackname, date), GetOldValue<string>(CloudRootKey(project, trackname, date), null));
         }
 
         static public void ResetCloudRoot(string project, string trackname, string date)
         {
-            string key = CloudRootKey(project, trackname, date);
-            Application.Current.Properties.Remove(key);
+            Preferences.Remove(CloudRootKey(project, trackname, date));
+            //string key = CloudRootKey(project, trackname, date);
+            //Application.Current.Properties.Remove(key);
         }
 
         static public void LoadQueuedTracks(ObservableCollection<QueuedTrack> qt)
@@ -362,33 +434,55 @@ namespace MyMixes
 
             try
             {
-                if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_COUNT))
+                for (int n = 0; n < Preferences.Get(KEY_QUEUED_TRACK_COUNT, GetOldValue<int>(KEY_QUEUED_TRACK_COUNT, 0)); n++)
                 {
-                    for (int n = 0; n < (int)Application.Current.Properties[KEY_QUEUED_TRACK_COUNT]; n++)
+                    string value = Preferences.Get(KEY_QUEUED_TRACK_ID + n.ToString(), GetOldValue<string>(KEY_QUEUED_TRACK_ID + n.ToString(), null));
+
+                    if (!string.IsNullOrEmpty(value))
                     {
-                        string key = KEY_QUEUED_TRACK_ID + n.ToString();
-
-                        if (Application.Current.Properties.ContainsKey(key))
+                        string[] trackParams = value.Split(',');
+                        if (trackParams.Length >= 3)
                         {
-                            string value = (string)Application.Current.Properties[key];
+                            DateTime d = DateTime.UtcNow;
 
-                            string[] trackParams = value.Split(',');
-                            if(trackParams.Length >= 3)
+                            if (trackParams.Length >= 4)
                             {
-                                DateTime d = DateTime.UtcNow;
-
-                                if(trackParams.Length >= 4)
+                                if (!DateTime.TryParse(trackParams[3], out d))
                                 {
-                                    if(!DateTime.TryParse(trackParams[3], out d))
-                                    {
-                                        Debug.Print("Error parsing date for {0}", trackParams[3]);
-                                    }
+                                    Debug.Print("Error parsing date for {0}", trackParams[3]);
                                 }
-                                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2], LastModifiedDate = d });
                             }
+                            qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2], LastModifiedDate = d });
                         }
                     }
                 }
+                //if (Application.Current.Properties.ContainsKey(KEY_QUEUED_TRACK_COUNT))
+                //{
+                //    for (int n = 0; n < (int)Application.Current.Properties[KEY_QUEUED_TRACK_COUNT]; n++)
+                //    {
+                //        string key = KEY_QUEUED_TRACK_ID + n.ToString();
+
+                //        if (Application.Current.Properties.ContainsKey(key))
+                //        {
+                //            string value = (string)Application.Current.Properties[key];
+
+                //            string[] trackParams = value.Split(',');
+                //            if(trackParams.Length >= 3)
+                //            {
+                //                DateTime d = DateTime.UtcNow;
+
+                //                if(trackParams.Length >= 4)
+                //                {
+                //                    if(!DateTime.TryParse(trackParams[3], out d))
+                //                    {
+                //                        Debug.Print("Error parsing date for {0}", trackParams[3]);
+                //                    }
+                //                }
+                //                qt.Add(new QueuedTrack() { Name = trackParams[0], Project = trackParams[1], FullPath = trackParams?[2], LastModifiedDate = d });
+                //            }
+                //        }
+                //    }
+                //}
             }
             catch(InvalidCastException ex)
             {
@@ -397,36 +491,59 @@ namespace MyMixes
 
         }
 
-        static public async Task SaveQueuedTracksAsync(ObservableCollection<QueuedTrack> qtlist)
+        static public void SaveQueuedTracks(ObservableCollection<QueuedTrack> qtlist)
         {
             int i = 0;
             foreach(QueuedTrack qt in qtlist)
             {
-                string key = KEY_QUEUED_TRACK_ID + i.ToString();
-                Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToString();
+                Preferences.Set(KEY_QUEUED_TRACK_ID + i.ToString(), qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToString());
+                //string key = KEY_QUEUED_TRACK_ID + i.ToString();
+                //Application.Current.Properties[key] = qt.Name + "," + qt.Project + "," + qt.FullPath + "," + qt.LastModifiedDate.ToString();
                 i++;
             }
 
-            Application.Current.Properties[KEY_QUEUED_TRACK_COUNT] = qtlist.Count;
-            await Application.Current.SavePropertiesAsync();
+            Preferences.Set(KEY_QUEUED_TRACK_COUNT, qtlist.Count);
+            //Application.Current.Properties[KEY_QUEUED_TRACK_COUNT] = qtlist.Count;
+            //await Application.Current.SavePropertiesAsync();
         }
 
         static public void SaveNotes(QueuedTrack qt, string notes)
         {
-            Application.Current.Properties[qt.FullPath] = notes;
+            Preferences.Set(qt.FullPath, notes);
+            //Application.Current.Properties[qt.FullPath] = notes;
         }
 
         static public string LoadNotes(QueuedTrack qt)
         {
-            if(Application.Current.Properties.ContainsKey(qt.FullPath))
-            {
-                return (string)Application.Current.Properties[qt.FullPath];
-            }
-            else
-            {
-                return null;
-            }
+            return Preferences.Get(qt.FullPath, GetOldValue<string>(qt.FullPath, null));
+            //if(Application.Current.Properties.ContainsKey(qt.FullPath))
+            //{
+            //    return (string)Application.Current.Properties[qt.FullPath];
+            //}
+            //else
+            //{
+            //    return null;
+            //}
         }
 
+        private static T GetOldValue<T>(string key)
+        {
+            if (Application.Current.Properties.ContainsKey(key))
+            {
+                return (T)Application.Current.Properties[key];
+            }
+
+            return default(T);
+        }
+
+        private static T GetOldValue<T>(string key, T defaultvalue)
+        {
+            if (Application.Current.Properties.ContainsKey(key))
+            {
+                return (T)Application.Current.Properties[key];
+            }
+
+            return defaultvalue;
+        }
     }
 }

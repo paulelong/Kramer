@@ -177,7 +177,7 @@ namespace MyMixes
                 if(!isLoopingLoaded)
                 {
                     isLoopingLoaded = true;
-                    IsLooping = PersistentData.lastLoop;
+                    IsLooping = PersistentData.LastLoop;
                 }
 
                 return isLooping;
@@ -186,7 +186,7 @@ namespace MyMixes
             {
                 if (value != isLooping)
                 {
-                    PersistentData.lastLoop = value;
+                    PersistentData.LastLoop = value;
                     isLooping = value;
                     SetRepeatMode();
                 }
@@ -203,7 +203,7 @@ namespace MyMixes
                 if (!isAlignedLoaded)
                 {
                     isAlignedLoaded = true;
-                    IsAligned = PersistentData.lastAlign;
+                    IsAligned = PersistentData.LastAlign;
                 }
 
                 return isAligned;
@@ -212,7 +212,7 @@ namespace MyMixes
             {
                 if (value != isAligned)
                 {
-                    PersistentData.lastAlign = value;
+                    PersistentData.LastAlign = value;
                     isAligned = value;
 
                     SetRepeatMode();
@@ -313,7 +313,7 @@ namespace MyMixes
             }
 
             PersistentData.LastPlayedSongIndex = CurrentTrackNumber;
-            PersistentData.Save();
+            //PersistentData.Save();
 
             Debug.Print("SelectedSong was {0} now {1}\n", selectedSong?.Name, track?.Name);
         }
@@ -827,11 +827,11 @@ namespace MyMixes
             return true;
         }
 
-        public async Task LoadProjects()
+        public void LoadProjects()
         {
             if(!playingListLoaded)
             {
-                await ValidatePlayingTracks();
+                ValidatePlayingTracks();
 
                 playingListLoaded = true;
 
@@ -841,7 +841,7 @@ namespace MyMixes
             //await ReadyPlaylist();
         }
 
-        private async Task ValidatePlayingTracks()
+        private void ValidatePlayingTracks()
         {
 
             List<QueuedTrack> t_remove = new List<QueuedTrack>();
@@ -864,7 +864,7 @@ namespace MyMixes
             }
 
 
-            await PersistentData.SaveQueuedTracksAsync(Playlist);
+            PersistentData.SaveQueuedTracks(Playlist);
         }
 
         public async Task RemoveSong(QueuedTrack t)

@@ -352,7 +352,7 @@ namespace MyMixes
             PersistentData.LastFolder = CurrentFolder;
             PersistentData.LastCloud = ProviderNameText;
 
-            PersistentData.Save();
+            //PersistentData.Save();
 
         }
 

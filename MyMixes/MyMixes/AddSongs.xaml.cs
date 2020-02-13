@@ -242,10 +242,10 @@ namespace MyMixes
 
             if(dirty)
             {
-                await PersistentData.SaveQueuedTracksAsync(tvm.Playlist);
-                PersistentData.Save();
+                PersistentData.SaveQueuedTracks(tvm.Playlist);
+                //PersistentData.Save();
 
-                await tvm.LoadProjects();
+                tvm.LoadProjects();
             }
         }
 
@@ -348,7 +348,7 @@ namespace MyMixes
             BusyOn(true);
             await SyncProjectsAsync();
             LoadProjects();
-            PersistentData.Save();
+            //PersistentData.Save();
             BusyOn(false);
 
             Projects.EndRefresh();
@@ -474,7 +474,7 @@ namespace MyMixes
 
             ComputeStorageSize();
 
-            PersistentData.Save();
+            //PersistentData.Save();
         }
 
         private void LoadProjects()

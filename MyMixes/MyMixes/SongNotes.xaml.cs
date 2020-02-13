@@ -31,7 +31,7 @@ namespace MyMixes
         private void OnDisapearing(object sender, EventArgs e)
         {
             PersistentData.SaveNotes(qt, snd.Notes);
-            PersistentData.Save();
+            //PersistentData.Save();
         }
 
         private void LeftSongPressed(object sender, EventArgs e)
