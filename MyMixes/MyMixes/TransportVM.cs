@@ -297,25 +297,26 @@ namespace MyMixes
 
         private async Task SetSelectedSong(QueuedTrack track)
         {
-            Debug.Print("Current track {0} doesn't match playing song {1}, lastplayerpos={2} \n", CurrentTrackNumber, Playlist.IndexOf(track), SongPosition);
+            Debug.Print("SetSelectSong: Current track={0} Setting to index {1}, lastplayerpos={2} \n", CurrentTrackNumber, Playlist.IndexOf(track), SongPosition);
 
-            if (CrossMediaManager.Current.IsPlaying())
-            {
-                last_playerpos = SongPosition;
-                last_endpos = CrossMediaManager.Current.Duration.TotalSeconds;
-                //currentTrackNumber = Playlist.IndexOf(track);
-                await CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber); // Awaitable, bug?
-                SelectedSong = track;
-            }
-            else
-            {
-                currentTrackNumber = Playlist.IndexOf(track);
-            }
+            //if(CurrentTrackNumber != Playlist.IndexOf(track))
+            //{
+            //    Debug.Print("SetSelectSong: Tracks don't match\n", CurrentTrackNumber, Playlist.IndexOf(track), SongPosition);
+                if (CrossMediaManager.Current.IsPlaying())
+                {
+                    last_playerpos = SongPosition;
+                    last_endpos = CrossMediaManager.Current.Duration.TotalSeconds;
+                    //currentTrackNumber = Playlist.IndexOf(track);
+                    await CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber); // Awaitable, bug?
+                    SelectedSong = track;
+                }
+                else
+                {
+                    currentTrackNumber = Playlist.IndexOf(track);
+                }
 
-            PersistentData.LastPlayedSongIndex = CurrentTrackNumber;
-            //PersistentData.Save();
-
-            Debug.Print("SelectedSong was {0} now {1}\n", selectedSong?.Name, track?.Name);
+                PersistentData.LastPlayedSongIndex = CurrentTrackNumber;
+            //}
         }
 
         private QueuedTrack selectedSong = null;
@@ -341,6 +342,10 @@ namespace MyMixes
                         if (!CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber).Result)
                         {
                             Debug.Print("SelectedSong PlayQueueItem failed {0} {1}\n", selectedSong?.Name, value?.Name);
+                        }
+                        else
+                        {
+                            Debug.Print("SelectedSong PlayQueueItem track number {0}\n", CurrentTrackNumber);
                         }
 
                     }
@@ -420,7 +425,7 @@ namespace MyMixes
         public void UpdateUI()
         {
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { 
-                Debug.Print("Setting last song played which was {0}", PersistentData.LastPlayedSongIndex); 
+                Debug.Print("Setting last song played which was {0}\n", PersistentData.LastPlayedSongIndex); 
                 CurrentTrackNumber = PersistentData.LastPlayedSongIndex;
                 // Select the last song index
                 OnPropertyChanged("SelectedSong");
@@ -451,6 +456,8 @@ namespace MyMixes
 
                             if (Playlist[CurrentTrackNumber].FullPath != CrossMediaManager.Current.Queue.Current.MediaUri)
                             {
+                                Debug.Print("StateChanged: path's don't match {0} vs {1}\n", Playlist[CurrentTrackNumber].FullPath, CrossMediaManager.Current.Queue.Current.MediaUri);
+
                                 await SetSelectedSong(Playlist[CurrentTrackNumber]);
                                 //await CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
                                 //OnPropertyChanged("SelectedSong");
@@ -537,8 +544,6 @@ namespace MyMixes
                 }
             }
 
-
-
             //NowPlaying = Playlist[CurrentTrackNumber].Name;
             //last_endpos = CrossMediaManager.Current.Duration.TotalSeconds;
         }
@@ -601,26 +606,58 @@ namespace MyMixes
                 {
                     await ReadyPlaylist();
 
-                    Debug.Print("State is {0} and prepared={1}\n", CrossMediaManager.Current.State, CrossMediaManager.Current.IsPrepared());
+                    Debug.Print("State is {0} and prepared={1} CurrentTrack={2} isplay={3} isprep={4} ci={5}\n", 
+                        CrossMediaManager.Current.State, 
+                        CrossMediaManager.Current.IsPrepared(),
+                        CurrentTrackNumber,
+                        CrossMediaManager.Current.IsPlaying(),
+                        CrossMediaManager.Current.IsPrepared(),
+                        CrossMediaManager.Current.Queue.CurrentIndex);
 
-                    if(Device.RuntimePlatform == Device.iOS)
+                    if(CurrentTrackNumber != CrossMediaManager.Current.Queue.CurrentIndex)
                     {
-                        if(newPlaylist)
+                        if(CrossMediaManager.Current.IsPlaying())
                         {
-                            await CrossMediaManager.Current.PlayQueueItem(0);
+                            await CrossMediaManager.Current.PlayPause();
                         }
                         else
                         {
-                            //await CrossMediaManager.Current.PlayQueueItem(0);
-                            await CrossMediaManager.Current.Play();
+                            await CrossMediaManager.Current.PlayPause();
                         }
-
                     }
                     else
                     {
-                        await CrossMediaManager.Current.PlayPause();
+                        if (Device.RuntimePlatform == Device.iOS)
+                        {
+                            if (newPlaylist)
+                            {
+                                await CrossMediaManager.Current.PlayQueueItem(0);
+                            }
+                            else
+                            {
+                                //await CrossMediaManager.Current.PlayQueueItem(0);
+                                await CrossMediaManager.Current.Play();
+                            }
+
+                        }
+                        else
+                        {
+                            int i = 0;
+                            if (i == 0)
+                            {
+                                await CrossMediaManager.Current.PlayPause();
+                            }
+                            else if (i == 1)
+                            {
+                                await CrossMediaManager.Current.Play();
+                            }
+                            else
+                            {
+                                await CrossMediaManager.Current.PlayQueueItem(CurrentTrackNumber);
+                            }
+                        }
                     }
-                        
+
                     newPlaylist = false;
                 }
             }
@@ -763,10 +800,10 @@ namespace MyMixes
         {
             if(!playlistReady)
             {
-                //if(CrossMediaManager.Current.IsPlaying())
-                //{
-                //    await CrossMediaManager.Current.Stop();
-                //}
+                if (CrossMediaManager.Current.IsPlaying())
+                {
+                    await CrossMediaManager.Current.Stop();
+                }
 
                 if (CrossMediaManager.Current.Queue != null)
                 {
@@ -790,6 +827,8 @@ namespace MyMixes
                 //await CrossMediaManager.Current.Play(mediaPlayList);
                 //await CrossMediaManager.Current.PlayPause();
 
+                //CurrentTrackNumber = 0;
+
                 //pausePlay = true;                
                 newPlaylist = true;
                 playlistReady = true;
@@ -809,7 +848,7 @@ namespace MyMixes
             double playerpos = CrossMediaManager.Current.Position.TotalSeconds;
             //double playerpos = player.CurrentPosition;
 
-            Debug.Print("playing {0}\n", song);
+            Debug.Print("PlaySongAsync: playing {0}\n", song);
 
             Dictionary<String, String> properties = new Dictionary<string, string>();
 
@@ -940,15 +979,15 @@ namespace MyMixes
             }
         }
 
-        private async Task StartPlayer()
-        {
-            await CrossMediaManager.Current.PlayPause();
-        }
+        //private async Task StartPlayer()
+        //{
+        //    await CrossMediaManager.Current.PlayPause();
+        //}
 
-        private void PausePlayer()
-        {
-            CrossMediaManager.Current.PlayPause();
-        }
+        //private void PausePlayer()
+        //{
+        //    CrossMediaManager.Current.PlayPause();
+        //}
 
         public async Task StopPlayer()
         {
